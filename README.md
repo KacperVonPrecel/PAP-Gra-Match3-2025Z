@@ -5,3 +5,6 @@ W ramach projektu stworzymy grę, w której użytkownik będzie mógł losować 
 # Realizacja
 
 Wstępnie planujemy realizację projektu z użyciem spring boota i angulara.
+
+# Skład zespołu
+Norbert Drabiński, Szymon Mucha, Kacper Skrodzki, Wiktoria Parzych
