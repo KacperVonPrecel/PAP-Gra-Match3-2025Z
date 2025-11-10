@@ -31,12 +31,23 @@
 			<mat-label i18n>Password</mat-label>
 			<input matInput placeholder="Enter your password" i18n-placeholder formControlName="password" />
 			<!-- XXX add errors to show user -->
+			<mat-error>
+				@if (passwordControl.hasError('passwordMismatch')) {
+					<span i18n>Passwords do not match</span>
+				}
+			</mat-error>
 		</mat-form-field>
 
 		<mat-form-field id="confirm-password-field">
 			<mat-label i18n>Repeat Password</mat-label>
 			<input matInput placeholder="Reapeat your password" i18n-placeholder formControlName="confirmPassword" />
-			<!-- XXX add errors to show user -->
+			<mat-error>
+				<!-- XXX add errors to show user -->
+
+				@if (confirmPasswordControl.hasError('passwordMismatch')) {
+					<span i18n>Passwords do not match</span>
+				}
+			</mat-error>
 		</mat-form-field>
 
 		<button id="register-button" matButton="filled" color="primary" type="submit" [disabled]="!registerForm.valid || isRequestInProgress" i18n>

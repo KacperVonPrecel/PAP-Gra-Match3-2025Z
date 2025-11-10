@@ -1,7 +1,16 @@
 import { Component, inject } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { AbstractControl, FormBuilder, FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+	AbstractControl,
+	FormBuilder,
+	FormControl,
+	FormsModule,
+	ReactiveFormsModule,
+	ValidationErrors,
+	ValidatorFn,
+	Validators
+} from '@angular/forms';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { AuthService, RegisterResult } from '../auth-service';
 import { RegisterRequest } from '../auth-service';
@@ -23,17 +32,29 @@ export class Register {
 		return this._isRequestInProgress;
 	}
 
+	private readonly passwordMatchValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+		const password = this.passwordControl.value;
+		const confirmPassword = this.confirmPasswordControl.value;
+
+		if (password !== confirmPassword) {
+			return { passwordMismatch: true };
+		}
+		return null;
+	};
+
 	readonly registerForm = this.formBuilder.group({
 		username: new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(20)]),
 		email: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(100), Validators.email]],
 		password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(40)]],
-		confirmPassword: ['', [Validators.required]] //XXX validator match password
+		confirmPassword: ['', [Validators.required]]
 	});
 
 	constructor(
 		private readonly authService: AuthService,
 		private readonly router: Router
-	) {}
+	) {
+		this.registerForm.setValidators(this.passwordMatchValidator);
+	}
 
 	get usernameControl(): AbstractControl {
 		return this.registerForm.get('username')!;

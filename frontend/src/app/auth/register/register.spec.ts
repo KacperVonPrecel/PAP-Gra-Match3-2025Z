@@ -100,7 +100,7 @@ describe('Register', () => {
 		expect(component.registerForm.valid).toBeFalse();
 	});
 
-	it('check if form have errors when text is missing', async () => {
+	it('check if form show errors when text is missing', async () => {
 		component.usernameControl.markAsTouched();
 		component.emailControl.markAsTouched();
 		component.passwordControl.markAsTouched();
@@ -124,7 +124,7 @@ describe('Register', () => {
 		expect(component.passwordControl.hasError('minlength')).toBeTrue();
 	});
 
-	it('check if form have errors when text is too short', async () => {
+	it('check if form show errors when text is too short', async () => {
 		await usernameInputHarness.setValue('123');
 		await emailInputHarness.setValue('123');
 		await passwordInputHarness.setValue('123');
@@ -150,7 +150,7 @@ describe('Register', () => {
 		expect(component.passwordControl.hasError('maxlength')).toBeTrue();
 	});
 
-	it('check if form have errors when text is too long', async () => {
+	it('check if form show errors when text is too long', async () => {
 		const longUsername = 'a'.repeat(25);
 		const longEmail = 'a'.repeat(95) + '@email.com';
 		const longPassword = 'a'.repeat(45);
@@ -172,12 +172,31 @@ describe('Register', () => {
 		expect(component.emailControl.hasError('email')).toBeTrue();
 	});
 
-	it('check if form have errors when email is invalid', async () => {
+	it('check if form show errors when email is invalid', async () => {
 		await emailInputHarness.setValue('invalid-email');
 
 		fixture.detectChanges();
 		expect(await emailFormFieldHarness.getTextErrors()).toHaveSize(1);
 	});
+
+	it('check if form have errors when passwords do not match', async () => {
+		await passwordInputHarness.setValue('TestPassword123!');
+		await confirmPasswordInputHarness.setValue('DifferentPassword123!');
+
+		expect(component.registerForm.hasError('passwordMismatch')).toBeTrue();
+	});
+
+	/** Test nie przechodzi harnessy nie wykrywają błędów dla całego formularza. */
+	// it('check if form show errors when passwords do not match', async () => {
+	// 	await passwordInputHarness.setValue('TestPassword123!');
+	// 	await confirmPasswordInputHarness.setValue('DifferentPassword123!');
+
+	// 	component.passwordControl.markAsTouched();
+	// 	component.confirmPasswordControl.markAsTouched();
+	// 	fixture.detectChanges();
+	// 	expect(await passwordFormFieldHarness.getTextErrors()).toHaveSize(1);
+	// 	expect(await confirmPasswordFormFieldHarness.getTextErrors()).toHaveSize(1);
+	// });
 
 	it('check if form have no errors when is valid', async () => {
 		await usernameInputHarness.setValue('testuser');
@@ -266,6 +285,7 @@ describe('Register', () => {
 		component.register();
 		expect(component.usernameControl.hasError('usernameTaken')).toBeTrue();
 
+		component.usernameControl.markAsTouched();
 		fixture.detectChanges();
 		expect(await usernameFormFieldHarness.getTextErrors()).toHaveSize(1);
 	});
@@ -275,6 +295,7 @@ describe('Register', () => {
 		component.register();
 		expect(component.emailControl.hasError('emailTaken')).toBeTrue();
 
+		component.emailControl.markAsTouched();
 		fixture.detectChanges();
 		expect(await emailFormFieldHarness.getTextErrors()).toHaveSize(1);
 	});
