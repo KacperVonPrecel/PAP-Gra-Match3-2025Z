@@ -3,7 +3,6 @@ package pap.project.auth;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -13,8 +12,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,8 +41,6 @@ public class AuthController
     private final @NonNull RegisterService registerService;
     private final @NonNull SecurityContextRepository securityContextRepository;
 
-    private final @NonNull SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
-
     public AuthController(@NonNull AuthenticationManager authenticationManager, @NonNull RegisterService registerService,
                           @NonNull SecurityContextRepository securityContextRepository)
     {
@@ -53,9 +50,9 @@ public class AuthController
     }
 
     @PostMapping("login")
-    public ResponseEntity<?> login(@NonNull @Valid @RequestBody(required = true)  LoginRequest request,
-                                   @NonNull HttpServletRequest http,
-                                   @NonNull HttpServletResponse response)
+    public @NonNull ResponseEntity<?> login(@NonNull @Valid @RequestBody LoginRequest request,
+                                   @NonNull HttpServletRequest httpRequest,
+                                   @NonNull HttpServletResponse httpResponse)
     {
         final int requestId = REQUEST_ID.getAndIncrement();
         final String logPrefix = LOG_PREFIX.formatted(requestId);
@@ -63,10 +60,7 @@ public class AuthController
         try
         {
             final Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.username(), request.password()));
-            final var context = SecurityContextHolder.createEmptyContext();
-            context.setAuthentication(authentication);
-            SecurityContextHolder.setContext(context);
-            securityContextRepository.saveContext(context, http, response);
+            createSession(authentication, httpRequest, httpResponse);
             LOG.info("%s new login successful".formatted(logPrefix));
             return ResponseEntity.ok(new LoginResponse());
         } catch (AuthenticationException wyj)
@@ -78,7 +72,7 @@ public class AuthController
     }
 
     @PostMapping("register")
-    public ResponseEntity<?> register(@NonNull @Valid @RequestBody(required = true) RegisterRequest registerRequest)
+    public @NonNull ResponseEntity<?> register(@NonNull @Valid @RequestBody RegisterRequest registerRequest)
     {
         final int requestId = REQUEST_ID.getAndIncrement();
         final String logPrefix = LOG_PREFIX.formatted(requestId);
@@ -94,5 +88,15 @@ public class AuthController
             case DATABASE_ERROR -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new RegisterErrorResponse("Internal server error"));
         };
+    }
+
+    private void createSession(@NonNull Authentication authentication,
+            @NonNull HttpServletRequest httpRequest,
+            @NonNull HttpServletResponse httpResponse)
+    {
+        final SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authentication);
+        SecurityContextHolder.setContext(context);
+        securityContextRepository.saveContext(context, httpRequest, httpResponse);
     }
 }

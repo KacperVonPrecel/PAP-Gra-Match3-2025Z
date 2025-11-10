@@ -1,6 +1,5 @@
 package pap.project.security;
 
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
@@ -26,7 +25,8 @@ public class WebSecurityConfig
 {
     private final @NonNull UserDetailService userDetailService;
 
-    public WebSecurityConfig(@NonNull UserDetailService userDetailService) {
+    public WebSecurityConfig(@NonNull UserDetailService userDetailService)
+    {
         this.userDetailService = userDetailService;
     }
 
@@ -38,21 +38,22 @@ public class WebSecurityConfig
                         .securityContextRepository(securityContextRepository())
                 )
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/api/auth/**", "/error").permitAll()
+                        .requestMatchers("/api/auth/**").anonymous()
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers("/xxx").authenticated()
                         .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .httpBasic(Customizer.withDefaults())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .logout(LogoutConfigurer::permitAll);
 
         return http.build();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(@NonNull AuthenticationConfiguration config) throws Exception
+    public @NonNull AuthenticationManager authenticationManager(@NonNull AuthenticationConfiguration config) throws Exception
     {
         return config.getAuthenticationManager();
     }
