@@ -1,7 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, map, Observable, of } from 'rxjs';
-import { Register } from './register/register';
 
 @Injectable({
 	providedIn: 'root'
@@ -17,9 +16,9 @@ export class AuthService {
 			catchError((error: HttpErrorResponse) => {
 				if (error.status === 409) {
 					const errorResponse = error.error as RegisterConflictErrorResponse;
-					if (errorResponse.result === RegisterConflictError.USERNAME_TAKEN) {
+					if (errorResponse.error === RegisterConflictError.USERNAME_TAKEN) {
 						return of(RegisterResult.USERNAME_TAKEN);
-					} else if (errorResponse.result === RegisterConflictError.EMAIL_TAKEN) {
+					} else if (errorResponse.error === RegisterConflictError.EMAIL_TAKEN) {
 						return of(RegisterResult.EMAIL_TAKEN);
 					}
 				}
