@@ -20,13 +20,15 @@ public class User
     private Long id;
 
     private String username;
+    private String email;
     private String hashedPassword;
 
     protected User() {}
 
-    public User(@NonNull String username, @NonNull String hashedPassword)
+    public User(@NonNull String username, @NonNull String email, @NonNull String hashedPassword)
     {
         this.username = Objects.requireNonNull(username);
+        this.email = Objects.requireNonNull(email);
         this.hashedPassword = Objects.requireNonNull(hashedPassword);
     }
 
@@ -38,6 +40,11 @@ public class User
     public @NonNull String getUsername()
     {
         return Objects.requireNonNull(username);
+    }
+
+    public @NonNull String getEmail()
+    {
+        return Objects.requireNonNull(email);
     }
 
     public @NonNull String getHashedPassword()

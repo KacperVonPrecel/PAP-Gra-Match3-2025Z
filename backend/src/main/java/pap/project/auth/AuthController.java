@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import pap.project.auth.model.RegisterResult;
 import pap.project.auth.model.controller.login.LoginRequest;
 import pap.project.auth.model.controller.login.LoginResponse;
+import pap.project.auth.model.controller.register.RegisterError;
 import pap.project.auth.model.controller.register.RegisterErrorResponse;
 import pap.project.auth.model.controller.register.RegisterRequest;
 import pap.project.auth.model.controller.register.RegisterResponse;
@@ -84,9 +85,11 @@ public class AuthController
         {
             case REGISTERED -> ResponseEntity.ok(new RegisterResponse());
             case USERNAME_REPEATED -> ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new RegisterErrorResponse("Username repeated"));
+                    .body(new RegisterErrorResponse(RegisterError.USERNAME_TAKEN));
+            case EMAIL_REPEATED -> ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new RegisterErrorResponse(RegisterError.EMAIL_TAKEN));
             case DATABASE_ERROR -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new RegisterErrorResponse("Internal server error"));
+                    .body(new RegisterErrorResponse(RegisterError.INTERNAL_SERVER_ERROR));
         };
     }
 

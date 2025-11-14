@@ -28,7 +28,7 @@ public class RegisterServiceTest
     @InjectMocks
     private RegisterService registerService;
 
-    private final RegisterRequest registerRequest = new RegisterRequest("test-user", "password");
+    private final RegisterRequest registerRequest = new RegisterRequest("test-user", "test-user@gmail.com", "password");
 
     @Test
     void test_register_user_repeated_username()
@@ -36,6 +36,14 @@ public class RegisterServiceTest
         when(userRepository.existsByUsername(registerRequest.username())).thenReturn(true);
         final RegisterResult result = registerService.registerUser("", registerRequest);
         assertEquals(RegisterResult.USERNAME_REPEATED, result);
+    }
+
+    @Test
+    void test_register_user_repeated_email()
+    {
+        when(userRepository.existsByEmail(registerRequest.email())).thenReturn(true);
+        final RegisterResult result = registerService.registerUser("", registerRequest);
+        assertEquals(RegisterResult.EMAIL_REPEATED, result);
     }
 
     @Test
@@ -53,7 +61,7 @@ public class RegisterServiceTest
     {
         when(userRepository.existsByUsername(registerRequest.username())).thenReturn(false);
         when(passwordEncoder.encode(registerRequest.password())).thenReturn("password");
-        when(userRepository.save(any())).thenReturn(new User(registerRequest.username(), "password"));
+        when(userRepository.save(any())).thenReturn(new User(registerRequest.username(), registerRequest.email(), "password"));
         final RegisterResult result = registerService.registerUser("", registerRequest);
         assertEquals(RegisterResult.REGISTERED, result);
     }

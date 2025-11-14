@@ -19,7 +19,7 @@ public class UserRepositoryTest
     @BeforeEach
     void init()
     {
-        final User user = new User("test-user", "password");
+        final User user = new User("test-user", "test-user@gmail.com", "password");
         userRepository.save(user);
     }
 
@@ -28,6 +28,13 @@ public class UserRepositoryTest
     {
         assertTrue(userRepository.existsByUsername("test-user"));
         assertFalse(userRepository.existsByUsername("not-existing-user"));
+    }
+
+    @Test
+    void test_exists_by_email()
+    {
+        assertTrue(userRepository.existsByEmail("test-user@gmail.com"));
+        assertFalse(userRepository.existsByEmail("not-exisiting-user@gmail.com"));
     }
 
     @Test

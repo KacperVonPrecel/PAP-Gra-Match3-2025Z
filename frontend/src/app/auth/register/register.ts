@@ -91,7 +91,7 @@ export class Register {
 				case RegisterResult.EMAIL_TAKEN:
 					this.emailControl.setErrors({ emailTaken: true });
 					break;
-				case RegisterResult.FAILURE:
+				case RegisterResult.SERVER_ERROR:
 					//XXX show generic error message
 					break;
 			}

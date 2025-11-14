@@ -65,7 +65,7 @@ describe('AuthService', () => {
 
 	it('should return FAILURE for other errors', () => {
 		service.register(mockRequest).subscribe((result) => {
-			expect(result).toBe(RegisterResult.FAILURE);
+			expect(result).toBe(RegisterResult.SERVER_ERROR);
 		});
 
 		const req = httpMock.expectOne('api/auth/register');

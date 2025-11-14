@@ -24,10 +24,11 @@ public class UserDetailServiceTest
 
     @InjectMocks
     private UserDetailService userDetailService;
+
     @Test
     void test_load_user_by_username_user_exists()
     {
-        final User user = new User("test-user", "password");
+        final User user = new User("test-user", "test-user@gmail.com", "password");
 
         when(userRepository.findByUsername("test-user"))
                 .thenReturn(Optional.of(user));
@@ -45,5 +46,4 @@ public class UserDetailServiceTest
         assertThrows(UsernameNotFoundException.class, () -> userDetailService.loadUserByUsername("not-existing-user"),
                 "User not founded: not-existing-user");
     }
-
 }

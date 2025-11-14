@@ -14,7 +14,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.context.SecurityContextRepository;
 import pap.project.auth.model.RegisterResult;
 import pap.project.auth.model.controller.login.LoginRequest;
+import pap.project.auth.model.controller.register.RegisterError;
+import pap.project.auth.model.controller.register.RegisterErrorResponse;
 import pap.project.auth.model.controller.register.RegisterRequest;
+import pap.project.auth.model.controller.register.RegisterResponse;
+
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -44,7 +49,7 @@ class AuthControllerTest {
     private AuthController authController;
 
     private final LoginRequest loginRequest = new LoginRequest("test-user", "password");
-    private final RegisterRequest request = new RegisterRequest("test-user", "password");
+    private final RegisterRequest request = new RegisterRequest("test-user", "test-user@gmail.com", "password");
 
     @Test
     void test_login_succes()
@@ -80,12 +85,13 @@ class AuthControllerTest {
         final ResponseEntity<?> response = authController.register(request);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        //XXX
+        assertTrue(response.hasBody());
+        assertInstanceOf(RegisterResponse.class, response.getBody());
     }
 
     @Test
     void test_register_username_repeated() {
-        RegisterRequest request = new RegisterRequest("test-user", "password");
+        final RegisterRequest request = new RegisterRequest("test-user", "test-user@gmail.com", "password");
 
         when(registerService.registerUser(anyString(), eq(request)))
                 .thenReturn(RegisterResult.USERNAME_REPEATED);
@@ -93,13 +99,31 @@ class AuthControllerTest {
         final ResponseEntity<?> response = authController.register(request);
 
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
-        //XXX
-//        assertTrue(response.getBody().toString().contains("Username repeated"));
+        assertTrue(response.hasBody());
+        assertInstanceOf(RegisterErrorResponse.class, response.getBody());
+        final RegisterErrorResponse responseBody = Objects.requireNonNull((RegisterErrorResponse) response.getBody());
+        assertEquals(RegisterError.USERNAME_TAKEN, responseBody.error());
+    }
+
+    @Test
+    void test_register_email_repeated() {
+        final RegisterRequest request = new RegisterRequest("test-user", "test-user@gmail.com", "password");
+
+        when(registerService.registerUser(anyString(), eq(request)))
+                .thenReturn(RegisterResult.EMAIL_REPEATED);
+
+        final ResponseEntity<?> response = authController.register(request);
+
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertTrue(response.hasBody());
+        assertInstanceOf(RegisterErrorResponse.class, response.getBody());
+        final RegisterErrorResponse responseBody = Objects.requireNonNull((RegisterErrorResponse) response.getBody());
+        assertEquals(RegisterError.EMAIL_TAKEN, responseBody.error());
     }
 
     @Test
     void test_register_database_error() {
-        RegisterRequest request = new RegisterRequest("test-user", "password");
+        final RegisterRequest request = new RegisterRequest("test-user", "test-user@gmail.com","password");
 
         when(registerService.registerUser(anyString(), eq(request)))
                 .thenReturn(RegisterResult.DATABASE_ERROR);
@@ -107,7 +131,9 @@ class AuthControllerTest {
         final ResponseEntity<?> response = authController.register(request);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        //XXX
-//        assertTrue(response.getBody().toString().contains("Internal server error"));
+        assertTrue(response.hasBody());
+        assertInstanceOf(RegisterErrorResponse.class, response.getBody());
+        final RegisterErrorResponse responseBody = Objects.requireNonNull((RegisterErrorResponse) response.getBody());
+        assertEquals(RegisterError.INTERNAL_SERVER_ERROR, responseBody.error());
     }
 }
