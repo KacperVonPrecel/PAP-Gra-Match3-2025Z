@@ -77,7 +77,7 @@ public class AuthController
     {
         final int requestId = REQUEST_ID.getAndIncrement();
         final String logPrefix = LOG_PREFIX.formatted(requestId);
-        LOG.info("%s new register request for user: %s".formatted(logPrefix, registerRequest.password()));
+        LOG.info("%s new register request for user: %s %s".formatted(logPrefix, registerRequest.username(), registerRequest.email()));
         final RegisterResult result = registerService.registerUser(logPrefix, registerRequest);
         LOG.info("%s register ended result: %s".formatted(logPrefix, result.name()));
 
