@@ -23,6 +23,10 @@ public class User
     private String email;
     private String hashedPassword;
 
+//    XXX czy to w ogóle tutaj mieć
+//    @OneToMany(fetch = FetchType.LAZY)
+//    private List<UserCharacter> characters;
+
     protected User() {}
 
     public User(@NonNull String username, @NonNull String email, @NonNull String hashedPassword)
