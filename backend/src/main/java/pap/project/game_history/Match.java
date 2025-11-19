@@ -1,21 +1,29 @@
 package pap.project.game_history;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import org.springframework.lang.NonNull;
 
+import pap.project.users.User;
 import java.util.Objects;
 import java.util.OptionalLong;
 
 @Entity
+@Table (
+        name = "games_history"
+)
 public class Match {
     @Id
     @GeneratedValue
     private Long id;
 
-    private Long winnerId;
-    private Long loserId;
+    @ManyToOne
+    @JoinColumn (name = "winner_id")
+    private User winner;
+
+    @ManyToOne
+    @JoinColumn (name = "loser_id")
+    private User loser;
+
     private Long finishTime;
 
     private Integer winnerEloChange;
@@ -24,14 +32,14 @@ public class Match {
     protected Match() {}
 
     public Match(
-            @NonNull Long winnerId,
-            @NonNull Long loserId,
+            @NonNull User winner,
+            @NonNull User loser,
             @NonNull Long finishTime,
             @NonNull Integer winnerEloChange,
             @NonNull Integer loserEloChange)
     {
-        this.winnerId = Objects.requireNonNull(winnerId);
-        this.loserId = Objects.requireNonNull(loserId);
+        this.winner = Objects.requireNonNull(winner);
+        this.loser = Objects.requireNonNull(loser);
         this.finishTime = Objects.requireNonNull(finishTime);
         this.winnerEloChange = Objects.requireNonNull(winnerEloChange);
         this.loserEloChange = Objects.requireNonNull(loserEloChange);
@@ -42,14 +50,14 @@ public class Match {
         return id == null ? OptionalLong.empty() : OptionalLong.of(id);
     }
 
-    public @NonNull Long getWinnerId()
+    public @NonNull User getWinner()
     {
-        return winnerId;
+        return winner;
     }
 
-    public @NonNull Long getLoserId()
+    public @NonNull User getLoser()
     {
-     return loserId;
+     return loser;
     }
 
     public  @NonNull Long getFinishTime()
