@@ -12,15 +12,15 @@ import java.util.OptionalLong;
         name = "userCharacters",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = {"characterType", "userId"})
-        },
-        indexes = {
-                @Index(name = "index_userCharacters_userId", columnList = "userId")
         }
 )
 public class UserCharacter
 {
+    /**
+     * Setting strategy equal {@link GenerationType#IDENTITY} to stop hibernate from generating gaps in DB.
+     */
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private CharacterType characterType;
@@ -30,7 +30,7 @@ public class UserCharacter
 
     /**
      * This is added to tell hibernate to create foreign key.
-     * It isn't used anywhere.
+     * It isn't used anywhere. If performance will matter it should be deleted and make DDL for DB manually.
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", insertable = false, updatable = false)

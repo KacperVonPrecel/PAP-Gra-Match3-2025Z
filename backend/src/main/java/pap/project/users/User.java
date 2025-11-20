@@ -15,17 +15,15 @@ import java.util.OptionalLong;
 )
 public class User
 {
+    /**
+     * Setting strategy equal {@link GenerationType#IDENTITY} to stop hibernate from generating gaps in DB.
+     */
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String username;
     private String email;
     private String hashedPassword;
-
-//    XXX czy to w ogóle tutaj mieć
-//    @OneToMany(fetch = FetchType.LAZY)
-//    private List<UserCharacter> characters;
 
     protected User() {}
 

@@ -1,9 +1,12 @@
 package pap.project.user_data;
 
 import org.springframework.lang.NonNull;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pap.project.user_data.model.controller.StartingDataResponse;
+import pap.project.users.UserAuthDetails;
 
 import java.security.Principal;
 
@@ -20,8 +23,11 @@ public class UserDataController
 
 
     @GetMapping("starting_data")
-    public void getStartingData(@NonNull Principal principal)
+    public @NonNull StartingDataResponse getStartingData(@NonNull Authentication authentication)
     {
-        //XXX check if principal work
+        final UserAuthDetails user = (UserAuthDetails) authentication.getPrincipal();
+        final long userId = user.getUserId();
+        final StartingDataResponse response = userDataService.getUserData(userId);
+        return response;
     }
 }
