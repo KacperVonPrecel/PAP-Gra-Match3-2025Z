@@ -84,4 +84,24 @@ public class User
     {
         return Objects.requireNonNull(currency);
     }
+
+    public void setRank(@NonNull Integer rank)
+    {
+        this.rank = Objects.requireNonNull(rank);
+    }
+
+    public void incrementTotalGames()
+    {
+        this.totalGames++;
+    }
+
+    public void incrementTotalWins()
+    {
+        this.totalWins++;
+    }
+
+    public void  setCurrency(@NonNull Integer currency)
+    {
+        this.currency = currency;
+    }
 }

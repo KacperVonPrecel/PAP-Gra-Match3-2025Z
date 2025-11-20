@@ -45,7 +45,7 @@ public class Match {
         this.loserEloChange = Objects.requireNonNull(loserEloChange);
     }
 
-    public @NonNull OptionalLong getmatchId()
+    public @NonNull OptionalLong getMatchId()
     {
         return matchId == null ? OptionalLong.empty() : OptionalLong.of(matchId);
     }
