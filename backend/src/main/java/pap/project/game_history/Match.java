@@ -14,14 +14,14 @@ import java.util.OptionalLong;
 public class Match {
     @Id
     @GeneratedValue
-    private Long id;
+    private Long matchId;
 
     @ManyToOne
-    @JoinColumn (name = "winner_id")
+    @JoinColumn (name = "winner_id", referencedColumnName = "id")
     private User winner;
 
     @ManyToOne
-    @JoinColumn (name = "loser_id")
+    @JoinColumn (name = "loser_id", referencedColumnName = "id")
     private User loser;
 
     private Long finishTime;
@@ -45,9 +45,9 @@ public class Match {
         this.loserEloChange = Objects.requireNonNull(loserEloChange);
     }
 
-    public @NonNull OptionalLong getId()
+    public @NonNull OptionalLong getmatchId()
     {
-        return id == null ? OptionalLong.empty() : OptionalLong.of(id);
+        return matchId == null ? OptionalLong.empty() : OptionalLong.of(matchId);
     }
 
     public @NonNull User getWinner()
