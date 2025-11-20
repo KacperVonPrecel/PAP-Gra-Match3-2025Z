@@ -1,4 +1,4 @@
-package pap.project.game_history.controller;
+package pap.project.game_history.model.controller;
 
 import jakarta.validation.constraints.Positive;
 import org.springframework.lang.NonNull;

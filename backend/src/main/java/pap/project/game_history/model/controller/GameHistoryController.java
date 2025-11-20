@@ -1,4 +1,4 @@
-package pap.project.game_history.controller;
+package pap.project.game_history.model.controller;
 
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pap.project.game_history.GameHistoryService;
-import pap.project.game_history.SaveResult;
+import pap.project.game_history.model.SaveResult;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
