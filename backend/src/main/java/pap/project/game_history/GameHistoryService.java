@@ -7,8 +7,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
-import pap.project.game_history.model.SaveResult;
-import pap.project.game_history.model.controller.SaveRequest;
+import pap.project.game_history.controller.model.save.SaveResult;
+import pap.project.game_history.controller.model.save.SaveRequest;
 import pap.project.users.User;
 import pap.project.users.UserRepository;
 
@@ -82,5 +82,9 @@ public class GameHistoryService {
         loser.setCurrency(loser.getCurrency() + CURRENCY_LOSER);
 
     }
-
+/**
+ * "xxx do it after PROB"
+ * public @NonNull Page<Match> loadMatches(@NonNull String logPrefix, @NonNull LoadRequest loadRequest)
+ * {}
+*/
 }

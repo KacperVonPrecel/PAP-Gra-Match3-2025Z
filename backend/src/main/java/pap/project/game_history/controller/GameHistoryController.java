@@ -1,4 +1,4 @@
-package pap.project.game_history.model.controller;
+package pap.project.game_history.controller;
 
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pap.project.game_history.GameHistoryService;
-import pap.project.game_history.model.SaveResult;
+import pap.project.game_history.controller.model.load.*;
+import pap.project.game_history.controller.model.save.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -44,6 +45,23 @@ public class GameHistoryController
             case SUCCESS -> ResponseEntity.ok(new SaveResponse());
             case FAILED ->  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new SaveErrorResponse(SaveError.INTERNAL_SERVER_ERROR));
+        };
+    }
+
+    @PostMapping("/load")
+    public @NonNull ResponseEntity<?> load(@NonNull @Valid @RequestBody LoadRequest loadRequest)
+    {
+        final int requestId = REQUEST_ID.getAndIncrement();
+        final String logPrefix = String.format(LOG_PREFIX, requestId);
+        LOG.info("%s new load request from user of id: ".formatted(logPrefix, loadRequest.userId()));
+        final LoadResult result = gameHistoryService.loadMatch(logPrefix, loadRequest);
+        LOG.info("%s load ended result: %s".formatted(logPrefix, result.name()));
+
+        return switch (result)
+        {
+            case SUCCESS -> ResponseEntity.ok(new LoadResponse());
+            case FAILURE ->  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new LoadErrorResponse(LoadError.INTERNAL_SERVER_ERROR));
         };
     }
 }

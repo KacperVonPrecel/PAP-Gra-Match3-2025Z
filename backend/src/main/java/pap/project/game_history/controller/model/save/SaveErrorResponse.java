@@ -1,4 +1,4 @@
-package pap.project.game_history.model.controller;
+package pap.project.game_history.controller.model.save;
 
 import org.springframework.lang.NonNull;
 
