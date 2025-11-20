@@ -1,13 +1,17 @@
 package pap.project.game_history.controller;
 
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pap.project.game_history.GameHistoryService;
+import pap.project.game_history.SaveResult;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -26,7 +30,20 @@ public class GameHistoryController
         this.gameHistoryService = gameHistoryService;
     }
 
-//    @PostMapping("/save")
-//    public @NonNull ResponseEntity<?>
+    @PostMapping("/save")
+    public @NonNull ResponseEntity<?> save(@NonNull @Valid @RequestBody SaveRequest saveRequest)
+    {
+        final int requestId = REQUEST_ID.getAndIncrement();
+        final String logPrefix = String.format(LOG_PREFIX, requestId);
+        LOG.info("%s new save request from users of id %d and %d".formatted(logPrefix, saveRequest.winnerId(), saveRequest.loserId()));
+        final SaveResult result = gameHistoryService.saveMatch(logPrefix, saveRequest);
+        LOG.info("%s save ended result: %s".formatted(logPrefix, result.name()));
 
+        return switch (result)
+        {
+            case SUCCESS -> ResponseEntity.ok(new SaveResponse());
+            case FAILED ->  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new SaveErrorResponse(SaveError.INTERNAL_SERVER_ERROR));
+        };
+    }
 }
