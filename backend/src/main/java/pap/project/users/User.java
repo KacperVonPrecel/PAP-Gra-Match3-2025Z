@@ -16,7 +16,7 @@ import java.util.OptionalLong;
 public class User
 {
     private static final Integer STARTING_CURRENCY = 1000;
-    private static final Integer STARTING_RANK = 100;
+    private static final Integer STARTING_ELO_POINTS = 100;
     private static final Integer STARTING_TOTAL_GAMES = 0;
     private static final Integer STARTING_TOTAL_WINS = 0;
 
@@ -28,10 +28,10 @@ public class User
     private String email;
     private String hashedPassword;
 
-    private Integer rank;
-    private Integer totalGames;
-    private Integer totalWins;
-    private Integer currency;
+    private int eloPoints;
+    private int totalGames;
+    private int totalWins;
+    private int currency;
 
     protected User() {}
 
@@ -40,7 +40,7 @@ public class User
         this.username = Objects.requireNonNull(username);
         this.email = Objects.requireNonNull(email);
         this.hashedPassword = Objects.requireNonNull(hashedPassword);
-        this.rank = STARTING_RANK;
+        this.eloPoints = STARTING_ELO_POINTS;
         this.totalGames = STARTING_TOTAL_GAMES;
         this.totalWins = STARTING_TOTAL_WINS;
         this.currency = STARTING_CURRENCY;
@@ -66,8 +66,8 @@ public class User
         return Objects.requireNonNull(hashedPassword);
     }
 
-    public @NonNull Integer getRank() {
-        return Objects.requireNonNull(rank);
+    public @NonNull Integer getEloPoints() {
+        return Objects.requireNonNull(eloPoints);
     }
 
     public @NonNull Integer getTotalGames()
@@ -85,22 +85,7 @@ public class User
         return Objects.requireNonNull(currency);
     }
 
-    public void setRank(@NonNull Integer rank)
-    {
-        this.rank = Objects.requireNonNull(rank);
-    }
-
-    public void incrementTotalGames()
-    {
-        this.totalGames++;
-    }
-
-    public void incrementTotalWins()
-    {
-        this.totalWins++;
-    }
-
-    public void  setCurrency(@NonNull Integer currency)
+    public void setCurrency(@NonNull Integer currency)
     {
         this.currency = currency;
     }

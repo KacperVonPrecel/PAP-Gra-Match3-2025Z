@@ -14,40 +14,40 @@ import java.util.OptionalLong;
 public class Match {
     @Id
     @GeneratedValue
-    private Long matchId;
+    private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "winner_id", referencedColumnName = "id")
     private User winner;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "loser_id", referencedColumnName = "id")
     private User loser;
 
-    private Long finishTime;
+    private long finishTime;
 
-    private Integer winnerEloChange;
-    private Integer loserEloChange;
+    private int winnerEloChange;
+    private int loserEloChange;
 
     protected Match() {}
 
     public Match(
             @NonNull User winner,
             @NonNull User loser,
-            @NonNull Long finishTime,
-            @NonNull Integer winnerEloChange,
-            @NonNull Integer loserEloChange)
+            long finishTime,
+            int winnerEloChange,
+            int loserEloChange)
     {
         this.winner = Objects.requireNonNull(winner);
         this.loser = Objects.requireNonNull(loser);
-        this.finishTime = Objects.requireNonNull(finishTime);
-        this.winnerEloChange = Objects.requireNonNull(winnerEloChange);
-        this.loserEloChange = Objects.requireNonNull(loserEloChange);
+        this.finishTime = finishTime;
+        this.winnerEloChange = winnerEloChange;
+        this.loserEloChange = loserEloChange;
     }
 
-    public @NonNull OptionalLong getMatchId()
+    public @NonNull OptionalLong getId()
     {
-        return matchId == null ? OptionalLong.empty() : OptionalLong.of(matchId);
+        return id == null ? OptionalLong.empty() : OptionalLong.of(id);
     }
 
     public @NonNull User getWinner()
@@ -57,22 +57,22 @@ public class Match {
 
     public @NonNull User getLoser()
     {
-     return loser;
+        return loser;
     }
 
-    public  @NonNull Long getFinishTime()
+    public @NonNull Long getFinishTime()
     {
-     return finishTime;
+        return finishTime;
     }
 
     public @NonNull Integer getWinnerEloChange()
     {
-     return winnerEloChange;
+        return winnerEloChange;
     }
 
     public @NonNull Integer getLoserEloChange()
     {
-     return loserEloChange;
+        return loserEloChange;
     }
 
 }
