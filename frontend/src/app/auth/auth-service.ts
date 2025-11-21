@@ -3,36 +3,28 @@ import { Injectable } from '@angular/core';
 import { catchError, map, Observable, of } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root',
+	providedIn: 'root'
 })
-export class AuthService
-{
+export class AuthService {
 	constructor(private http: HttpClient) {}
 
-
-	register(registerRequest: RegisterRequest) : Observable<RegisterResult>
-	{
-		return this.http.post('api/auth/register', registerRequest, { responseType: 'json' })
-			.pipe(
-				map((_: any) => {
-					return RegisterResult.SUCCESS
-				}),
-				catchError((error: HttpErrorResponse) => {
-					if (error.status === 409)
-					{
-						const errorResponse = error.error as RegisterErrorResponse;
-						if (errorResponse.result === RegisterResult.USERNAME_TAKEN)
-						{
-							return of(RegisterResult.USERNAME_TAKEN);
-						}
-						else if (errorResponse.result === RegisterResult.EMAIL_TAKEN)
-						{
-							return of(RegisterResult.EMAIL_TAKEN);
-						}
+	register(registerRequest: RegisterRequest): Observable<RegisterResult> {
+		return this.http.post('api/auth/register', registerRequest, { responseType: 'json' }).pipe(
+			map((_: any) => {
+				return RegisterResult.SUCCESS;
+			}),
+			catchError((error: HttpErrorResponse) => {
+				if (error.status === 409) {
+					const errorResponse = error.error as RegisterConflictErrorResponse;
+					if (errorResponse.error === RegisterConflictError.USERNAME_TAKEN) {
+						return of(RegisterResult.USERNAME_TAKEN);
+					} else if (errorResponse.error === RegisterConflictError.EMAIL_TAKEN) {
+						return of(RegisterResult.EMAIL_TAKEN);
 					}
-					return of(RegisterResult.FAILURE);
-				})
-			);
+				}
+				return of(RegisterResult.SERVER_ERROR);
+			})
+		);
 	}
 
 	login(loginRequest: LoginRequest) : Observable<LoginResult>{
@@ -56,16 +48,19 @@ export interface LoginRequest
 	password: string
 }
 
-export interface RegisterRequest
-{
+export interface RegisterRequest {
 	username: string;
 	email: string;
 	password: string;
 }
 
-export interface RegisterErrorResponse
-{
-	result: RegisterResult;
+export interface RegisterConflictErrorResponse {
+	error: RegisterConflictError;
+}
+
+export enum RegisterConflictError {
+	USERNAME_TAKEN = 'USERNAME_TAKEN',
+	EMAIL_TAKEN = 'EMAIL_TAKEN'
 }
 
 export interface LoginErrorResponse
@@ -73,12 +68,11 @@ export interface LoginErrorResponse
 	result: LoginResult;
 }
 
-export enum RegisterResult
-{
-	SUCCESS = "SUCCESS",
-	USERNAME_TAKEN = "USERNAME_TAKEN",
-	EMAIL_TAKEN = "EMAIL_TAKEN",
-	FAILURE  = "FAILURE"
+export enum RegisterResult {
+	SUCCESS = 'SUCCESS',
+	USERNAME_TAKEN = 'USERNAME_TAKEN',
+	EMAIL_TAKEN = 'EMAIL_TAKEN',
+	SERVER_ERROR = 'SERVER_ERROR'
 }
 
 export enum LoginResult

@@ -3,7 +3,6 @@ package pap.project.auth;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -13,8 +12,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import pap.project.auth.model.RegisterResult;
 import pap.project.auth.model.controller.login.LoginRequest;
 import pap.project.auth.model.controller.login.LoginResponse;
+import pap.project.auth.model.controller.register.RegisterError;
 import pap.project.auth.model.controller.register.RegisterErrorResponse;
 import pap.project.auth.model.controller.register.RegisterRequest;
 import pap.project.auth.model.controller.register.RegisterResponse;
@@ -42,8 +42,6 @@ public class AuthController
     private final @NonNull RegisterService registerService;
     private final @NonNull SecurityContextRepository securityContextRepository;
 
-    private final @NonNull SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
-
     public AuthController(@NonNull AuthenticationManager authenticationManager, @NonNull RegisterService registerService,
                           @NonNull SecurityContextRepository securityContextRepository)
     {
@@ -53,9 +51,9 @@ public class AuthController
     }
 
     @PostMapping("login")
-    public ResponseEntity<?> login(@NonNull @Valid @RequestBody(required = true)  LoginRequest request,
-                                   @NonNull HttpServletRequest http,
-                                   @NonNull HttpServletResponse response)
+    public @NonNull ResponseEntity<?> login(@NonNull @Valid @RequestBody LoginRequest request,
+                                   @NonNull HttpServletRequest httpRequest,
+                                   @NonNull HttpServletResponse httpResponse)
     {
         final int requestId = REQUEST_ID.getAndIncrement();
         final String logPrefix = LOG_PREFIX.formatted(requestId);
@@ -63,10 +61,7 @@ public class AuthController
         try
         {
             final Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.username(), request.password()));
-            final var context = SecurityContextHolder.createEmptyContext();
-            context.setAuthentication(authentication);
-            SecurityContextHolder.setContext(context);
-            securityContextRepository.saveContext(context, http, response);
+            createSession(authentication, httpRequest, httpResponse);
             LOG.info("%s new login successful".formatted(logPrefix));
             return ResponseEntity.ok(new LoginResponse());
         } catch (AuthenticationException wyj)
@@ -78,11 +73,11 @@ public class AuthController
     }
 
     @PostMapping("register")
-    public ResponseEntity<?> register(@NonNull @Valid @RequestBody(required = true) RegisterRequest registerRequest)
+    public @NonNull ResponseEntity<?> register(@NonNull @Valid @RequestBody RegisterRequest registerRequest)
     {
         final int requestId = REQUEST_ID.getAndIncrement();
         final String logPrefix = LOG_PREFIX.formatted(requestId);
-        LOG.info("%s new register request for user: %s".formatted(logPrefix, registerRequest.password()));
+        LOG.info("%s new register request for user: %s %s".formatted(logPrefix, registerRequest.username(), registerRequest.email()));
         final RegisterResult result = registerService.registerUser(logPrefix, registerRequest);
         LOG.info("%s register ended result: %s".formatted(logPrefix, result.name()));
 
@@ -90,9 +85,21 @@ public class AuthController
         {
             case REGISTERED -> ResponseEntity.ok(new RegisterResponse());
             case USERNAME_REPEATED -> ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new RegisterErrorResponse("Username repeated"));
+                    .body(new RegisterErrorResponse(RegisterError.USERNAME_TAKEN));
+            case EMAIL_REPEATED -> ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new RegisterErrorResponse(RegisterError.EMAIL_TAKEN));
             case DATABASE_ERROR -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new RegisterErrorResponse("Internal server error"));
+                    .body(new RegisterErrorResponse(RegisterError.INTERNAL_SERVER_ERROR));
         };
+    }
+
+    private void createSession(@NonNull Authentication authentication,
+            @NonNull HttpServletRequest httpRequest,
+            @NonNull HttpServletResponse httpResponse)
+    {
+        final SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authentication);
+        SecurityContextHolder.setContext(context);
+        securityContextRepository.saveContext(context, httpRequest, httpResponse);
     }
 }
