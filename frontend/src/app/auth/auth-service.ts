@@ -5,7 +5,7 @@ import { catchError, map, Observable, of } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class AuthService 
+export class AuthService
 {
 	constructor(private http: HttpClient) {}
 
@@ -34,6 +34,26 @@ export class AuthService
 				})
 			);
 	}
+
+	login(loginRequest: LoginRequest) : Observable<LoginResult>{
+		return this.http.post('api/auth/login', loginRequest, { responseType: 'json' })
+		.pipe(
+			map(() => {
+					return LoginResult.SUCCESS;
+				}),
+			catchError((error: HttpErrorResponse) => {
+				return of (LoginResult.FAILURE);
+			}
+		)
+	);
+	}
+
+}
+
+export interface LoginRequest
+{
+	username: string,
+	password: string
 }
 
 export interface RegisterRequest
@@ -48,10 +68,21 @@ export interface RegisterErrorResponse
 	result: RegisterResult;
 }
 
+export interface LoginErrorResponse
+{
+	result: LoginResult;
+}
+
 export enum RegisterResult
 {
 	SUCCESS = "SUCCESS",
 	USERNAME_TAKEN = "USERNAME_TAKEN",
 	EMAIL_TAKEN = "EMAIL_TAKEN",
 	FAILURE  = "FAILURE"
+}
+
+export enum LoginResult
+{
+	SUCCESS = "SUCCESS",
+	FAILURE = "FAILURE"
 }
