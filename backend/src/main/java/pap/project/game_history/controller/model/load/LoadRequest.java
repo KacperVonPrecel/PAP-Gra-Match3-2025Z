@@ -6,7 +6,7 @@ import org.springframework.lang.NonNull;
 
 public record LoadRequest(
         @NonNull @Positive @Size(min = MIN_RECORD_SIZE, max = MAX_RECORD_SIZE) Integer size,
-        @NonNull @Positive Integer page,
+//      xxx czy potrzebne  @NonNull @Positive Integer page,
         @NonNull @Positive Long userId,
         @NonNull @Positive Long latestRecordTime
 )
