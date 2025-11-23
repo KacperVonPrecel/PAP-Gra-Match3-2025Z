@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -83,7 +84,7 @@ public class EndGameService {
 
     public @NonNull List<MatchDTO> loadMatches(@NonNull LoadRequest loadRequest)
     {
-        PageRequest pageReq = PageRequest.of(FIRST_PAGE, loadRequest.size());
+        PageRequest pageReq = PageRequest.of(FIRST_PAGE, loadRequest.size(), Sort.by("finishTime").descending());
 
         Page<Match> matchPage = matchRepository.findMatchesBeforeFinishTime(loadRequest.userId(), loadRequest.latestRecordTime(), pageReq);
 
