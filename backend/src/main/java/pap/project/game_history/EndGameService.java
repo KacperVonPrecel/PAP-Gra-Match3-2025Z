@@ -16,6 +16,8 @@ import pap.project.game_history.controller.model.process.ProcessResult;
 import pap.project.users.User;
 import pap.project.users.UserRepository;
 
+import java.util.List;
+
 @Service
 public class EndGameService {
 
@@ -80,11 +82,31 @@ public class EndGameService {
         }
     }
 
-    public @NonNull Page<MatchDTO> loadMatches(@NonNull String logPrefix, @NonNull LoadRequest loadRequest)
+    public @NonNull List<MatchDTO> loadMatches(@NonNull String logPrefix, @NonNull LoadRequest loadRequest)
     {
-        Pageable pageable = PageRequest.of(FIRST_PAGE, loadRequest.size());
+        PageRequest pageReq = PageRequest.of(FIRST_PAGE, loadRequest.size());
 
-        Page<Match> matchPage = matchRepository.
+        Page<Match> matchPage = matchRepository.findMatchesBeforeFinishTime(loadRequest.userId(), loadRequest.latestRecordTime(), pageReq);
+
+        return matchPage.map(match ->
+        {
+            User player = userRepository.findById(loadRequest.userId()).get();
+            boolean isPlayerWinner = match.getWinner() == player;
+            User opponent = (isPlayerWinner) ? match.getLoser() : match.getWinner();
+
+            return new MatchDTO(
+                    player.getId().getAsLong(),
+                    player.getUsername(),
+                    opponent.getId().getAsLong(),
+                    opponent.getUsername(),
+                    match.getFinishTime(),
+                    (isPlayerWinner) ? match.getWinnerEloChange() : match.getLoserEloChange(),
+                    (isPlayerWinner) ? match.getLoserEloChange() : match.getWinnerEloChange(),
+                    player.getEloPoints(),
+                    opponent.getEloPoints(),
+                    isPlayerWinner
+                    );
+        }).getContent();
     }
 
 }

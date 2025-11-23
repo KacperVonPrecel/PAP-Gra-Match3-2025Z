@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import pap.project.game_history.EndGameService;
 import pap.project.game_history.controller.model.load.*;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
@@ -33,14 +34,15 @@ public class GameHistoryController
         final int requestId = REQUEST_ID.getAndIncrement();
         final String logPrefix = String.format(LOG_PREFIX, requestId);
         LOG.info("%s new load request from user of id: ".formatted(logPrefix, loadRequest.userId()));
-        final LoadResult result = endGameService.loadMatches(logPrefix, loadRequest);
-        LOG.info("%s load ended result: %s".formatted(logPrefix, result.name()));
 
-        return switch (result)
+        try {
+            final List<MatchDTO> gameMatchesList = endGameService.loadMatches(logPrefix, loadRequest);
+            LOG.info("%s load ended result: SUCCESS".formatted(logPrefix));
+            return ResponseEntity.ok(gameMatchesList);
+        } catch (final Exception ex)
         {
-            case SUCCESS -> ResponseEntity.ok(new LoadResponse());
-            case FAILURE ->  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new LoadErrorResponse(LoadError.INTERNAL_SERVER_ERROR));
-        };
+            LOG.info("%s load ended result: FAILURE".formatted(logPrefix));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new LoadErrorResponse(LoadError.INTERNAL_SERVER_ERROR));
+        }
     }
 }
