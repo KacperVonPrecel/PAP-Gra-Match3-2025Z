@@ -67,26 +67,21 @@ public class User
     }
 
     public @NonNull Integer getEloPoints() {
-        return Objects.requireNonNull(eloPoints);
+        return eloPoints;
     }
 
     public @NonNull Integer getTotalGames()
     {
-        return Objects.requireNonNull(totalGames);
+        return totalGames;
     }
 
     public @NonNull Integer getTotalWins()
     {
-        return Objects.requireNonNull(totalWins);
+        return totalWins;
     }
 
     public @NonNull Integer getCurrency()
     {
-        return Objects.requireNonNull(currency);
-    }
-
-    public void setCurrency(@NonNull Integer currency)
-    {
-        this.currency = currency;
+        return currency;
     }
 }

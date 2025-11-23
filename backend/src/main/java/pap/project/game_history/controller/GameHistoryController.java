@@ -36,7 +36,7 @@ public class GameHistoryController
         LOG.info("%s new load request from user of id: ".formatted(logPrefix, loadRequest.userId()));
 
         try {
-            final List<MatchDTO> gameMatchesList = endGameService.loadMatches(logPrefix, loadRequest);
+            final List<MatchDTO> gameMatchesList = endGameService.loadMatches(loadRequest);
             LOG.info("%s load ended result: SUCCESS".formatted(logPrefix));
             return ResponseEntity.ok(gameMatchesList);
         } catch (final Exception ex)
