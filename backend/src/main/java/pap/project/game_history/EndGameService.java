@@ -21,7 +21,7 @@ import java.util.List;
 @Service
 public class EndGameService {
 
-    private static final String LOG_PREFIX = "endGameService";
+    private static final String LOG_PREFIX = "-endGameService";
     private static final Logger LOG = LoggerFactory.getLogger(EndGameService.class);
 
     private static final int ELO_DOWN = -10;
@@ -44,11 +44,11 @@ public class EndGameService {
      * @return information if match was successfully saved
      */
     @Transactional
-    public @NonNull ProcessResult processEndGame(@NonNull String logPrefix, long winnerId, long loserId, long finishTime)
+    public @NonNull ProcessResult processEndGame(long winnerId, long loserId, long finishTime)
     {
         User winner = userRepository.findById(winnerId).get();
         User loser = userRepository.findById(loserId).get();
-        logPrefix += "-" + LOG_PREFIX;
+        final String logPrefix = LOG_PREFIX;
         final Match match = new Match(
                 winner,
                 loser,
