@@ -1,9 +1,11 @@
 package pap.project.game_history.controller.model.load;
 
-public record MatchDTO(
-        long playerId,
+import java.util.OptionalLong;
+
+public record MatchProjectionForController(
+        OptionalLong playerId,
         String playerUserName,
-        long opponentsId,
+        OptionalLong opponentsId,
         String opponentsUserName,
         long finishTime,
         int playerEloChange,

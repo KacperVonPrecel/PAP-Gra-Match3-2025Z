@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
 import pap.project.game_history.controller.model.load.LoadRequest;
 import pap.project.game_history.controller.model.process.ProcessResult;
 import pap.project.users.User;
@@ -15,8 +16,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class EndGameServiceTest
@@ -93,5 +93,4 @@ public class EndGameServiceTest
         final ProcessResult result = endGameService.processEndGame(1L, 2L, MOCK_FINISH_TIME);
         assertEquals(ProcessResult.FAILED, result);
     }
-
 }

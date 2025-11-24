@@ -66,22 +66,27 @@ public class User
         return Objects.requireNonNull(hashedPassword);
     }
 
-    public @NonNull Integer getEloPoints() {
+    public int getEloPoints() {
         return eloPoints;
     }
 
-    public @NonNull Integer getTotalGames()
+    public int getTotalGames()
     {
         return totalGames;
     }
 
-    public @NonNull Integer getTotalWins()
+    public int getTotalWins()
     {
         return totalWins;
     }
 
-    public @NonNull Integer getCurrency()
+    public int getCurrency()
     {
         return currency;
+    }
+
+    public void setEloPoints(@NonNull Integer eloPoints)
+    {
+        this.eloPoints = eloPoints;
     }
 }

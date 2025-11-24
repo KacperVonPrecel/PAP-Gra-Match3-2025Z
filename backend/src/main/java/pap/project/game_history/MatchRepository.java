@@ -16,9 +16,8 @@ public interface MatchRepository extends JpaRepository<Match, Long>
         FROM Match m
         JOIN m.winner w
         JOIN m.loser l
-        WHERE m.finishTime < :time
+        WHERE m.finishTime <= :time
            AND (w.id = :userId OR l.id = :userId)
         """)
     Page<Match> findMatchesBeforeFinishTime(@Param("userId") long userId,@Param("time") long time, Pageable pageable);
-
 }

@@ -3,20 +3,13 @@ package pap.project.game_history;
 import jakarta.persistence.PersistenceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
-import pap.project.game_history.controller.model.load.LoadRequest;
-import pap.project.game_history.controller.model.load.MatchDTO;
 import pap.project.game_history.controller.model.process.ProcessResult;
 import pap.project.users.User;
 import pap.project.users.UserRepository;
-
-import java.util.List;
 
 @Service
 public class EndGameService {
@@ -81,32 +74,4 @@ public class EndGameService {
             return ProcessResult.FAILED;
         }
     }
-
-    public @NonNull List<MatchDTO> loadMatches(@NonNull LoadRequest loadRequest)
-    {
-        PageRequest pageReq = PageRequest.of(FIRST_PAGE, loadRequest.size(), Sort.by("finishTime").descending());
-
-        Page<Match> matchPage = matchRepository.findMatchesBeforeFinishTime(loadRequest.userId(), loadRequest.latestRecordTime(), pageReq);
-
-        return matchPage.map(match ->
-        {
-            User player = userRepository.findById(loadRequest.userId()).get();
-            boolean isPlayerWinner = match.getWinner() == player;
-            User opponent = (isPlayerWinner) ? match.getLoser() : match.getWinner();
-
-            return new MatchDTO(
-                    player.getId().getAsLong(),
-                    player.getUsername(),
-                    opponent.getId().getAsLong(),
-                    opponent.getUsername(),
-                    match.getFinishTime(),
-                    (isPlayerWinner) ? match.getWinnerEloChange() : match.getLoserEloChange(),
-                    (isPlayerWinner) ? match.getLoserEloChange() : match.getWinnerEloChange(),
-                    player.getEloPoints(),
-                    opponent.getEloPoints(),
-                    isPlayerWinner
-                    );
-        }).getContent();
-    }
-
 }
