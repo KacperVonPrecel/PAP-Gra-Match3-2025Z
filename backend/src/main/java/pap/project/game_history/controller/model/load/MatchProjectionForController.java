@@ -4,9 +4,9 @@ import java.util.OptionalLong;
 
 public record MatchProjectionForController(
         OptionalLong playerId,
-        String playerUserName,
+        String playerUsername,
         OptionalLong opponentsId,
-        String opponentsUserName,
+        String opponentsUsername,
         long finishTime,
         int playerEloChange,
         int opponentsEloChange,

@@ -11,10 +11,11 @@ import pap.project.users.User;
 import pap.project.users.UserRepository;
 
 import java.util.List;
+import java.util.OptionalLong;
 
 @Service
 public class LoadMatchesService {
-    private static final int FIRST_PAGE = 1;
+    private static final int FIRST_PAGE = 0;
 
     private final @NonNull MatchRepository matchRepository;
     private final @NonNull UserRepository userRepository;
@@ -33,8 +34,8 @@ public class LoadMatchesService {
 
         return matchPage.map(match ->
         {
-            final User player = userRepository.findById(loadRequest.userId()).get();
-            boolean isPlayerWinner = match.getWinner() == player;
+            boolean isPlayerWinner = match.getWinner().getId().equals(OptionalLong.of(loadRequest.userId()));
+            final User player = (isPlayerWinner) ? match.getWinner() : match.getLoser();
             final User opponent = (isPlayerWinner) ? match.getLoser() : match.getWinner();
 
             return new MatchProjectionForController(

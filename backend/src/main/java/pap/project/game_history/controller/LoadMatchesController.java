@@ -1,6 +1,8 @@
 package pap.project.game_history.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -14,9 +16,12 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
-@RequestMapping("api/load_matches")
+@RequestMapping("/api/load_matches")
 public class LoadMatchesController
 {
+    public static final int MIN_RECORD_SIZE = 10;
+    public static final int MAX_RECORD_SIZE = 100;
+
     private static final String LOG_PREFIX = "loadMatchesController{%d}";
     private static final Logger LOG = LoggerFactory.getLogger(LoadMatchesController.class);
     private static final AtomicInteger REQUEST_ID = new AtomicInteger(0);
@@ -29,13 +34,18 @@ public class LoadMatchesController
     }
 
     @GetMapping ("/load")
-    public @NonNull ResponseEntity<?> load(@NonNull @Valid @RequestBody LoadRequest loadRequest)
+    public @NonNull ResponseEntity<?> load(
+            @RequestParam @Min(MIN_RECORD_SIZE) @Max(MAX_RECORD_SIZE) int size,
+            @RequestParam long userId,
+            @RequestParam long latestRecordTime)
     {
         final int requestId = REQUEST_ID.getAndIncrement();
         final String logPrefix = String.format(LOG_PREFIX, requestId);
-        LOG.info("%s new load request from user of id: ".formatted(logPrefix, loadRequest.userId()));
+        LOG.info("%s new load request from user of id: ".formatted(logPrefix, userId));
 
-        try {
+        try
+        {
+            final LoadRequest loadRequest = new LoadRequest(size, userId, latestRecordTime);
             final List<MatchProjectionForController> gameMatchesList = loadMatchesService.loadMatches(loadRequest);
             LOG.info("%s load ended result: SUCCESS".formatted(logPrefix));
             return ResponseEntity.ok(gameMatchesList);

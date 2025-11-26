@@ -6,6 +6,8 @@ import org.springframework.lang.NonNull;
 import java.util.Objects;
 import java.util.OptionalLong;
 
+
+
 @Entity
 @Table(
         name = "users",
@@ -24,14 +26,20 @@ public class User
     @GeneratedValue
     private Long id;
 
+    @Column(name = "username")
     private String username;
+    @Column(name = "email")
     private String email;
+    @Column(name = "hashed_password")
     private String hashedPassword;
-
-    private int eloPoints;
-    private int totalGames;
-    private int totalWins;
-    private int currency;
+    @Column(name = "elo_points", nullable = false)
+    private Integer eloPoints = STARTING_ELO_POINTS;
+    @Column(name = "total_games", nullable = false)
+    private Integer totalGames =  STARTING_TOTAL_GAMES;
+    @Column(name = "total_wins", nullable = false)
+    private Integer totalWins = STARTING_TOTAL_WINS;
+    @Column(name = "currency", nullable = false)
+    private Integer currency =  STARTING_CURRENCY;
 
     protected User() {}
 
@@ -40,10 +48,10 @@ public class User
         this.username = Objects.requireNonNull(username);
         this.email = Objects.requireNonNull(email);
         this.hashedPassword = Objects.requireNonNull(hashedPassword);
-        this.eloPoints = STARTING_ELO_POINTS;
-        this.totalGames = STARTING_TOTAL_GAMES;
-        this.totalWins = STARTING_TOTAL_WINS;
-        this.currency = STARTING_CURRENCY;
+//        this.eloPoints = STARTING_ELO_POINTS;
+//        this.totalGames = STARTING_TOTAL_GAMES;
+//        this.totalWins = STARTING_TOTAL_WINS;
+//        this.currency = STARTING_CURRENCY;
     }
 
     public @NonNull OptionalLong getId()
@@ -89,4 +97,5 @@ public class User
     {
         this.eloPoints = eloPoints;
     }
+
 }

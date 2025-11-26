@@ -49,7 +49,7 @@ public class LoadMatchesControllerTest {
         when(loadMatchesService.loadMatches(eq(loadRequest)))
                 .thenReturn(loadedMatchesList);
 
-        final ResponseEntity<?> response = loadMatchesController.load(loadRequest);
+        final ResponseEntity<?> response = loadMatchesController.load(10, 1L, MOCK_FINISH_TIME);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(response.hasBody());
     }
@@ -60,7 +60,7 @@ public class LoadMatchesControllerTest {
         when(loadMatchesService.loadMatches(eq(loadRequest)))
                 .thenThrow(new RuntimeException());
 
-        final ResponseEntity<?> response = loadMatchesController.load(loadRequest);
+        final ResponseEntity<?> response = loadMatchesController.load(10, 1L, MOCK_FINISH_TIME);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertTrue(response.hasBody());
         final LoadErrorResponse responseBody = Objects.requireNonNull((LoadErrorResponse) response.getBody());

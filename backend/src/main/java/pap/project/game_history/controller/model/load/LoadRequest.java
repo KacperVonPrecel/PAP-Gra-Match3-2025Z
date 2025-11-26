@@ -1,13 +1,17 @@
 package pap.project.game_history.controller.model.load;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
-import org.springframework.lang.NonNull;
 
 public record LoadRequest(
-        @NonNull @Positive @Size(min = MIN_RECORD_SIZE, max = MAX_RECORD_SIZE) Integer size,
-        @NonNull @Positive Long userId,
-        @NonNull @Positive Long latestRecordTime
+        @Positive
+        @Min(value = MIN_RECORD_SIZE, message = "Size must be at least 10")
+        @Max(value = MAX_RECORD_SIZE, message = "Size cannot exceed 100")
+        int size,
+
+        @Positive long userId,
+        @Positive long latestRecordTime
 )
 {
     public static final int MIN_RECORD_SIZE = 10;

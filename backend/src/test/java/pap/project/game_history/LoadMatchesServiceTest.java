@@ -81,8 +81,8 @@ public class LoadMatchesServiceTest
         MatchProjectionForController matchProjectionForController = matchesList.get(0);
         assertEquals(matchProjectionForController.playerId(), match.getWinner().getId());
         assertEquals(matchProjectionForController.opponentsId(), match.getLoser().getId());
-        assertEquals("test-user-1", matchProjectionForController.playerUserName());
-        assertEquals("test-user-2", matchProjectionForController.opponentsUserName());
+        assertEquals("test-user-1", matchProjectionForController.playerUsername());
+        assertEquals("test-user-2", matchProjectionForController.opponentsUsername());
         assertEquals(MOCK_FINISH_TIME, matchProjectionForController.finishTime());
         assertEquals(20, matchProjectionForController.playerEloChange());
         assertEquals(-10, matchProjectionForController.opponentsEloChange());
