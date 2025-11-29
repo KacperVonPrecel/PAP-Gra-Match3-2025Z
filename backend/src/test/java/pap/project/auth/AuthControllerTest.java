@@ -25,7 +25,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class AuthControllerTest {
+class AuthControllerTest
+{
 
     @Mock
     private AuthenticationManager authenticationManager;
@@ -90,7 +91,8 @@ class AuthControllerTest {
     }
 
     @Test
-    void test_register_username_repeated() {
+    void test_register_username_repeated()
+    {
         final RegisterRequest request = new RegisterRequest("test-user", "test-user@gmail.com", "password");
 
         when(registerService.registerUser(anyString(), eq(request)))
@@ -106,7 +108,8 @@ class AuthControllerTest {
     }
 
     @Test
-    void test_register_email_repeated() {
+    void test_register_email_repeated()
+    {
         final RegisterRequest request = new RegisterRequest("test-user", "test-user@gmail.com", "password");
 
         when(registerService.registerUser(anyString(), eq(request)))
@@ -122,7 +125,8 @@ class AuthControllerTest {
     }
 
     @Test
-    void test_register_database_error() {
+    void test_register_database_error()
+    {
         final RegisterRequest request = new RegisterRequest("test-user", "test-user@gmail.com","password");
 
         when(registerService.registerUser(anyString(), eq(request)))

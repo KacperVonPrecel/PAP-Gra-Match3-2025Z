@@ -12,7 +12,8 @@ import java.util.OptionalLong;
 @Table(
         name = "users",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = "username")
+                @UniqueConstraint(columnNames = "username"),
+                @UniqueConstraint(columnNames = "email")
         }
 )
 public class User
@@ -22,9 +23,14 @@ public class User
     private static final Integer STARTING_TOTAL_GAMES = 0;
     private static final Integer STARTING_TOTAL_WINS = 0;
 
+
+    /**
+     * Setting strategy equal {@link GenerationType#IDENTITY} to stop hibernate from generating gaps in DB.
+     */
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
 
     @Column(name = "username")
     private String username;
@@ -40,6 +46,16 @@ public class User
     private Integer totalWins = STARTING_TOTAL_WINS;
     @Column(name = "currency", nullable = false)
     private Integer currency =  STARTING_CURRENCY;
+
+    /**
+     * Only for use in tests if it necessary to have userId.
+     */
+    public static @NonNull User createUserForTests(long id, @NonNull String username, @NonNull String email, @NonNull String hashedPassword)
+    {
+        final User user = new User(username, email, hashedPassword);
+        user.id = id;
+        return user;
+    }
 
     protected User() {}
 

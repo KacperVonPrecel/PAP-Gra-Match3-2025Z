@@ -28,7 +28,7 @@ public class UserDetailServiceTest
     @Test
     void test_load_user_by_username_user_exists()
     {
-        final User user = new User("test-user", "test-user@gmail.com", "password");
+        final User user = User.createUserForTests(1, "test-user", "test-user@gmail.com", "password");
 
         when(userRepository.findByUsername("test-user"))
                 .thenReturn(Optional.of(user));
