@@ -51,4 +51,6 @@ public class UserRepositoryTest
         final Optional<User> notFounded = userRepository.findByUsername("not-existing-user");
         assertTrue(notFounded.isEmpty());
     }
+
+    //XXXK add tests for updateUserAfterEndGame - it should be other file after adding additional table for user data.
 }

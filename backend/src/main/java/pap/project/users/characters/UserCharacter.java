@@ -9,7 +9,7 @@ import java.util.OptionalLong;
 
 @Entity
 @Table(
-        name = "userCharacters",
+        name = "user_characters",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = {"characterType", "userId"})
         }
@@ -23,9 +23,10 @@ public class UserCharacter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "character_type")
     private CharacterType characterType;
 
-    @Column(name = "userId")
+    @Column(name = "user_id")
     private long userId;
 
     /**
@@ -33,7 +34,7 @@ public class UserCharacter
      * It isn't used anywhere. If performance will matter it should be deleted and make DDL for DB manually.
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
 
     private int level;
@@ -42,6 +43,7 @@ public class UserCharacter
      * Copies count which user actually obtain.
      * It doesn't include copies which was used to level up character.
      */
+    @Column(name = "copies_count")
     private int copiesCount;
 
     protected UserCharacter() {}

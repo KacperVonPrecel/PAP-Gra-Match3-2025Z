@@ -53,7 +53,7 @@ class AuthControllerTest
     private final RegisterRequest request = new RegisterRequest("test-user", "test-user@gmail.com", "password");
 
     @Test
-    void test_login_succes()
+    void test_login_success()
     {
         when(authenticationManager.authenticate(any()))
                 .thenReturn(authentication);
