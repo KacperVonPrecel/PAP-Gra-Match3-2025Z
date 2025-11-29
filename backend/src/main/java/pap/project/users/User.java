@@ -10,18 +10,31 @@ import java.util.OptionalLong;
 @Table(
         name = "users",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = "username")
+                @UniqueConstraint(columnNames = "username"),
+                @UniqueConstraint(columnNames = "email")
         }
 )
 public class User
 {
+    /**
+     * Setting strategy equal {@link GenerationType#IDENTITY} to stop hibernate from generating gaps in DB.
+     */
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String username;
     private String email;
     private String hashedPassword;
+
+    /**
+     * Only for use in tests if it necessary to have userId.
+     */
+    public static @NonNull User createUserForTests(long id, @NonNull String username, @NonNull String email, @NonNull String hashedPassword)
+    {
+        final User user = new User(username, email, hashedPassword);
+        user.id = id;
+        return user;
+    }
 
     protected User() {}
 
