@@ -2,85 +2,52 @@ package pap.project.user_data;
 
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import pap.project.user_data.model.UserData;
+import pap.project.user_data.model.UserSessionData;
 import pap.project.user_data.model.controller.StartingDataResponse;
 import pap.project.users.characters.UserCharacter;
+import pap.project.users.characters.UserCharactersRepository;
 import pap.project.users.characters.UserCharactersService;
 import pap.project.users.characters.model.CharacterStats;
 import pap.project.users.characters.model.CharacterType;
 import pap.project.users.characters.model.controller.CharacterData;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class UserDataService
 {
-    //XXX it isn't valid place for it.
-    //XXX create another service/ or public method to be able to mock it for tests
-    /**
-     * It is guaranteed that this map contains all characters type in it.
-     * This map is unmodifiable.
-     */
-    private static final Map<CharacterType, CharacterStats> CHARACTERS_STATS;
-    static
-    {
+    private final @NonNull UserCharactersRepository userCharactersRepository;
+    // XXX it should be cleaned with some interval from userSessionData.
+    private final @NonNull ConcurrentHashMap<Long, UserSessionData> userSessionData = new ConcurrentHashMap<>();
 
-        final Map<CharacterType, CharacterStats> map = new EnumMap<>(CharacterType.class);
-        for (CharacterType type : CharacterType.values())
+    public UserDataService(@NonNull UserCharactersRepository userCharactersRepository)
+    {
+        this.userCharactersRepository = userCharactersRepository;
+    }
+
+    /**
+     * It checks if userData is already in memory. If not it loads from db.
+     * Be carefully using this function, because it sets locks for user with id.
+     */
+    public @NonNull UserData getUserData(long userId)
+    {
+        final UserSessionData userSessionData = this.userSessionData.computeIfAbsent(userId, _ -> new UserSessionData());
+        userSessionData.lock();
+        try
         {
-            map.put(type, new CharacterStats() {
-                @Override
-                public int getDamage(int level)
-                {
-                    return 100 * level;
-                }
-
-                @Override
-                public int getHealth(int level)
-                {
-                    return 100 * level;
-                }
-
-                @Override
-                public @NonNull OptionalInt getRequiredCopiesForNextLevel(int level)
-                {
-                    return OptionalInt.of(10 * level);
-                }
-            });
+            final UserData userDataInMemory = userSessionData.getUserData();
+            if (userDataInMemory != null)
+                return userDataInMemory;
+            final List<UserCharacter> userCharacters = userCharactersRepository.findAllByUserId(userId);
+            final int money = 100; //XXX load from DB.
+            final UserData loadedUserData = new UserData(userCharacters, money);
+            userSessionData.setUserData(loadedUserData);
+            return loadedUserData;
+        } finally
+        {
+            userSessionData.unlock();
         }
-        CHARACTERS_STATS = Collections.unmodifiableMap(map);
-
-        if (CHARACTERS_STATS.size() != CharacterType.values().length)
-            throw new IllegalStateException("Characters stats doesn't have initialized all characters");
-    }
-
-    private final @NonNull UserCharactersService userCharactersService;
-
-    public UserDataService(@NonNull UserCharactersService userCharactersService)
-    {
-        this.userCharactersService = userCharactersService;
-    }
-
-    public @NonNull StartingDataResponse getUserData(long userId)
-    {
-        final List<UserCharacter> userCharacters = userCharactersService.getUserCharacters(userId);
-        final int money = 100; //XXX load from DB.
-        return new StartingDataResponse(createCharactersData(userCharacters), money);
-    }
-
-    /**
-     * @return unmodifiable list.
-     */
-    private @NonNull List<CharacterData> createCharactersData(@NonNull List<UserCharacter> characters)
-    {
-        return characters.stream().map(this::createCharacterData).toList();
-    }
-
-    private @NonNull CharacterData createCharacterData(@NonNull UserCharacter character)
-    {
-        final CharacterType type = character.getCharacterType();
-        final int level = character.getLevel();
-        final CharacterStats stats = CHARACTERS_STATS.get(type);
-        return new CharacterData(type, stats.getDamage(level), stats.getHealth(level), level,
-                stats.getRequiredCopiesForNextLevel(level), character.getCopiesCount());
     }
 }

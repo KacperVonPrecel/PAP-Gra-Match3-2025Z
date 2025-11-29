@@ -7,12 +7,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pap.project.users.characters.model.CharacterType;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserCharactersServiceTest
@@ -23,15 +21,12 @@ public class UserCharactersServiceTest
     @InjectMocks
     private UserCharactersService userCharactersService;
 
-
     @Test
-    public void test_get_user_characters()
+    public void test_create_character_data_works_for_all_characters_type()
     {
-        final List<UserCharacter> userCharacters = new ArrayList<>();
-        userCharacters.add(new UserCharacter(CharacterType.FIRST_CHARACTER, 1, 12, 10));
-        userCharacters.add(new UserCharacter(CharacterType.SECOND_CHARACTER, 1, 13, 2));
-        when(userCharactersRepository.findAllByUserId(anyLong())).thenReturn(userCharacters);
-        final List<UserCharacter> returnedUserCharacters = userCharactersService.getUserCharacters(1);
-        assertEquals(userCharacters, returnedUserCharacters);
+        final List<UserCharacter> characters = Arrays.stream(CharacterType.values()).map(type -> new UserCharacter(type, 1, 1, 1)).toList();
+        final var res = userCharactersService.createCharactersData(characters);
+        assertNotNull(res);
+        assertEquals(characters.size(), res.size());
     }
 }

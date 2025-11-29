@@ -10,7 +10,8 @@ import java.util.OptionalLong;
 @Table(
         name = "users",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = "username")
+                @UniqueConstraint(columnNames = "username"),
+                @UniqueConstraint(columnNames = "email")
         }
 )
 public class User
@@ -24,6 +25,16 @@ public class User
     private String username;
     private String email;
     private String hashedPassword;
+
+    /**
+     * Only for use in tests if it necessary to have userId.
+     */
+    public static @NonNull User createUserForTests(long id, @NonNull String username, @NonNull String email, @NonNull String hashedPassword)
+    {
+        final User user = new User(username, email, hashedPassword);
+        user.id = id;
+        return user;
+    }
 
     protected User() {}
 

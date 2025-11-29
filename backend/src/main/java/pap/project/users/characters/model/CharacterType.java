@@ -4,6 +4,5 @@ public enum CharacterType
 {
     // XXX
     FIRST_CHARACTER,
-    SECOND_CHARACTER,
-    THIRD_CHARACTER
+    SECOND_CHARACTER
 }

@@ -1,9 +1,6 @@
 package pap.project.users;
 
-import org.h2.engine.UserBuilder;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
