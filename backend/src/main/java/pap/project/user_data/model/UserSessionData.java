@@ -3,6 +3,7 @@ package pap.project.user_data.model;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class UserSessionData
@@ -19,6 +20,19 @@ public class UserSessionData
     public void lock()
     {
         lock.lock();
+    }
+
+    public boolean lockWithTimeout(long milliseconds)
+    {
+        try
+        {
+            return lock.tryLock(milliseconds, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException wyj)
+        {
+            Thread.interrupted();
+            return false;
+        }
+
     }
 
     public void unlock()

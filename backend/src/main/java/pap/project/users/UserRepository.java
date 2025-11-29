@@ -16,7 +16,7 @@ public interface UserRepository extends JpaRepository<User, Long>
     boolean existsByEmail(@NonNull String email);
 
     @Modifying
-    @Query("update User u set u.totalGames = u.totalGames + 1, u.totalWins = u.totalWins + 1, u.eloPoints = ?1, u.currency = ?2 where u.id = ?3")
-    void updateUserAfterEndGame(int eloPointsChange, int currencyChange, long id);
+    @Query("UPDATE User u SET u.totalGames = u.totalGames + 1, u.totalWins = u.totalWins + 1, u.eloPoints = ?1, u.currency = ?2 WHERE u.id = ?3")
+    void updateUserAfterEndGame(int eloPoints, int currency, long id);
 
 }

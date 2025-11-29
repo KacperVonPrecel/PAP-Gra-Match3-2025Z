@@ -33,6 +33,6 @@ public class UserDataController
         final long userId = user.getUserId();
         final UserData userData = userDataService.getUserData(userId);
         final List<CharacterData> charactersData = userCharactersService.createCharactersData(userData.userCharacters());
-        return new StartingDataResponse(charactersData, userData.money());
+        return new StartingDataResponse(charactersData, userData.currency());
     }
 }

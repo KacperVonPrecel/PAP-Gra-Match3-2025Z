@@ -18,10 +18,10 @@ import java.util.OptionalLong;
 )
 public class User
 {
-    private static final Integer STARTING_CURRENCY = 1000;
-    private static final Integer STARTING_ELO_POINTS = 100;
-    private static final Integer STARTING_TOTAL_GAMES = 0;
-    private static final Integer STARTING_TOTAL_WINS = 0;
+    private static final int STARTING_CURRENCY = 1000;
+    private static final int STARTING_ELO_POINTS = 100;
+    private static final int STARTING_TOTAL_GAMES = 0;
+    private static final int STARTING_TOTAL_WINS = 0;
 
 
     /**
@@ -39,13 +39,13 @@ public class User
     @Column(name = "hashed_password")
     private String hashedPassword;
     @Column(name = "elo_points", nullable = false)
-    private Integer eloPoints = STARTING_ELO_POINTS;
+    private int eloPoints = STARTING_ELO_POINTS;
     @Column(name = "total_games", nullable = false)
-    private Integer totalGames =  STARTING_TOTAL_GAMES;
+    private int totalGames = STARTING_TOTAL_GAMES;
     @Column(name = "total_wins", nullable = false)
-    private Integer totalWins = STARTING_TOTAL_WINS;
+    private int totalWins = STARTING_TOTAL_WINS;
     @Column(name = "currency", nullable = false)
-    private Integer currency =  STARTING_CURRENCY;
+    private int currency = STARTING_CURRENCY;
 
     /**
      * Only for use in tests if it necessary to have userId.
