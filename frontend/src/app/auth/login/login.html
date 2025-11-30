@@ -1,5 +1,7 @@
-<p>login works!</p>
 <div id="main">
+    @if (isRequestInProgress) {
+        <mat-spinner id="progress" [diameter]="60"></mat-spinner>
+    }
     <form id="form" (ngSubmit)="login()" [formGroup]="loginForm">
         <mat-form-field>
         <mat-label i18n>Username</mat-label>

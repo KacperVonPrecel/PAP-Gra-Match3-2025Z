@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinner, MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 
 @Component({
@@ -14,6 +15,7 @@ import { MatInputModule } from '@angular/material/input';
     ReactiveFormsModule,
     MatButtonModule,
     MatInputModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
@@ -22,12 +24,16 @@ import { MatInputModule } from '@angular/material/input';
 export class Login {
   private readonly formBuilder = inject(FormBuilder);
   private readonly authService = inject(AuthService);
+  private _isRequestInProgress: boolean = false;
 
   readonly loginForm = this.formBuilder.group({
-    username: ['',[Validators.required]],
-    password: ['',[Validators.required]]
+    username: new FormControl('',[Validators.required]),
+    password: new FormControl('',[Validators.required])
   });
 
+  get isRequestInProgress(): boolean {
+    return this._isRequestInProgress;
+  }
 
   get usernameControl() : AbstractControl
 	{
@@ -54,6 +60,7 @@ export class Login {
                   case LoginResult.FAILURE:
                     break
       }
+      this._isRequestInProgress = false;
     });
     }
   }
