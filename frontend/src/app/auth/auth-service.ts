@@ -34,7 +34,15 @@ export class AuthService {
 					return LoginResult.SUCCESS;
 				}),
 			catchError((error: HttpErrorResponse) => {
-				return of (LoginResult.FAILURE);
+				if (error.status === 409) {
+					const errorResponse = error.error as LoginErrorResponse;
+					if (errorResponse.result == LoginResult.WRONG_USERNAME){
+						return of(LoginResult.WRONG_USERNAME)
+					} else if (errorResponse.result == LoginResult.WRONG_PASSWORD){
+						return of(LoginResult.WRONG_PASSWORD)
+					}
+				}
+				return of (LoginResult.SERVER_ERROR);
 			}
 		)
 	);
@@ -77,6 +85,8 @@ export enum RegisterResult {
 
 export enum LoginResult
 {
-	SUCCESS = "SUCCESS",
-	FAILURE = "FAILURE"
+	SUCCESS = 'SUCCESS',
+	WRONG_USERNAME = 'WRONG_USERNAME',
+	WRONG_PASSWORD = 'WRONG_PASSWORD',
+	SERVER_ERROR = 'SERVER_ERROR'
 }

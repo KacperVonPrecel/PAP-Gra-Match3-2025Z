@@ -2,56 +2,65 @@
 	@if (isRequestInProgress) {
 		<mat-spinner id="progress" [diameter]="60"></mat-spinner>
 	}
-	<form id="form" (ngSubmit)="register()" [formGroup]="registerForm">
-		<mat-form-field id="username-field">
-			<mat-label i18n>Username</mat-label>
-			<input matInput placeholder="Enter your username" i18n-placeholder formControlName="username" />
-			<mat-error>
-				@if (usernameControl.hasError('required')) {
-					<span i18n>Username is required</span>
-				} @else if (usernameControl.hasError('minlength')) {
-					<!-- XXX get min char from control -->
-					<span i18n>Username must be at least 5 characters long</span>
-				} @else if (usernameControl.hasError('maxlength')) {
-					<!-- XXX get max char from control -->
-					<span i18n>Username cannot be more than 20 characters long</span>
-				} @else if (usernameControl.hasError('usernameTaken')) {
-					<span i18n>Username is already taken</span>
-				}
-			</mat-error>
-		</mat-form-field>
+	<div class="form-container">
+		<form id="form" (ngSubmit)="register()" [formGroup]="registerForm">
+			<mat-form-field id="username-field">
+				<mat-label i18n>Username</mat-label>
+				<input matInput placeholder="Enter your username" i18n-placeholder formControlName="username" />
+				<mat-error>
+					@if (usernameControl.hasError('required')) {
+						<span i18n>Username is required</span>
+					} @else if (usernameControl.hasError('minlength')) {
+						<!-- XXX get min char from control -->
+						<span i18n>Username must be at least 5 characters long</span>
+					} @else if (usernameControl.hasError('maxlength')) {
+						<!-- XXX get max char from control -->
+						<span i18n>Username cannot be more than 20 characters long</span>
+					} @else if (usernameControl.hasError('usernameTaken')) {
+						<span i18n>Username is already taken</span>
+					}
+				</mat-error>
+			</mat-form-field>
 
-		<mat-form-field id="email-field">
-			<mat-label i18n>Email</mat-label>
-			<input matInput type="email" placeholder="Enter your email" i18n-placeholder formControlName="email" />
-			<!-- XXX add errors to show user -->
-		</mat-form-field>
-
-		<mat-form-field id="password-field">
-			<mat-label i18n>Password</mat-label>
-			<input matInput placeholder="Enter your password" i18n-placeholder formControlName="password" />
-			<!-- XXX add errors to show user -->
-			<mat-error>
-				@if (passwordControl.hasError('passwordMismatch')) {
-					<span i18n>Passwords do not match</span>
-				}
-			</mat-error>
-		</mat-form-field>
-
-		<mat-form-field id="confirm-password-field">
-			<mat-label i18n>Repeat Password</mat-label>
-			<input matInput placeholder="Reapeat your password" i18n-placeholder formControlName="confirmPassword" />
-			<mat-error>
+			<mat-form-field id="email-field">
+				<mat-label i18n>Email</mat-label>
+				<input matInput type="email" placeholder="Enter your email" i18n-placeholder formControlName="email" />
 				<!-- XXX add errors to show user -->
+			</mat-form-field>
 
-				@if (confirmPasswordControl.hasError('passwordMismatch')) {
-					<span i18n>Passwords do not match</span>
-				}
-			</mat-error>
-		</mat-form-field>
+			<mat-form-field id="password-field">
+				<mat-label i18n>Password</mat-label>
+				<input matInput placeholder="Enter your password" i18n-placeholder type="password" formControlName="password" />
+				<!-- XXX add errors to show user -->
+				<mat-error>
+					@if (passwordControl.hasError('passwordMismatch')) {
+						<span i18n>Passwords do not match</span>
+					}
+				</mat-error>
+			</mat-form-field>
 
-		<button id="register-button" matButton="filled" color="primary" type="submit" [disabled]="!registerForm.valid || isRequestInProgress" i18n>
-			Register
-		</button>
-	</form>
+			<mat-form-field id="confirm-password-field">
+				<mat-label i18n>Repeat Password</mat-label>
+				<input matInput placeholder="Reapeat your password" i18n-placeholder type="password"  formControlName="confirmPassword" />
+				<mat-error>
+					<!-- XXX add errors to show user -->
+
+					@if (confirmPasswordControl.hasError('passwordMismatch')) {
+						<span i18n>Passwords do not match</span>
+					}
+				</mat-error>
+			</mat-form-field>
+			<button id="register-button" matButton="filled" color="primary" type="submit" [disabled]="!registerForm.valid || isRequestInProgress" i18n>
+				Register
+			</button>
+		</form>
+		@if (registerErrorMessage){
+				<div class="register-error">
+					<span i18n>Couldn't register.</span>
+					@if (serverErrorMessage){
+                        <span i18n> An unknown issue occured.</span>
+                    }
+				</div>
+			}
+	</div>
 </div>
