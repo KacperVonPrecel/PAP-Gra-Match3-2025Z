@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
 import { Register } from './auth/register/register';
 import { Login } from './auth/login/login';
-import { HomePage } from './home/home-page/home-page';
 import { Home } from './home/home';
+import { HomePage } from './home/home-page/home-page';
 
 export const routes: Routes = [
     {
@@ -18,6 +18,13 @@ export const routes: Routes = [
     {
         path: 'home',
         component: Home,
-        title: 'Home'
+        title: 'Home',
+        children: [
+            {
+            path: 'home-page',
+            component: HomePage,
+            title: 'Home Page'
+            }
+        ]
     }
 ];
