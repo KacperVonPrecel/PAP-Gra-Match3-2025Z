@@ -3,14 +3,6 @@
         <mat-spinner id="progress" [diameter]="60"></mat-spinner>
     }
     <div class="form-container">
-        @if (loginErrorMessage){
-				<div class="login-error">
-					<span i18n>Couldn't log you in.</span>
-                    @if (serverErrorMessage){
-                        <span i18n> An unknown issue occured.</span>
-                    }
-				</div>
-			}
         <form id="form" (ngSubmit)="login()" [formGroup]="loginForm">
             <mat-form-field>
             <mat-label i18n>Username</mat-label>
@@ -40,5 +32,13 @@
             </mat-form-field>
             <button matButton="filled" color="primary" type="submit" [disabled]="!loginForm.valid || isRequestInProgress" i18n>Login</button>
         </form>
+         @if (loginErrorMessage){
+				<div class="login-error">
+					<span i18n>Couldn't log you in.</span>
+                    @if (serverErrorMessage){
+                        <span i18n> An unknown issue occured.</span>
+                    }
+				</div>
+			}
     </div>
 </div>

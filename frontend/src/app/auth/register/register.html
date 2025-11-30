@@ -3,14 +3,6 @@
 		<mat-spinner id="progress" [diameter]="60"></mat-spinner>
 	}
 	<div class="form-container">
-		@if (registerErrorMessage){
-				<div class="register-error">
-					<span i18n>Couldn't register.</span>
-					@if (serverErrorMessage){
-                        <span i18n> An unknown issue occured.</span>
-                    }
-				</div>
-			}
 		<form id="form" (ngSubmit)="register()" [formGroup]="registerForm">
 			<mat-form-field id="username-field">
 				<mat-label i18n>Username</mat-label>
@@ -38,7 +30,7 @@
 
 			<mat-form-field id="password-field">
 				<mat-label i18n>Password</mat-label>
-				<input matInput placeholder="Enter your password" i18n-placeholder formControlName="password" />
+				<input matInput placeholder="Enter your password" i18n-placeholder type="password" formControlName="password" />
 				<!-- XXX add errors to show user -->
 				<mat-error>
 					@if (passwordControl.hasError('passwordMismatch')) {
@@ -49,7 +41,7 @@
 
 			<mat-form-field id="confirm-password-field">
 				<mat-label i18n>Repeat Password</mat-label>
-				<input matInput placeholder="Reapeat your password" type="password"  formControlName="confirmPassword" />
+				<input matInput placeholder="Reapeat your password" i18n-placeholder type="password"  formControlName="confirmPassword" />
 				<mat-error>
 					<!-- XXX add errors to show user -->
 
@@ -62,5 +54,13 @@
 				Register
 			</button>
 		</form>
+		@if (registerErrorMessage){
+				<div class="register-error">
+					<span i18n>Couldn't register.</span>
+					@if (serverErrorMessage){
+                        <span i18n> An unknown issue occured.</span>
+                    }
+				</div>
+			}
 	</div>
 </div>
