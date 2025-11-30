@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Register } from './register';
+import { Register, ErrorToDisplay } from './register';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatFormField, MatInput, MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -12,13 +12,13 @@ import { MatInputHarness } from '@angular/material/input/testing';
 import { MatFormFieldHarness } from '@angular/material/form-field/testing';
 import { MatButtonHarness } from '@angular/material/button/testing';
 import { delay, of } from 'rxjs';
-import { Router } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 
 describe('Register', () => {
 	let component: Register;
 	let fixture: ComponentFixture<Register>;
 	let authServiceSpy: jasmine.SpyObj<AuthService>;
-	let routerSpy: jasmine.SpyObj<Router>;
+	let router: jasmine.SpyObj<Router>;
 	let loader: HarnessLoader;
 
 	let usernameFormFieldHarness: MatFormFieldHarness;
@@ -35,15 +35,12 @@ describe('Register', () => {
 
 	beforeEach(async () => {
 		authServiceSpy = jasmine.createSpyObj('AuthService', ['register']);
-		routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 		await TestBed.configureTestingModule({
 			imports: [Register, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatProgressBarModule],
-			providers: [
-				{ provide: AuthService, useValue: authServiceSpy },
-				{ provide: Router, useValue: routerSpy }
-			]
+			providers: [{ provide: AuthService, useValue: authServiceSpy }, provideRouter([])]
 		}).compileComponents();
 
+		router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
 		fixture = TestBed.createComponent(Register);
 		component = fixture.componentInstance;
 		fixture.detectChanges();
@@ -96,7 +93,6 @@ describe('Register', () => {
 		expect(component.usernameControl.hasError('required')).toBeTrue();
 		expect(component.emailControl.hasError('required')).toBeTrue();
 		expect(component.passwordControl.hasError('required')).toBeTrue();
-		expect(component.confirmPasswordControl.hasError('required')).toBeTrue();
 		expect(component.registerForm.valid).toBeFalse();
 	});
 
@@ -104,14 +100,12 @@ describe('Register', () => {
 		component.usernameControl.markAsTouched();
 		component.emailControl.markAsTouched();
 		component.passwordControl.markAsTouched();
-		component.confirmPasswordControl.markAsTouched();
 
 		fixture.detectChanges();
 
 		expect(await usernameFormFieldHarness.getTextErrors()).toHaveSize(1);
 		expect(await emailFormFieldHarness.getTextErrors()).toHaveSize(1);
 		expect(await passwordFormFieldHarness.getTextErrors()).toHaveSize(1);
-		expect(await confirmPasswordFormFieldHarness.getTextErrors()).toHaveSize(1);
 	});
 
 	it('check if form have errors when text is to short', async () => {
@@ -129,11 +123,21 @@ describe('Register', () => {
 		await emailInputHarness.setValue('123');
 		await passwordInputHarness.setValue('123');
 
+		component.usernameControl.markAsTouched();
+		component.emailControl.markAsTouched();
+		component.passwordControl.markAsTouched();
+
 		fixture.detectChanges();
 
-		expect(await usernameFormFieldHarness.getTextErrors()).toHaveSize(1);
-		expect(await emailFormFieldHarness.getTextErrors()).toHaveSize(1);
-		expect(await passwordFormFieldHarness.getTextErrors()).toHaveSize(1);
+		expect(await usernameFormFieldHarness.getTextErrors())
+			.withContext('username')
+			.toHaveSize(1);
+		expect(await emailFormFieldHarness.getTextErrors())
+			.withContext('email')
+			.toHaveSize(1);
+		expect(await passwordFormFieldHarness.getTextErrors())
+			.withContext('password')
+			.toHaveSize(1);
 	});
 
 	it('check if form have errors when text is to long', async () => {
@@ -159,6 +163,10 @@ describe('Register', () => {
 		await emailInputHarness.setValue(longEmail);
 		await passwordInputHarness.setValue(longPassword);
 
+		component.usernameControl.markAsTouched();
+		component.emailControl.markAsTouched();
+		component.passwordControl.markAsTouched();
+
 		fixture.detectChanges();
 
 		expect(await usernameFormFieldHarness.getTextErrors()).toHaveSize(1);
@@ -169,11 +177,12 @@ describe('Register', () => {
 	it('check if form have errors when email is invalid', async () => {
 		await emailInputHarness.setValue('invalid-email');
 
-		expect(component.emailControl.hasError('email')).toBeTrue();
+		expect(component.emailControl.hasError('pattern')).toBeTrue();
 	});
 
 	it('check if form show errors when email is invalid', async () => {
 		await emailInputHarness.setValue('invalid-email');
+		component.emailControl.markAsTouched();
 
 		fixture.detectChanges();
 		expect(await emailFormFieldHarness.getTextErrors()).toHaveSize(1);
@@ -183,20 +192,18 @@ describe('Register', () => {
 		await passwordInputHarness.setValue('TestPassword123!');
 		await confirmPasswordInputHarness.setValue('DifferentPassword123!');
 
-		expect(component.registerForm.hasError('passwordMismatch')).toBeTrue();
+		expect(component.confirmPasswordControl.hasError('passwordMismatch')).toBeTrue();
 	});
 
 	/** Test nie przechodzi harnessy nie wykrywają błędów dla całego formularza. */
-	// it('check if form show errors when passwords do not match', async () => {
-	// 	await passwordInputHarness.setValue('TestPassword123!');
-	// 	await confirmPasswordInputHarness.setValue('DifferentPassword123!');
+	it('check if form show errors when passwords do not match', async () => {
+		await passwordInputHarness.setValue('TestPassword123!');
+		await confirmPasswordInputHarness.setValue('DifferentPassword123!');
 
-	// 	component.passwordControl.markAsTouched();
-	// 	component.confirmPasswordControl.markAsTouched();
-	// 	fixture.detectChanges();
-	// 	expect(await passwordFormFieldHarness.getTextErrors()).toHaveSize(1);
-	// 	expect(await confirmPasswordFormFieldHarness.getTextErrors()).toHaveSize(1);
-	// });
+		component.confirmPasswordControl.markAsTouched();
+		fixture.detectChanges();
+		expect(await confirmPasswordFormFieldHarness.getTextErrors()).toHaveSize(1);
+	});
 
 	it('check if form have no errors when is valid', async () => {
 		await usernameInputHarness.setValue('testuser');
@@ -263,21 +270,27 @@ describe('Register', () => {
 		expect(authServiceSpy.register).toHaveBeenCalledOnceWith(expectedCallingArguments);
 	});
 
-	it('register should set isRequestInProgress to true when called', async () => {
-		expect(component['_isRequestInProgress']).toBeFalse();
+	it('register should set isRequestInProgress to true and errorToDisplay when called', async () => {
+		component['_errorToDisplay'] = ErrorToDisplay.SERVER_ERROR;
+		expect(component.isRequestInProgress).toBeFalse();
+		expect(component.errorToDisplay).toBe(ErrorToDisplay.SERVER_ERROR);
+
 		authServiceSpy.register.and.returnValue(of(RegisterResult.SUCCESS).pipe(delay(100)));
 		component.register();
-		expect(component['_isRequestInProgress']).toBeTrue();
+
+		expect(component.errorToDisplay).toBeUndefined();
+		expect(component.isRequestInProgress).toBeTrue();
 
 		await new Promise((r) => setTimeout(r, 150));
-		expect(component['_isRequestInProgress']).toBeFalse();
+		expect(component.isRequestInProgress).toBeFalse();
 	});
 
 	it('register should go to login page after succesfull registration', async () => {
+		spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 		authServiceSpy.register.and.returnValue(of(RegisterResult.SUCCESS));
-		routerSpy.navigate.and.returnValue(Promise.resolve(true));
+		router.navigate.and.returnValue(Promise.resolve(true));
 		component.register();
-		expect(routerSpy.navigate).toHaveBeenCalledOnceWith(['/auth/login']);
+		expect(router.navigate).toHaveBeenCalledOnceWith(['/auth/login']);
 	});
 
 	it('register should set usernameTaken error when USERNAME_TAKEN is returned', async () => {
@@ -298,5 +311,32 @@ describe('Register', () => {
 		component.emailControl.markAsTouched();
 		fixture.detectChanges();
 		expect(await emailFormFieldHarness.getTextErrors()).toHaveSize(1);
+	});
+
+	it('register should set errorToDisplay error when SERVER_ERROR is returned', async () => {
+		authServiceSpy.register.and.returnValue(of(RegisterResult.SERVER_ERROR));
+		component.register();
+		expect(component.errorToDisplay).toBe(ErrorToDisplay.SERVER_ERROR);
+
+		fixture.detectChanges();
+		expect(fixture.nativeElement.querySelector('#server-error')).not.toBeNull();
+	});
+
+	it('register should set errorToDisplay error when UNKNOWN_ERROR is returned', async () => {
+		authServiceSpy.register.and.returnValue(of(RegisterResult.UNKNOWN_ERROR));
+		component.register();
+		expect(component.errorToDisplay).toBe(ErrorToDisplay.UNKNOWN_ERROR);
+
+		fixture.detectChanges();
+		expect(fixture.nativeElement.querySelector('#unknown-error')).not.toBeNull();
+	});
+
+	it('register should set errorToDisplay error when UNKNOWN_ERROR is returned', async () => {
+		authServiceSpy.register.and.returnValue(of(RegisterResult.NO_INTERNET));
+		component.register();
+		expect(component.errorToDisplay).toBe(ErrorToDisplay.NO_INTERNET);
+
+		fixture.detectChanges();
+		expect(fixture.nativeElement.querySelector('#no-internet-connection')).not.toBeNull();
 	});
 });

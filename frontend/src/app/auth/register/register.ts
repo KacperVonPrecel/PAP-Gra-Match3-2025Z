@@ -15,23 +15,26 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { AuthService, RegisterResult } from '../auth-service';
 import { RegisterRequest } from '../auth-service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
 	selector: 'app-register',
-	imports: [MatInputModule, MatButtonModule, FormsModule, ReactiveFormsModule, MatProgressSpinnerModule],
+	imports: [MatInputModule, MatButtonModule, FormsModule, ReactiveFormsModule, MatProgressSpinnerModule, RouterLink],
 	templateUrl: './register.html',
 	styleUrl: './register.scss',
 	providers: [{ provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'outline' } }]
 })
 export class Register {
-	private readonly formBuilder = inject(FormBuilder);
-	private _isRequestInProgress: boolean = false;
-	private _registerError: boolean = false;
-	private _serverError: boolean = false;
+	readonly ErrorToDisplay = ErrorToDisplay;
 
+	private _isRequestInProgress: boolean = false;
 	get isRequestInProgress(): boolean {
 		return this._isRequestInProgress;
+	}
+
+	private _errorToDisplay?: ErrorToDisplay = undefined;
+	get errorToDisplay(): ErrorToDisplay | undefined {
+		return this._errorToDisplay;
 	}
 
 	private readonly passwordMatchValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
@@ -39,27 +42,34 @@ export class Register {
 		const confirmPassword = this.confirmPasswordControl.value;
 
 		if (password !== confirmPassword) {
-			return { passwordMismatch: true };
+			this.confirmPasswordControl.setErrors({ passwordMismatch: true });
+		} else {
+			this.confirmPasswordControl.setErrors(null);
 		}
 		return null;
 	};
 
-	readonly registerForm = this.formBuilder.group({
-		username: new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(20)]),
-		email: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(100), Validators.email]],
-		password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(40)]],
-		confirmPassword: ['', [Validators.required]]
-	});
+	readonly registerForm;
 
 	constructor(
+		formBuilder: FormBuilder,
 		private readonly authService: AuthService,
 		private readonly router: Router
 	) {
+		this.registerForm = formBuilder.group({
+			username: new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(20)]),
+			email: new FormControl('', [
+				Validators.required,
+				Validators.minLength(5),
+				Validators.maxLength(100),
+				Validators.pattern('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
+			]),
+			password: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(40)]),
+			/** Without any validatorm, because passwordMatchValidator will check if it matches with password.
+			 * And if it matches it match valid password it means that it is valid. */
+			confirmPassword: new FormControl('', [])
+		});
 		this.registerForm.setValidators(this.passwordMatchValidator);
-	}
-
-	get serverErrorMessage(){
-		return this._serverError;
 	}
 
 	get usernameControl(): AbstractControl {
@@ -78,10 +88,6 @@ export class Register {
 		return this.registerForm.get('confirmPassword')!;
 	}
 
-	get registerErrorMessage(): boolean{
-		return this._registerError;
-	}
-
 	register(): void {
 		const registerRequest: RegisterRequest = {
 			username: this.usernameControl.value!,
@@ -90,26 +96,39 @@ export class Register {
 		};
 
 		this._isRequestInProgress = true;
+		this._errorToDisplay = undefined;
 		this.authService.register(registerRequest).subscribe((result) => {
 			switch (result) {
 				case RegisterResult.SUCCESS:
 					this.router.navigate(['/auth/login']);
 					break;
 				case RegisterResult.USERNAME_TAKEN:
-					this._registerError = true
 					this.usernameControl.setErrors({ usernameTaken: true });
 					break;
 				case RegisterResult.EMAIL_TAKEN:
-					this._registerError = true
 					this.emailControl.setErrors({ emailTaken: true });
 					break;
 				case RegisterResult.SERVER_ERROR:
-					this._registerError = true
-					this._serverError = true;
-					//XXX show generic error message
+					this._errorToDisplay = ErrorToDisplay.SERVER_ERROR;
+					break;
+				case RegisterResult.UNKNOWN_ERROR:
+					this._errorToDisplay = ErrorToDisplay.UNKNOWN_ERROR;
+					break;
+				case RegisterResult.NO_INTERNET:
+					this._errorToDisplay = ErrorToDisplay.NO_INTERNET;
 					break;
 			}
 			this._isRequestInProgress = false;
 		});
 	}
+}
+
+/**
+ * It is used to determine which error message to display to the user.
+ * It doesn't include all errors from RegisterResult, only those that need to be displayed in a general error er area.
+ */
+export enum ErrorToDisplay {
+	SERVER_ERROR = 'SERVER_ERROR',
+	NO_INTERNET = 'NO_INTERNET',
+	UNKNOWN_ERROR = 'UNKNOWN_ERROR'
 }

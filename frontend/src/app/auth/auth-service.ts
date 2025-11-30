@@ -10,50 +10,42 @@ export class AuthService {
 
 	register(registerRequest: RegisterRequest): Observable<RegisterResult> {
 		return this.http.post('api/auth/register', registerRequest, { responseType: 'json' }).pipe(
-			map((_: any) => {
+			map(() => {
 				return RegisterResult.SUCCESS;
 			}),
 			catchError((error: HttpErrorResponse) => {
-				if (error.status === 409) {
+				if (error.status === 0) return of(RegisterResult.NO_INTERNET);
+				else if (error.status === 409) {
 					const errorResponse = error.error as RegisterConflictErrorResponse;
 					if (errorResponse.error === RegisterConflictError.USERNAME_TAKEN) {
 						return of(RegisterResult.USERNAME_TAKEN);
 					} else if (errorResponse.error === RegisterConflictError.EMAIL_TAKEN) {
 						return of(RegisterResult.EMAIL_TAKEN);
 					}
-				}
-				return of(RegisterResult.SERVER_ERROR);
+				} else if (error.status === 500) return of(RegisterResult.SERVER_ERROR);
+				return of(RegisterResult.UNKNOWN_ERROR);
 			})
 		);
 	}
 
-	login(loginRequest: LoginRequest) : Observable<LoginResult>{
-		return this.http.post('api/auth/login', loginRequest, { responseType: 'json' })
-		.pipe(
+	login(loginRequest: LoginRequest): Observable<LoginResult> {
+		return this.http.post('api/auth/login', loginRequest, { responseType: 'json' }).pipe(
 			map(() => {
-					return LoginResult.SUCCESS;
-				}),
+				return LoginResult.SUCCESS;
+			}),
 			catchError((error: HttpErrorResponse) => {
-				if (error.status === 409) {
-					const errorResponse = error.error as LoginErrorResponse;
-					if (errorResponse.result == LoginResult.WRONG_USERNAME){
-						return of(LoginResult.WRONG_USERNAME)
-					} else if (errorResponse.result == LoginResult.WRONG_PASSWORD){
-						return of(LoginResult.WRONG_PASSWORD)
-					}
-				}
-				return of (LoginResult.SERVER_ERROR);
-			}
-		)
-	);
+				if (error.status === 0) return of(LoginResult.NO_INTERNET);
+				else if (error.status === 401) return of(LoginResult.INVALID_CREDENTIALS);
+				else if (error.status === 500) return of(LoginResult.SERVER_ERROR);
+				return of(LoginResult.UNKNOWN_ERROR);
+			})
+		);
 	}
-
 }
 
-export interface LoginRequest
-{
-	username: string,
-	password: string
+export interface LoginRequest {
+	username: string;
+	password: string;
 }
 
 export interface RegisterRequest {
@@ -71,22 +63,19 @@ export enum RegisterConflictError {
 	EMAIL_TAKEN = 'EMAIL_TAKEN'
 }
 
-export interface LoginErrorResponse
-{
-	result: LoginResult;
-}
-
 export enum RegisterResult {
 	SUCCESS = 'SUCCESS',
 	USERNAME_TAKEN = 'USERNAME_TAKEN',
 	EMAIL_TAKEN = 'EMAIL_TAKEN',
-	SERVER_ERROR = 'SERVER_ERROR'
+	SERVER_ERROR = 'SERVER_ERROR',
+	NO_INTERNET = 'NO_INTERNET',
+	UNKNOWN_ERROR = 'UNKNOWN_ERROR'
 }
 
-export enum LoginResult
-{
+export enum LoginResult {
 	SUCCESS = 'SUCCESS',
-	WRONG_USERNAME = 'WRONG_USERNAME',
-	WRONG_PASSWORD = 'WRONG_PASSWORD',
-	SERVER_ERROR = 'SERVER_ERROR'
+	INVALID_CREDENTIALS = 'INVALID_CREDENTIALS',
+	SERVER_ERROR = 'SERVER_ERROR',
+	NO_INTERNET = 'NO_INTERNET',
+	UNKNOWN_ERROR = 'UNKNOWN_ERROR'
 }

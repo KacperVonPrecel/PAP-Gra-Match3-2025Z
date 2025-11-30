@@ -2,65 +2,85 @@
 	@if (isRequestInProgress) {
 		<mat-spinner id="progress" [diameter]="60"></mat-spinner>
 	}
-	<div class="form-container">
-		<form id="form" (ngSubmit)="register()" [formGroup]="registerForm">
-			<mat-form-field id="username-field">
-				<mat-label i18n>Username</mat-label>
-				<input matInput placeholder="Enter your username" i18n-placeholder formControlName="username" />
-				<mat-error>
-					@if (usernameControl.hasError('required')) {
-						<span i18n>Username is required</span>
-					} @else if (usernameControl.hasError('minlength')) {
-						<!-- XXX get min char from control -->
-						<span i18n>Username must be at least 5 characters long</span>
-					} @else if (usernameControl.hasError('maxlength')) {
-						<!-- XXX get max char from control -->
-						<span i18n>Username cannot be more than 20 characters long</span>
-					} @else if (usernameControl.hasError('usernameTaken')) {
-						<span i18n>Username is already taken</span>
-					}
-				</mat-error>
-			</mat-form-field>
+	<form id="form" (ngSubmit)="register()" [formGroup]="registerForm">
+		<mat-form-field id="username-field">
+			<mat-label i18n>Username</mat-label>
+			<input matInput placeholder="Enter your username" i18n-placeholder formControlName="username" />
+			<mat-error>
+				@if (usernameControl.hasError('required')) {
+					<span i18n>Username is required</span>
+				} @else if (usernameControl.hasError('minlength')) {
+					<span i18n>Username must be at least {{ usernameControl.getError('minlength').requiredLength }} characters long</span>
+				} @else if (usernameControl.hasError('maxlength')) {
+					<span i18n>Username cannot be more than {{ usernameControl.getError('maxlength').requiredLength }} characters long</span>
+				} @else if (usernameControl.hasError('usernameTaken')) {
+					<span i18n>Username is already taken</span>
+				}
+			</mat-error>
+		</mat-form-field>
 
-			<mat-form-field id="email-field">
-				<mat-label i18n>Email</mat-label>
-				<input matInput type="email" placeholder="Enter your email" i18n-placeholder formControlName="email" />
-				<!-- XXX add errors to show user -->
-			</mat-form-field>
+		<mat-form-field id="email-field">
+			<mat-label i18n>Email</mat-label>
+			<input matInput type="email" placeholder="Enter your email" i18n-placeholder formControlName="email" />
+			<mat-error>
+				@if (emailControl.hasError('required')) {
+					<span i18n>Email is required</span>
+				} @else if (emailControl.hasError('minlength')) {
+					<span i18n>Email must be at least {{ emailControl.getError('minlength').requiredLength }} characters long</span>
+				} @else if (emailControl.hasError('maxlength')) {
+					<span i18n>Email cannot be more than {{ emailControl.getError('maxlength').requiredLength }} characters long</span>
+				} @else if (emailControl.hasError('pattern')) {
+					<span i18n>Invalid email format</span>
+				} @else if (emailControl.hasError('emailTaken')) {
+					<span i18n>Email is already taken</span>
+				}
+			</mat-error>
+		</mat-form-field>
 
-			<mat-form-field id="password-field">
-				<mat-label i18n>Password</mat-label>
-				<input matInput placeholder="Enter your password" i18n-placeholder type="password" formControlName="password" />
-				<!-- XXX add errors to show user -->
-				<mat-error>
-					@if (passwordControl.hasError('passwordMismatch')) {
-						<span i18n>Passwords do not match</span>
-					}
-				</mat-error>
-			</mat-form-field>
+		<mat-form-field id="password-field">
+			<mat-label i18n>Password</mat-label>
+			<input matInput placeholder="Enter your password" i18n-placeholder type="password" formControlName="password" />
+			<mat-error>
+				@if (passwordControl.hasError('required')) {
+					<span i18n>Password is required</span>
+				} @else if (passwordControl.hasError('minlength')) {
+					<span i18n>Password must be at least {{ passwordControl.getError('minlength').requiredLength }} characters long</span>
+				} @else if (passwordControl.hasError('maxlength')) {
+					<span i18n>Password cannot be longer than {{ passwordControl.getError('maxlength').requiredLength }} characters long</span>
+				}
+			</mat-error>
+		</mat-form-field>
 
-			<mat-form-field id="confirm-password-field">
-				<mat-label i18n>Repeat Password</mat-label>
-				<input matInput placeholder="Reapeat your password" i18n-placeholder type="password"  formControlName="confirmPassword" />
-				<mat-error>
-					<!-- XXX add errors to show user -->
+		<mat-form-field id="confirm-password-field">
+			<mat-label i18n>Repeat Password</mat-label>
+			<input matInput placeholder="Reapeat your password" i18n-placeholder type="password" formControlName="confirmPassword" />
+			<mat-error>
+				@if (confirmPasswordControl.hasError('passwordMismatch')) {
+					<span i18n>Passwords do not match</span>
+				}
+			</mat-error>
+		</mat-form-field>
 
-					@if (confirmPasswordControl.hasError('passwordMismatch')) {
-						<span i18n>Passwords do not match</span>
-					}
-				</mat-error>
-			</mat-form-field>
-			<button id="register-button" matButton="filled" color="primary" type="submit" [disabled]="!registerForm.valid || isRequestInProgress" i18n>
-				Register
-			</button>
-		</form>
-		@if (registerErrorMessage){
-				<div class="register-error">
-					<span i18n>Couldn't register.</span>
-					@if (serverErrorMessage){
-                        <span i18n> An unknown issue occured.</span>
-                    }
-				</div>
-			}
-	</div>
+		@if (errorToDisplay) {
+			<div class="register-error">
+				@if (errorToDisplay === ErrorToDisplay.SERVER_ERROR) {
+					<span i18n id="server-error"> Server error occured. Wait a moment and try again.</span>
+				} @else if (errorToDisplay === ErrorToDisplay.NO_INTERNET) {
+					<span i18n id="no-internet-connection"> No internet connection. Check your connection and try again.</span>
+				} @else if (errorToDisplay === ErrorToDisplay.UNKNOWN_ERROR) {
+					<span i18n id="unknown-error"> An unknown issue occured. Please try again later.</span>
+				}
+			</div>
+		}
+
+		<button id="register-button" matButton="filled" color="primary" type="submit" [disabled]="!registerForm.valid || isRequestInProgress" i18n>
+			Register
+		</button>
+
+		<div id="login-ask">
+			<span i18n>Already have account?</span>
+			&nbsp;&nbsp;
+			<a routerLink="/auth/login" i18n>Sign in</a>
+		</div>
+	</form>
 </div>
