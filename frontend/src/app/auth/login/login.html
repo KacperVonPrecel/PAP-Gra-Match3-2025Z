@@ -2,26 +2,43 @@
     @if (isRequestInProgress) {
         <mat-spinner id="progress" [diameter]="60"></mat-spinner>
     }
-    <form id="form" (ngSubmit)="login()" [formGroup]="loginForm">
-        <mat-form-field>
-        <mat-label i18n>Username</mat-label>
-        <input matInput placeholder="Enter your username" i18n-placeholder formControlName = "username">
-        <mat-error>
-                @if (usernameControl.hasError('required'))
-                {
-                    <span i18n>Username is required</span>
-                }
-        </mat-error>
-        </mat-form-field>
-        <mat-form-field>
-        <input matInput placeholder="Enter your password" i18n-placeholder formControlName = "username">
-        <mat-error>
-                @if (passwordControl.hasError('required'))
-                {
-                    <span i18n>Password is required</span>
-                }
-        </mat-error>
-        </mat-form-field>
-        <button matButton="filled" color="primary" type="submit" i18n>Login</button>
-    </form>
+    <div class="form-container">
+        @if (loginErrorMessage){
+				<div class="login-error">
+					<span i18n>Couldn't log you in.</span>
+                    @if (serverErrorMessage){
+                        <span i18n> An unknown issue occured.</span>
+                    }
+				</div>
+			}
+        <form id="form" (ngSubmit)="login()" [formGroup]="loginForm">
+            <mat-form-field>
+            <mat-label i18n>Username</mat-label>
+            <input matInput placeholder="Enter your username" i18n-placeholder formControlName = "username">
+            <mat-error>
+                    @if (usernameControl.hasError('required'))
+                    {
+                        <span i18n>Username is required</span>
+                    }
+                    @if (usernameControl.hasError('wrongUsername')){
+                        <span i18n>Username not found</span>
+                    }
+            </mat-error>
+            </mat-form-field>
+            <mat-form-field>
+            <input matInput placeholder="Enter your password" i18n-placeholder type="password" formControlName = "password">
+            <mat-error>
+                    @if (passwordControl.hasError('required'))
+                    {
+                        <span i18n>Password is required</span>
+                    }
+                    @if (passwordControl.hasError('wrongPassword'))
+                    {
+                        <span i18n>Wrong password</span>
+                    }
+            </mat-error>
+            </mat-form-field>
+            <button matButton="filled" color="primary" type="submit" [disabled]="!loginForm.valid || isRequestInProgress" i18n>Login</button>
+        </form>
+    </div>
 </div>

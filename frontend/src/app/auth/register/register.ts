@@ -27,6 +27,8 @@ import { Router } from '@angular/router';
 export class Register {
 	private readonly formBuilder = inject(FormBuilder);
 	private _isRequestInProgress: boolean = false;
+	private _registerError: boolean = false;
+	private _serverError: boolean = false;
 
 	get isRequestInProgress(): boolean {
 		return this._isRequestInProgress;
@@ -56,6 +58,10 @@ export class Register {
 		this.registerForm.setValidators(this.passwordMatchValidator);
 	}
 
+	get serverErrorMessage(){
+		return this._serverError;
+	}
+
 	get usernameControl(): AbstractControl {
 		return this.registerForm.get('username')!;
 	}
@@ -72,6 +78,10 @@ export class Register {
 		return this.registerForm.get('confirmPassword')!;
 	}
 
+	get registerErrorMessage(): boolean{
+		return this._registerError;
+	}
+
 	register(): void {
 		const registerRequest: RegisterRequest = {
 			username: this.usernameControl.value!,
@@ -86,12 +96,16 @@ export class Register {
 					this.router.navigate(['/auth/login']);
 					break;
 				case RegisterResult.USERNAME_TAKEN:
+					this._registerError = true
 					this.usernameControl.setErrors({ usernameTaken: true });
 					break;
 				case RegisterResult.EMAIL_TAKEN:
+					this._registerError = true
 					this.emailControl.setErrors({ emailTaken: true });
 					break;
 				case RegisterResult.SERVER_ERROR:
+					this._registerError = true
+					this._serverError = true;
 					//XXX show generic error message
 					break;
 			}

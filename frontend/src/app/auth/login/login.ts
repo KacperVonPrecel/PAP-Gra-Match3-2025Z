@@ -25,6 +25,8 @@ export class Login {
   private readonly formBuilder = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private _isRequestInProgress: boolean = false;
+  private _loginError: boolean = false;
+  private _serverError: boolean = false;
 
   readonly loginForm = this.formBuilder.group({
     username: new FormControl('',[Validators.required]),
@@ -45,6 +47,14 @@ export class Login {
 		return this.loginForm.get('password')!;
 	}
 
+  get loginErrorMessage(){
+    return this._loginError;
+  }
+
+  get serverErrorMessage(){
+    return this._serverError;
+  }
+
   login() : void
   {
     const loginRequest: LoginRequest = {
@@ -57,8 +67,19 @@ export class Login {
                 {
                   case LoginResult.SUCCESS:
                     break;
-                  case LoginResult.FAILURE:
-                    break
+                  case LoginResult.WRONG_USERNAME:
+                    this.usernameControl.setErrors({wrongUsername: true});
+                    this._loginError = true;
+                    break;
+                  case LoginResult.WRONG_PASSWORD:
+                    this.passwordControl.setErrors({wrongPassword: true});
+                    this._loginError = true;
+                    break;
+                  case LoginResult.SERVER_ERROR:
+                    default:
+                    this._loginError = true;
+                    this._serverError = true;
+                    break;
       }
       this._isRequestInProgress = false;
     });
