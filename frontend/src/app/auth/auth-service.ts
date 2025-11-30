@@ -6,7 +6,7 @@ import { catchError, map, Observable, of } from 'rxjs';
 	providedIn: 'root'
 })
 export class AuthService {
-	constructor(private http: HttpClient) {}
+	constructor(private readonly http: HttpClient) {}
 
 	register(registerRequest: RegisterRequest): Observable<RegisterResult> {
 		return this.http.post('api/auth/register', registerRequest, { responseType: 'json' }).pipe(

@@ -65,8 +65,10 @@ export class Register {
 				Validators.pattern('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
 			]),
 			password: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(40)]),
-			/** Without any validatorm, because passwordMatchValidator will check if it matches with password.
-			 * And if it matches it match valid password it means that it is valid. */
+			/**
+			 * Without any validatorm, because passwordMatchValidator will check if it matches with password.
+			 * And if it matches it match valid password it means that it is valid.
+			 */
 			confirmPassword: new FormControl('', [])
 		});
 		this.registerForm.setValidators(this.passwordMatchValidator);
