@@ -29,7 +29,7 @@ import pap.project.auth.model.controller.register.RegisterResponse;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-
+//XXX maybe not use ResponseEntity, but configure better GlobalExceptionHandler
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController

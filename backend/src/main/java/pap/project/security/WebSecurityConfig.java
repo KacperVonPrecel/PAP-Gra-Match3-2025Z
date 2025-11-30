@@ -41,7 +41,6 @@ public class WebSecurityConfig
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/api/auth/**").anonymous()
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers("/xxx").authenticated()
                         .requestMatchers("/h2-console", "/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -51,7 +50,7 @@ public class WebSecurityConfig
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .httpBasic(Customizer.withDefaults())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).maximumSessions(1))
                 .logout(LogoutConfigurer::permitAll);
 
         return http.build();

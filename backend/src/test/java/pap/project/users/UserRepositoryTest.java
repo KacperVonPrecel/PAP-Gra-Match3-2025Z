@@ -4,12 +4,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
+@ActiveProfiles("test")
 public class UserRepositoryTest
 {
     @Autowired
@@ -49,4 +51,6 @@ public class UserRepositoryTest
         final Optional<User> notFounded = userRepository.findByUsername("not-existing-user");
         assertTrue(notFounded.isEmpty());
     }
+
+    //XXXK add tests for updateUserAfterEndGame - it should be other file after adding additional table for user data.
 }
