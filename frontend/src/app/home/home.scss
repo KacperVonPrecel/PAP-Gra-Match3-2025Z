@@ -1,0 +1,29 @@
+#main
+{
+    display: flex;
+    flex-direction: column;
+    //XXX - does this work in built app or only in dev and ng s
+    background-image: url('../../assets/backgrounds/tlo_temp.png');
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+
+    #content
+    {
+        flex: 1;
+    }
+
+    #navbar
+    {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 1rem;
+        background: rgb(240, 226, 163, 0.8);
+
+        button
+        {
+            background-color: rgba(102, 78, 76);
+        }
+    }
+}
