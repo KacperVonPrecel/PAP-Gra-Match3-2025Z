@@ -7,6 +7,6 @@
 //because its rendered in the parent (home-page)
 :host {
   display: block;
-  background-color: rgba(240, 226, 163);
+  background: linear-gradient(190deg, rgba(240, 226, 163), rgba(226, 213, 139));
   padding: 20px;
 }

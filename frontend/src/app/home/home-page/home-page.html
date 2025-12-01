@@ -4,7 +4,7 @@
             <mat-icon>settings</mat-icon>
         </button>
         <div id="utility-buttons-wrapper">
-            <button id="rank" mat-button i18n>{{rank}} rank</button>
+            <button id="rank" mat-button i18n (click)="openRanking()">{{rank}} rank</button>
             <span class="label" i18n>{{money}} money</span>
          </div>
     </div>
