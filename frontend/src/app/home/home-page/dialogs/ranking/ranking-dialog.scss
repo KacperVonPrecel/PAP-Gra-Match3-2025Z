@@ -7,7 +7,6 @@
 :host
 {
   display: block;
-  background: linear-gradient(190deg, rgba(240, 226, 163), rgba(226, 213, 139));
   background-color: rgba(240, 226, 163);
   padding: 20px;
 }
@@ -34,7 +33,7 @@
   flex-direction: row;
   justify-content: space-between;
   transition: transform 0.4s ease;
-  background-color: rgba(240, 226, 163);
+  background: linear-gradient(-100deg, rgba(240, 226, 163), rgba(226, 213, 139));
 
   span
   {
