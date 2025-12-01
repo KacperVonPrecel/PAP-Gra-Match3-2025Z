@@ -106,7 +106,7 @@ public class GameHistoryIntegrationTest
         final User user = new User("test-user1", "test-user1@gmail.com", "password1");
         userRepository.saveAndFlush(user);
 
-        when(matchRepository.findMatchesBeforeFinishTime(anyLong(), anyLong(), any(Pageable.class)))
+        when(matchRepository.findMatchesBeforeRecordId(anyLong(), anyLong(), any(Pageable.class)))
                 .thenThrow(new PersistenceException("Database error"));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/match_history/load")

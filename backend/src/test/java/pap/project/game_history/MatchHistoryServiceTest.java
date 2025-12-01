@@ -48,7 +48,7 @@ public class MatchHistoryServiceTest
         );
 
         final List<Match> matches = List.of(Match.createMatchForTest(playerOne, playerTwo, finishTime, 20, -10));
-        Mockito.when(matchRepository.findMatchesBeforeFinishTime(anyLong(), anyLong(), any())).thenReturn(matches);
+        Mockito.when(matchRepository.findMatchesBeforeRecordId(anyLong(), anyLong(), any())).thenReturn(matches);
 
         final List<MatchFromHistoryData> matchesList = matchHistoryService.loadMatches(1, finishTime, 10);
         assertEquals(1, matchesList.size());
