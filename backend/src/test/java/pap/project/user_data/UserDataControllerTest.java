@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import pap.project.user_data.model.UserData;
-import pap.project.user_data.model.controller.StartingDataResponse;
+import pap.project.user_data.model.controller.UserDataResponse;
 import pap.project.users.UserAuthDetails;
 import pap.project.users.characters.UserCharacter;
 import pap.project.users.characters.UserCharactersService;
@@ -43,7 +43,7 @@ public class UserDataControllerTest
         when(userDataService.getUserData(1)).thenReturn(userData);
         when(userCharactersService.createCharactersData(userData.userCharacters())).thenReturn(charactersData);
 
-        final StartingDataResponse ret = userDataController.getStartingData(authentication);
+        final UserDataResponse ret = userDataController.getStartingData(authentication);
         assertEquals(userData.currency(), ret.currency());
         assertEquals(charactersData, ret.characters());
     }

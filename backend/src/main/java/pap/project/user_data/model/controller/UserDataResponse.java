@@ -10,7 +10,7 @@ import java.util.List;
  *                   If character is not present in this list it means that user not unlocked this character yet.
  * @param currency that player currently have. Cannot be negative.
  */
-public record StartingDataResponse(
+public record UserDataResponse(
         @NonNull List<CharacterData> characters,
         int currency
         ) {
