@@ -41,9 +41,12 @@ export class AuthService {
 			})
 		);
 	}
+
+	logout(): Observable<void> {
+		// XXX
+		return of();
+	}
 }
-// XXX add guard which checks if user is logged in before accessing certain routes - How check if user is loged in? - The best option will be checking if user have a session cookie.
-// If it's not possible it can be done by trying to load user data and see if it's successful.
 
 export interface LoginRequest {
 	username: string;

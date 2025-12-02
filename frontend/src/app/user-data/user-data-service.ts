@@ -1,14 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from '@angular/router';
-import { BehaviorSubject, delay, map, Observable, retry, shareReplay } from 'rxjs';
+import { BehaviorSubject, delay, map, Observable, retry, shareReplay, Subscription } from 'rxjs';
 import { UserDataLoadingPage } from './user-data-loading-page/user-data-loading-page';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class UserDataService {
-	private _userData = new BehaviorSubject<UserData | undefined>(undefined);
+	private readonly _userData = new BehaviorSubject<UserData | undefined>(undefined);
+	private _lodingUserDataSubscription: Subscription | undefined;
 
 	constructor(private readonly http: HttpClient) {}
 
@@ -35,8 +36,17 @@ export class UserDataService {
 		);
 	}
 
+	/**
+	 * It should be called to start loading user data when navigating to loading page.
+	 * After data is loaded it will be available through {@link userData} observable.
+	 * After navigating away from loading page call {@link endLoadingUserData} to stop loading process.
+	 * It cannot be multiple loading processes at the same time. If it already is already working loading process this method will throw an error.
+	 */
 	loadUserData() {
-		this.http
+		if (this._lodingUserDataSubscription) throw new Error('It is already loading user data.');
+		// It is not required to analyze when stop, because the subscription will be closed after first successful response.
+		// When received 401, 403 {@link LogoutInterceptor} will handle logout and clearing user data, and stop loading process.
+		this._lodingUserDataSubscription = this.http
 			.get('api/user/data', { responseType: 'json' })
 			.pipe(
 				map((result) => {
@@ -48,6 +58,26 @@ export class UserDataService {
 			.subscribe((result: UserData) => {
 				this._userData.next(result);
 			});
+	}
+
+	/**
+	 * It should be called to stop loading user data when navigating away from loading page.
+	 * It can be called without checking if loading is in progress or even call {@link loadUserData} before it.
+	 */
+	endLoadingUserData() {
+		this._lodingUserDataSubscription?.unsubscribe();
+		this._lodingUserDataSubscription = undefined;
+	}
+
+	/**
+	 * It should be called after user logout to clear user data.
+	 * Call it after navigating out of protected routes by {@link userDataGuard}, because it clears user data.
+	 */
+	handleLogout() {
+		// It more safe to call endLoadingUserData there, than expect that it was called before.
+		// Because it doesn't have downside to call it multiple times.
+		this.endLoadingUserData();
+		this._userData.next(undefined);
 	}
 
 	// XXX add method's for updating user drawCharacters, upgradeCharacter and maybe more.
