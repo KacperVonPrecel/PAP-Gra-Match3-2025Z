@@ -33,7 +33,7 @@ public class MatchHistoryController
     @GetMapping ("/load")
     public @NonNull LoadHistoryMatchesData load(
             @RequestParam @Positive long userId,
-            @RequestParam @Positive long latestRecordTime,
+            @RequestParam @Positive long latestRecordId,
             @RequestParam @Min(MIN_RECORD_SIZE) @Max(MAX_RECORD_SIZE) int size
             )
     {
@@ -41,7 +41,7 @@ public class MatchHistoryController
         final String logPrefix = String.format(LOG_PREFIX, requestId);
         LOG.info("%s new load request from user of id: ".formatted(logPrefix, userId));
 
-        final LoadHistoryMatchesData loadedData = matchHistoryService.loadMatches(userId, latestRecordTime, size);
+        final LoadHistoryMatchesData loadedData = matchHistoryService.loadMatches(userId, latestRecordId, size);
         LOG.info("%s load ended result: SUCCESS".formatted(logPrefix));
         return loadedData;
     }

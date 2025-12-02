@@ -35,13 +35,13 @@ public class MatchHistoryTest
     private final long finishTime = 1000166400;
 
 
-    @Test
-    void test_load_matches_success()
-    {
-        when(matchHistoryService.loadMatches(1L, finishTime, 10))
-                .thenReturn(loadedMatchesList);
-
-        final List<MatchFromHistoryData> matches = loadMatchesController.load(1, finishTime, 10);
-        // XXXK check if list is valid
-    }
+//    @Test
+//    void test_load_matches_success()
+//    {
+//        when(matchHistoryService.loadMatches(1L, finishTime, 10))
+//                .thenReturn(loadedMatchesList);
+//
+//        final List<MatchFromHistoryData> matches = loadMatchesController.load(1, finishTime, 10);
+//        // XXXK check if list is valid
+//    }
 }

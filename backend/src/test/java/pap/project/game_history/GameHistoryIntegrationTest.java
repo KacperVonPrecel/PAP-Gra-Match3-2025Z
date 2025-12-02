@@ -85,7 +85,7 @@ public class GameHistoryIntegrationTest
         mockMvc.perform(MockMvcRequestBuilders.get("/api/match_history/load")
                         .param("size", "10")
                         .param("userId", String.valueOf(user1.getId().orElseThrow()))
-                        .param("latestRecordTime", String.valueOf(finishTime + 5000))
+                        .param("latestRecordId", String.valueOf(finishTime + 5000))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())

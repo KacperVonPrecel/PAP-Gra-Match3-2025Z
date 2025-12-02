@@ -54,7 +54,7 @@ public class UserDataService
         try
         {
             if (userSessionData.getUserData() == null)
-                loadUserSessionData(userSessionData, userId);
+                loadUserSessionData(userSessionData, this.userStatsRepository, userId);
             return userSessionData.getUserData();
         } finally
         {

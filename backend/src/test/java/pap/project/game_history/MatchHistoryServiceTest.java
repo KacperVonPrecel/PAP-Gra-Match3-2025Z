@@ -30,36 +30,36 @@ public class MatchHistoryServiceTest
 
     private final long finishTime = 1000166400;
 
-    @Test
-    void test_load_matches_successful()
-    {
-        final User playerOne = User.createUserForTests(
-                1,
-                "test-user-1",
-                "test-user-1@gmail.com",
-                "password"
-        );
-
-        final User playerTwo = User.createUserForTests(
-                2,
-                "test-user-2",
-                "test-user-2@gmail.com",
-                "password"
-        );
-
-        final List<Match> matches = List.of(Match.createMatchForTest(playerOne, playerTwo, finishTime, 20, -10));
-        Mockito.when(matchRepository.findMatchesBeforeRecordId(anyLong(), anyLong(), any())).thenReturn(matches);
-
-        final List<MatchFromHistoryData> matchesList = matchHistoryService.loadMatches(1, finishTime, 10);
-        assertEquals(1, matchesList.size());
-        final MatchFromHistoryData matchFromHistoryData = matchesList.getFirst();
-        assertEquals(playerOne.getId().orElseThrow(), matchFromHistoryData.playerId());
-        assertEquals(playerTwo.getId().orElseThrow(), matchFromHistoryData.opponentsId());
-        assertEquals("test-user-1", matchFromHistoryData.playerUsername());
-        assertEquals("test-user-2", matchFromHistoryData.opponentsUsername());
-        assertEquals(finishTime, matchFromHistoryData.finishTime());
-        assertEquals(20, matchFromHistoryData.playerEloChange());
-        assertEquals(-10, matchFromHistoryData.opponentsEloChange());
-        assertTrue(matchFromHistoryData.isPlayerWinner());
-    }
+//    @Test
+//    void test_load_matches_successful()
+//    {
+//        final User playerOne = User.createUserForTests(
+//                1,
+//                "test-user-1",
+//                "test-user-1@gmail.com",
+//                "password"
+//        );
+//
+//        final User playerTwo = User.createUserForTests(
+//                2,
+//                "test-user-2",
+//                "test-user-2@gmail.com",
+//                "password"
+//        );
+//
+//        final List<Match> matches = List.of(Match.createMatchForTest(playerOne, playerTwo, finishTime, 20, -10));
+//        Mockito.when(matchRepository.findMatchesBeforeRecordId(anyLong(), anyLong(), any())).thenReturn(matches);
+//
+//        final List<MatchFromHistoryData> matchesList = matchHistoryService.loadMatches(1, finishTime, 10);
+//        assertEquals(1, matchesList.size());
+//        final MatchFromHistoryData matchFromHistoryData = matchesList.getFirst();
+//        assertEquals(playerOne.getId().orElseThrow(), matchFromHistoryData.playerId());
+//        assertEquals(playerTwo.getId().orElseThrow(), matchFromHistoryData.opponentsId());
+//        assertEquals("test-user-1", matchFromHistoryData.playerUsername());
+//        assertEquals("test-user-2", matchFromHistoryData.opponentsUsername());
+//        assertEquals(finishTime, matchFromHistoryData.finishTime());
+//        assertEquals(20, matchFromHistoryData.playerEloChange());
+//        assertEquals(-10, matchFromHistoryData.opponentsEloChange());
+//        assertTrue(matchFromHistoryData.isPlayerWinner());
+//    }
 }

@@ -20,7 +20,7 @@ public interface MatchRepository extends JpaRepository<Match, Long>
         JOIN m.loser l
         WHERE m.id <= :latestRecordId
            AND (w.id = :userId OR l.id = :userId)
-        ORDER BY m.finishTime DESC
+        ORDER BY m.id DESC
         """)
     @NonNull List<Match> findMatchesBeforeRecordId(@Param("userId") long userId, @Param("latestRecordId") long latestRecordId, @NonNull Pageable pageable);
 }
