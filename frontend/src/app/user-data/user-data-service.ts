@@ -61,7 +61,7 @@ export const userDataGuard: CanActivateFn = (route: ActivatedRouteSnapshot, stat
 	const userDataService = inject(UserDataService);
 	const router = inject(Router);
 	if (userDataService.isUserDataLoaded) return true;
-	return router.createUrlTree(['main/loading'], { queryParams: { RETURN_URL_QUERY_PARAM: state.url } });
+	return router.createUrlTree(['main/loading'], { queryParams: { [RETURN_URL_QUERY_PARAM]: state.url } });
 };
 
 export interface UserData {

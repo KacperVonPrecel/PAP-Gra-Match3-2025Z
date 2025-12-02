@@ -22,19 +22,21 @@ export const routes: Routes = [
 		path: 'main',
 		component: MainPage,
 		title: 'Main Page',
-		children: [ { path: 'loading', component: UserDataLoadingPage },
-	{
-		canActivate: [userDataGuard],
-        path: 'home',
-        component: Home,
-        title: 'Home',
-        children: [
-            {
-            path: 'home-page',
-            component: HomePage,
-            title: 'Home Page'
-            }
-        ]
-    }]
+		children: [
+			{ path: 'loading', component: UserDataLoadingPage },
+			{
+				canActivate: [userDataGuard],
+				path: 'home',
+				component: Home,
+				title: 'Home',
+				children: [
+					{
+						path: 'home-page',
+						component: HomePage,
+						title: 'Home Page'
+					}
+				]
+			}
+		]
 	}
 ];
