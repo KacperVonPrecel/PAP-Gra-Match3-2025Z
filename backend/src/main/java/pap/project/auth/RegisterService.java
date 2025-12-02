@@ -37,9 +37,14 @@ public class RegisterService
             LOG.info("%s user with this username exists".formatted(logPrefix));
             return RegisterResult.USERNAME_REPEATED;
         }
+        if (userRepository.existsByEmail(registerRequest.email()))
+        {
+            LOG.info("%s user with this email exists".formatted(logPrefix));
+            return RegisterResult.EMAIL_REPEATED;
+        }
         final String encodedPassword = passwordEncoder.encode(registerRequest.password());
         LOG.info("%s encoded password %s".formatted(logPrefix, encodedPassword));
-        final User userToSave = new User(registerRequest.username(), encodedPassword);
+        final User userToSave = new User(registerRequest.username(), registerRequest.email(), encodedPassword);
         try
         {
             userRepository.save(userToSave);
