@@ -60,7 +60,7 @@ export class Login {
 		this.authService.login(loginRequest).subscribe((result) => {
 			switch (result) {
 				case LoginResult.SUCCESS:
-					this.router.navigate(['/game']);
+					this.router.navigate(['/main/loading']);
 					break;
 				case LoginResult.INVALID_CREDENTIALS:
 					this._errorToDisplay = ErrorToDisplay.INVALID_CREDENTIALS;

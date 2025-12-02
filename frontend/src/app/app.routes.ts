@@ -5,6 +5,7 @@ import { MainPage } from './main-page/main-page';
 import { UserDataLoadingPage } from './user-data/user-data-loading-page/user-data-loading-page';
 import { Home } from './home/home';
 import { HomePage } from './home/home-page/home-page';
+import { userDataGuard } from './user-data/user-data-service';
 
 export const routes: Routes = [
 	{
@@ -23,6 +24,7 @@ export const routes: Routes = [
 		title: 'Main Page',
 		children: [ { path: 'loading', component: UserDataLoadingPage },
 	{
+		canActivate: [userDataGuard],
         path: 'home',
         component: Home,
         title: 'Home',
