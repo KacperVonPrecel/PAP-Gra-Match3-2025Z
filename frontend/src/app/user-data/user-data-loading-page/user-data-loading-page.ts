@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { RETURN_URL_QUERY_PARAM, UserDataService } from '../user-data-service';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -8,7 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 	templateUrl: './user-data-loading-page.html',
 	styleUrl: './user-data-loading-page.scss'
 })
-export class UserDataLoadingPage implements OnInit {
+export class UserDataLoadingPage implements OnInit, OnDestroy {
 	constructor(
 		private readonly userDataService: UserDataService,
 		private readonly router: Router,
@@ -24,5 +24,9 @@ export class UserDataLoadingPage implements OnInit {
 				else this.router.navigate(['/main/home']);
 			}
 		});
+	}
+
+	ngOnDestroy(): void {
+		this.userDataService.endLoadingUserData();
 	}
 }

@@ -15,7 +15,7 @@ describe('UserDataLoadingPage', () => {
 	beforeEach(async () => {
 		userDataLoadedSubject = new BehaviorSubject<boolean>(false);
 
-		mockUserDataService = jasmine.createSpyObj('UserDataService', ['loadUserData'], {
+		mockUserDataService = jasmine.createSpyObj('UserDataService', ['loadUserData', 'endLoadingUserData'], {
 			observableUserDataLoaded: userDataLoadedSubject.asObservable() // property to include
 		});
 
