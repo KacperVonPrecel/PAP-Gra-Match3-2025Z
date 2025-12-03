@@ -5,4 +5,14 @@
     #animation {
         flex: 1;
     }
+    #skip-button-container{
+        display: flex;
+        margin: 1rem;
+        margin-bottom: 1.5rem;
+        #skip-button
+        {
+            background-color: rgba(102, 78, 76);
+            color: white;
+        }
+    }
 }

@@ -44,7 +44,7 @@
         #draw-button[disabled] {
             cursor: not-allowed;
             box-shadow: none;
-            filter: grayscale(100%);
+            filter: grayscale(75%);
 }
         #prev-draw
         {
@@ -61,6 +61,7 @@
         margin-bottom: 1rem;
         #amount-display
         {
+            flex-shrink: 1;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -81,9 +82,14 @@
             {
                 margin-left: 3rem;
             }
+            .amount-text{
+                color: rgba(102, 78, 76 ,1);
+                text-shadow: rgba(0, 0, 0, 0.2);
+                font-size: 1.1rem;
+            }
             #amount
             {
-                padding-right: 1rem;
+                //padding-right: 0.1rem;
             }
             #price
             {

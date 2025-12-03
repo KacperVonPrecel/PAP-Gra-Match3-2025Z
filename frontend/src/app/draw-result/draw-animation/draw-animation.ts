@@ -58,8 +58,8 @@ export class DrawAnimation {
 
   animate(centerX: number, centerY: number, beggining_radius: number){
     const alpha_step = 0.05;
-    const circle_radius = 15;
-    const radial_change = -7; //b in the equation
+    const circle_radius = 30;
+    const radial_change = -10; //b in the equation
     this.drawing_context.clearRect(0, 0, this.width, this.height);
     for (const circle of this.circles){
       circle.alpha += alpha_step;
@@ -76,8 +76,14 @@ export class DrawAnimation {
 
     this.drawing_context.beginPath();
     this.drawing_context.arc(x, y, circle_radius, 0, Math.PI * 2);
-    this.drawing_context.fillStyle = 'white';
+    const gradient = this.drawing_context.createRadialGradient(x, y, 0, x, y, circle_radius * 2);
+
+    gradient.addColorStop(0, `rgba(193, 211, 127, 1)`);
+    gradient.addColorStop(1, 'transparent');
+    this.drawing_context.fillStyle = gradient;
+    this.drawing_context.arc(x, y, circle_radius * 3, 0, Math.PI * 2);
     this.drawing_context.fill();
+
 
     if(radius_from_center <= 0) {
       this.finished.emit();

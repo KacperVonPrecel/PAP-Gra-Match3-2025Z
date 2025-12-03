@@ -125,9 +125,9 @@ export enum CharacterType {
 }
 
 export enum DrawType {
-	COMMON = 'COMMON',
-	UNCOMMON = 'UNCOMMON',
-	RARE = 'RARE'
+	COMMON = 'Common',
+	UNCOMMON = 'Uncommon',
+	RARE = 'Rare'
 }
 
 export interface DrawRequest {

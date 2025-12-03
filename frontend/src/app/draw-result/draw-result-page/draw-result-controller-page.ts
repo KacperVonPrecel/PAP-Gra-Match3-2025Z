@@ -4,12 +4,15 @@ import { DrawResult } from '../../user-data/user-data-service';
 import { DrawResultService } from '../draw-result-service';
 import { Router } from '@angular/router';
 import { DrawAnimation } from "../draw-animation/draw-animation";
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-draw-result-page',
   imports: [
     FireflyBackground,
-    DrawAnimation],
+    DrawAnimation,
+    MatButtonModule
+  ],
   templateUrl: './draw-result-controller-page.html',
   styleUrl: './draw-result-controller-page.scss',
 })
