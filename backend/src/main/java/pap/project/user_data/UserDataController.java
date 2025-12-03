@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pap.project.user_data.model.UserData;
-import pap.project.user_data.model.controller.StartingDataResponse;
+import pap.project.user_data.model.controller.UserDataResponse;
 import pap.project.users.UserAuthDetails;
 import pap.project.users.characters.UserCharactersService;
 import pap.project.users.characters.model.controller.CharacterData;
@@ -26,13 +26,13 @@ public class UserDataController
         this.userCharactersService = userCharactersService;
     }
 
-    @GetMapping("starting_data")
-    public @NonNull StartingDataResponse getStartingData(@NonNull Authentication authentication)
+    @GetMapping("data")
+    public @NonNull UserDataResponse getStartingData(@NonNull Authentication authentication)
     {
         final UserAuthDetails user = (UserAuthDetails) authentication.getPrincipal();
         final long userId = user.getUserId();
         final UserData userData = userDataService.getUserData(userId);
         final List<CharacterData> charactersData = userCharactersService.createCharactersData(userData.userCharacters());
-        return new StartingDataResponse(charactersData, userData.currency());
+        return new UserDataResponse(charactersData, userData.currency());
     }
 }

@@ -13,7 +13,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import pap.project.user_data.model.controller.StartingDataResponse;
+import pap.project.user_data.model.controller.UserDataResponse;
 import pap.project.users.User;
 import pap.project.users.UserAuthDetails;
 import pap.project.users.UserRepository;
@@ -66,7 +66,7 @@ public class UserDataIntegrationTest
         final UserAuthDetails user = new UserAuthDetails("test-user", "password", 1);
         mockMvc.perform(MockMvcRequestBuilders.get("/api/user/starting_data").with((user(user))))
                 .andExpect(status().isOk())
-                .andExpect(content().json(mapper.writeValueAsString(new StartingDataResponse(
+                .andExpect(content().json(mapper.writeValueAsString(new UserDataResponse(
                         List.of(new CharacterData(CharacterType.FIRST_CHARACTER, 100, 100, 1, OptionalInt.of(10), 1),
                                 new CharacterData(CharacterType.SECOND_CHARACTER, 1000, 1000, 10, OptionalInt.of(100), 11)),
                         100

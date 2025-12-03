@@ -41,6 +41,11 @@ export class AuthService {
 			})
 		);
 	}
+
+	logout(): Observable<void> {
+		// XXX
+		return of();
+	}
 }
 
 export interface LoginRequest {

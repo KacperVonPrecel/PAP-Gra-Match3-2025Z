@@ -2,13 +2,15 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChang
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
-import { provideHttpClient } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { LogoutInterceptor } from './auth/logout-interceptor';
 
 export const appConfig: ApplicationConfig = {
-  providers: [
-    provideBrowserGlobalErrorListeners(),
-    provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes),
-    provideHttpClient()
-  ]
+	providers: [
+		provideBrowserGlobalErrorListeners(),
+		provideZoneChangeDetection({ eventCoalescing: true }),
+		provideRouter(routes),
+		provideHttpClient(withInterceptorsFromDi()),
+		{ provide: HTTP_INTERCEPTORS, useClass: LogoutInterceptor, multi: true }
+	]
 };
