@@ -13,7 +13,7 @@ export class DrawResultService {
 
   getResult(): DrawResult{
     if (!this.result) {
-      throw new Error("DrawResultService: No draw result has been set.");
+      return this.result ?? null;
     }
     return this.result;
 

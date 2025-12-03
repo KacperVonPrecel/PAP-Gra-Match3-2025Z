@@ -1,8 +1,10 @@
 <app-firefly-background></app-firefly-background>
-<app-draw-animation
-    [resultEntry]="result.results[currentEntry]"
-    (finished)="onAnimationFinished()">
-</app-draw-animation>
-<div id="skip-button-container">
-    <button mat-button (click)="skip()">Skip</button>
+<div id="content-container">
+    <app-draw-animation id="animation"
+        [resultEntry]="result.results[currentEntry]"
+        (finished)="onAnimationFinished()">
+    </app-draw-animation>
+    <div id="skip-button-container">
+        <button mat-button (click)="skip()">Skip</button>
+    </div>
 </div>
