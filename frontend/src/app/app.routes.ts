@@ -6,6 +6,7 @@ import { UserDataLoadingPage } from './user-data/user-data-loading-page/user-dat
 import { Home } from './home/home';
 import { HomePage } from './home/home-page/home-page';
 import { userDataGuard } from './user-data/user-data-service';
+import { Draw } from './home/draw/draw';
 
 export const routes: Routes = [
 	{
@@ -34,6 +35,11 @@ export const routes: Routes = [
 						path: 'home-page',
 						component: HomePage,
 						title: 'Home Page'
+					},
+					{
+						path: 'draw',
+						component:Draw,
+						title: 'Draw'
 					}
 				]
 			}

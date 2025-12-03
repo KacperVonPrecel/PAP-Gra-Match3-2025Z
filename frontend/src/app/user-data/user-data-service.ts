@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from '@angular/router';
-import { BehaviorSubject, delay, map, Observable, retry, shareReplay, Subscription } from 'rxjs';
+import { BehaviorSubject, delay, map, Observable, of, retry, shareReplay, Subscription } from 'rxjs';
 import { UserDataLoadingPage } from './user-data-loading-page/user-data-loading-page';
 
 @Injectable({
@@ -83,6 +83,16 @@ export class UserDataService {
 	// XXX add method's for updating user drawCharacters, upgradeCharacter and maybe more.
 	// Also handling game and should be here. Like updating currency after win/loss.
 	// This methods should update the _userData BehaviorSubject accordingly.
+
+	draw(drawRequest: DrawRequest): Observable<DrawResult> {
+		const result: DrawResult = {
+			results:[
+				{characterType: CharacterType.FIRST_CHARACTER, amount: 1},
+				{characterType: CharacterType.SECOND_CHARACTER, amount: 2}
+			]
+		}
+		return of(result);
+	}
 }
 
 export const RETURN_URL_QUERY_PARAM = 'returnUrl';
@@ -112,4 +122,24 @@ export interface CharacterData {
 export enum CharacterType {
 	FIRST_CHARACTER = 'FIRST_CHARACTER',
 	SECOND_CHARACTER = 'SECOND_CHARACTER'
+}
+
+export enum DrawType {
+	COMMON = 'COMMON',
+	UNCOMMON = 'UNCOMMON',
+	RARE = 'RARE'
+}
+
+export interface DrawRequest {
+	drawType: DrawType;
+	amount: number;
+}
+
+export interface DrawResultEntry{
+	characterType: CharacterType;
+	amount: number;
+}
+export interface DrawResult
+{
+	results: DrawResultEntry[];
 }

@@ -32,7 +32,7 @@
 			}
 		</button>
 
-		<button matFab [extended]="!smallScreen">
+		<button matFab [extended]="!smallScreen" [routerLinkActive]="['selected']" routerLink="/main/home/draw">
 			<mat-icon>casino</mat-icon>
 			@if (!smallScreen) {
 				<span i18n>Draw</span>
