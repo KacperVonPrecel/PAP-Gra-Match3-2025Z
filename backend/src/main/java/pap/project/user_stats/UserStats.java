@@ -1,10 +1,7 @@
 package pap.project.user_stats;
 
 import jakarta.persistence.*;
-import org.springframework.lang.NonNull;
 import pap.project.users.User;
-
-import java.util.OptionalLong;
 
 @Entity
 @Table (
@@ -17,11 +14,8 @@ public class UserStats {
     private static final int STARTING_TOTAL_WINS = 0;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @Column (name = "user_id")
-    private long userId;
+    private long id;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "user_id", insertable = false, updatable = false)
@@ -39,23 +33,14 @@ public class UserStats {
     protected UserStats() {}
 
     public UserStats(long userId) {
-        this.userId = userId;
+        this.id = userId;
     }
 
-    public @NonNull OptionalLong getId()
+    public long getId()
     {
-        return id != null ? OptionalLong.of(id) : OptionalLong.empty();
+        return id;
     }
 
-    public @NonNull OptionalLong getUserId()
-    {
-        return user != null ? OptionalLong.of(userId) : OptionalLong.empty();
-    }
-
-    public User getUser()
-    {
-        return user;
-    }
     public int getEloPoints()
     {
         return eloPoints;

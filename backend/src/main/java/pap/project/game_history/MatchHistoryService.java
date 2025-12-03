@@ -9,7 +9,6 @@ import pap.project.user_stats.UserStatsRepository;
 import pap.project.users.User;
 import pap.project.users.UserRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -34,15 +33,14 @@ public class MatchHistoryService
     public @Nullable LoadHistoryMatchesData loadMatches(long userId, long latestRecordId, int size)
     {
         if(!userRepository.existsById(userId)) return null;
-        if(!matchRepository.existsById(latestRecordId)) return null;
-        List<Match> loadedMatches = matchRepository.findMatchesBeforeRecordId(userId, latestRecordId, PageRequest.of(0, size + 1));
+        final List<Match> loadedMatches = matchRepository.findMatchesBeforeRecordId(userId, latestRecordId, PageRequest.of(0, size + 1));
         boolean isMoreToLoad = loadedMatches.size() == size + 1;
         if (isMoreToLoad)
         {
             loadedMatches.removeLast();
         }
 
-        List<MatchFromHistoryData> mappedMatches = loadedMatches.stream().map(match ->
+        final List<MatchFromHistoryData> mappedMatches = loadedMatches.stream().map(match ->
         {
             boolean isPlayerWinner = match.getWinnerId() == userId;
             final User player = (isPlayerWinner) ? match.getWinner() : match.getLoser();
@@ -58,8 +56,8 @@ public class MatchHistoryService
                     match.getFinishTime(),
                     (isPlayerWinner) ? match.getWinnerEloChange() : match.getLoserEloChange(),
                     (isPlayerWinner) ? match.getLoserEloChange() : match.getWinnerEloChange(),
-                    userStatsRepository.findUserStatsByUserId(playerId).orElseThrow().getEloPoints(),
-                    userStatsRepository.findUserStatsByUserId(opponentId).orElseThrow().getEloPoints(),
+                    userStatsRepository.findUserStatsById(playerId).orElseThrow().getEloPoints(),
+                    userStatsRepository.findUserStatsById(opponentId).orElseThrow().getEloPoints(),
                     isPlayerWinner
             );
         }).toList();

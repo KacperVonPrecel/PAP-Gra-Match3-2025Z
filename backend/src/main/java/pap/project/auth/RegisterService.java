@@ -51,10 +51,10 @@ public class RegisterService
         final String encodedPassword = passwordEncoder.encode(registerRequest.password());
         LOG.info("%s encoded password %s".formatted(logPrefix, encodedPassword));
         final User userToSave = new User(registerRequest.username(), registerRequest.email(), encodedPassword);
-        final UserStats userStatsToSave = new UserStats(userToSave.getId().orElseThrow());
         try
         {
             userRepository.save(userToSave);
+            final UserStats userStatsToSave = new UserStats(userToSave.getId().orElseThrow());
             userStatsRepository.save(userStatsToSave);
             LOG.info("%s user saved to database".formatted(logPrefix));
             return RegisterResult.REGISTERED;

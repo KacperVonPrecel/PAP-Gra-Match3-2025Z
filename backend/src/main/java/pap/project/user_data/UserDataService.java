@@ -9,7 +9,6 @@ import pap.project.user_data.model.UserData;
 import pap.project.user_data.model.UserSessionData;
 import pap.project.user_stats.UserStats;
 import pap.project.user_stats.UserStatsRepository;
-import pap.project.users.UserRepository;
 import pap.project.users.characters.UserCharacter;
 import pap.project.users.characters.UserCharactersRepository;
 
@@ -24,7 +23,6 @@ public class UserDataService
     private static final int CURRENCY_WINNER = 500;
     private static final int CURRENCY_LOSER = 200;
 
-    private final @NonNull UserRepository userRepository;
     private final @NonNull UserCharactersRepository userCharactersRepository;
     private final @NonNull MatchRepository matchRepository;
     private final @NonNull UserStatsRepository userStatsRepository;
@@ -32,12 +30,10 @@ public class UserDataService
     private final @NonNull ConcurrentHashMap<Long, UserSessionData> userSessionData = new ConcurrentHashMap<>();
 
     public UserDataService(
-            @NonNull UserRepository userRepository,
             @NonNull UserCharactersRepository userCharactersRepository,
             @NonNull MatchRepository matchRepository,
             @NonNull UserStatsRepository userStatsRepository)
     {
-        this.userRepository = userRepository;
         this.userCharactersRepository = userCharactersRepository;
         this.matchRepository = matchRepository;
         this.userStatsRepository = userStatsRepository;
@@ -54,7 +50,7 @@ public class UserDataService
         try
         {
             if (userSessionData.getUserData() == null)
-                loadUserSessionData(userSessionData, this.userStatsRepository, userId);
+                loadUserSessionData(userSessionData, userId);
             return userSessionData.getUserData();
         } finally
         {
@@ -89,9 +85,9 @@ public class UserDataService
         try
         {
             if (winnerUserSessionData.getUserData() == null)
-                loadUserSessionData(winnerUserSessionData, userStatsRepository, winnerId);
+                loadUserSessionData(winnerUserSessionData, winnerId);
             if (loserUserSessionData.getUserData() == null)
-                loadUserSessionData(loserUserSessionData, userStatsRepository, loserId);
+                loadUserSessionData(loserUserSessionData, loserId);
 
             final UserData winnerNewUserData = winnerUserSessionData.getUserData().changeUserDataAfterGame(ELO_UP, CURRENCY_WINNER, true);
             winnerUserSessionData.setUserData(winnerNewUserData);
@@ -132,10 +128,10 @@ public class UserDataService
      * This function don't lock for user id.
      * @param userSessionData this function change state of given object by calling {@link UserSessionData#setUserData(UserData)} for this object.
      */
-    private void loadUserSessionData(@NonNull UserSessionData userSessionData, @NonNull UserStatsRepository userStatsRepository, long userId)
+    private void loadUserSessionData(@NonNull UserSessionData userSessionData, long userId)
     {
         final List<UserCharacter> userCharacters = userCharactersRepository.findAllByUserId(userId);
-        final UserStats userData = userStatsRepository.findUserStatsByUserId(userId).orElseThrow();
+        final UserStats userData = userStatsRepository.findUserStatsById(userId).orElseThrow();
         final UserData loadedUserData = new UserData(userCharacters, userData.getCurrency(), userData.getEloPoints(), userData.getMatchPlayed(), userData.getMatchWon());
         userSessionData.setUserData(loadedUserData);
     }

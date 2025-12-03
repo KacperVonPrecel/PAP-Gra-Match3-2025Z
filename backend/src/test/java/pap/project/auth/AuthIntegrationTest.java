@@ -24,6 +24,8 @@ import pap.project.auth.model.controller.login.LoginRequest;
 import pap.project.auth.model.controller.register.RegisterError;
 import pap.project.auth.model.controller.register.RegisterErrorResponse;
 import pap.project.auth.model.controller.register.RegisterRequest;
+import pap.project.user_stats.UserStats;
+import pap.project.user_stats.UserStatsRepository;
 import pap.project.users.User;
 import pap.project.users.UserRepository;
 
@@ -47,6 +49,9 @@ public class AuthIntegrationTest
     @MockitoSpyBean
     private UserRepository userRepository;
 
+    @Autowired
+    private UserStatsRepository userStatsRepository;
+
     @MockitoSpyBean
     private BCryptPasswordEncoder passwordEncoder;
 
@@ -56,6 +61,7 @@ public class AuthIntegrationTest
     @BeforeEach
     void init()
     {
+        userStatsRepository.deleteAll();
         userRepository.deleteAll();
     }
 
