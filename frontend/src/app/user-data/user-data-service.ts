@@ -86,13 +86,11 @@ export class UserDataService {
 
 	draw(drawRequest: DrawRequest, cost:number): Observable<DrawResult> {
 		this._userData.subscribe((res)=>res!.currency-=cost);
-		const result: DrawResult = {
-			results:[
-				{characterType: CharacterType.FIRST_CHARACTER, amount: 1},
-				{characterType: CharacterType.SECOND_CHARACTER, amount: 2}
-			]
-		}
-		return of(result);
+		return this.http.post('api/user/draw_characters', drawRequest, {responseType: 'json'}).pipe(
+			map((result) => {
+					return result as DrawResult;
+				})
+		)
 	}
 }
 
