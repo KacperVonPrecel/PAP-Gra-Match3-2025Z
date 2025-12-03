@@ -6,20 +6,15 @@ import { SettingsDialog } from './dialogs/settings/settings-dialog';
 import { RankingDialog } from './dialogs/ranking/ranking-dialog';
 
 @Component({
-  selector: 'app-home-page',
-  imports: [
-    MatButtonModule,
-    MatIconModule,
-    MatDialogModule,
-  ],
-  templateUrl: './home-page.html',
-  styleUrl: './home-page.scss',
+	selector: 'app-home-page',
+	imports: [MatButtonModule, MatIconModule, MatDialogModule],
+	templateUrl: './home-page.html',
+	styleUrl: './home-page.scss'
 })
 export class HomePage {
+	constructor(private dialog: MatDialog) {}
 
-  constructor(private dialog: MatDialog){}
-
-  openSettings(){
-    this.dialog.open(SettingsDialog)
-  }
+	openSettings() {
+		this.dialog.open(SettingsDialog);
+	}
 }

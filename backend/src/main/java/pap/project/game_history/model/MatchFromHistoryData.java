@@ -5,6 +5,7 @@ import org.springframework.lang.NonNull;
 import java.util.OptionalLong;
 
 public record MatchFromHistoryData(
+        long matchId,
         long playerId,
         @NonNull String playerUsername,
         long opponentsId,

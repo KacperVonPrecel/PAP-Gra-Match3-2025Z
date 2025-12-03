@@ -42,7 +42,7 @@ public class UserStatsRepositoryTest
 
         final UserStats userStats3 = new UserStats(user3.getId().orElseThrow());
         userStatsRepository.save(userStats3);
-        final UserStats founded = userStatsRepository.findUserStatsById(userStats3.getId()).orElseThrow();
+        final UserStats founded = userStatsRepository.findUserStatsByUserId(userStats3.getId()).orElseThrow();
         assertEquals(userStats3.getId(), founded.getId());
         assertEquals(userStats3.getCurrency(), founded.getCurrency());
         assertEquals(userStats3.getMatchWon(), founded.getMatchWon());
@@ -56,8 +56,8 @@ public class UserStatsRepositoryTest
         final long user1Id = userRepository.findByUsername("test-user1").orElseThrow().getId().orElseThrow();
         final long user2Id = userRepository.findByUsername("test-user2").orElseThrow().getId().orElseThrow();
 
-        final UserStats founded1 = userStatsRepository.findUserStatsById(user1Id).orElseThrow();
-        final UserStats founded2 = userStatsRepository.findUserStatsById(user2Id).orElseThrow();
+        final UserStats founded1 = userStatsRepository.findUserStatsByUserId(user1Id).orElseThrow();
+        final UserStats founded2 = userStatsRepository.findUserStatsByUserId(user2Id).orElseThrow();
 
         assertEquals(100, founded1.getEloPoints());
         assertEquals(100, founded2.getEloPoints());
@@ -78,8 +78,8 @@ public class UserStatsRepositoryTest
         userStatsRepository.updateUserStatsAfterGameEnd(10, 5, 120, 1200, user1Id);
         userStatsRepository.updateUserStatsAfterGameEnd(20, 11, 130, 900, user2Id);
 
-        final UserStats founded1 = userStatsRepository.findUserStatsById(user1Id).orElseThrow();
-        final UserStats founded2 = userStatsRepository.findUserStatsById(user2Id).orElseThrow();
+        final UserStats founded1 = userStatsRepository.findUserStatsByUserId(user1Id).orElseThrow();
+        final UserStats founded2 = userStatsRepository.findUserStatsByUserId(user2Id).orElseThrow();
 
         assertEquals(120, founded1.getEloPoints());
         assertEquals(130, founded2.getEloPoints());

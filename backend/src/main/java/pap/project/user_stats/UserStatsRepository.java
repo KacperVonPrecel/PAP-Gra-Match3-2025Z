@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface UserStatsRepository extends JpaRepository<UserStats, Long>
 {
-    @NonNull Optional<UserStats> findUserStatsById(long userId);
+    @NonNull Optional<UserStats> findUserStatsByUserId(long userId);
 
     @Modifying (clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE UserStats u SET u.matchPlayed = ?1, u.matchWon = ?2, u.eloPoints = ?3, u.currency = ?4 WHERE u.id = ?5")

@@ -35,8 +35,8 @@ public class MatchHistoryController
     @GetMapping ("/load")
     public @NonNull LoadHistoryMatchesData load(
             @NonNull Authentication authentication,
-            @RequestParam @Positive Long userId,
-            @RequestParam @Positive long latestRecordId,
+            @RequestParam(required = false) @Positive Long userId,
+            @RequestParam(required = false) @Positive Long latestRecordId,
             @RequestParam @Min(MIN_RECORD_SIZE) @Max(MAX_RECORD_SIZE) int size
             )
     {
@@ -47,6 +47,7 @@ public class MatchHistoryController
         if (userId == null)
             userId = ((UserAuthDetails) authentication.getPrincipal()).getUserId();
 
+        if (latestRecordId == null) latestRecordId = Long.MAX_VALUE;
         final LoadHistoryMatchesData loadedData = matchHistoryService.loadMatches(userId, latestRecordId, size);
 
         if (loadedData == null) throw new DataNotFoundException(String.format(LOG_PREFIX, requestId));

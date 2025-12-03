@@ -131,7 +131,7 @@ public class UserDataService
     private void loadUserSessionData(@NonNull UserSessionData userSessionData, long userId)
     {
         final List<UserCharacter> userCharacters = userCharactersRepository.findAllByUserId(userId);
-        final UserStats userData = userStatsRepository.findUserStatsById(userId).orElseThrow();
+        final UserStats userData = userStatsRepository.findUserStatsByUserId(userId).orElseThrow();
         final UserData loadedUserData = new UserData(userCharacters, userData.getCurrency(), userData.getEloPoints(), userData.getMatchPlayed(), userData.getMatchWon());
         userSessionData.setUserData(loadedUserData);
     }
