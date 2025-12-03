@@ -14,6 +14,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import pap.project.user_data.model.controller.UserDataResponse;
+import pap.project.user_stats.UserStats;
+import pap.project.user_stats.UserStatsRepository;
 import pap.project.users.User;
 import pap.project.users.UserAuthDetails;
 import pap.project.users.UserRepository;
@@ -43,6 +45,8 @@ public class UserDataIntegrationTest
     private UserRepository userRepository;
 
     @Autowired
+    private UserStatsRepository userStatsRepository;
+    @Autowired
     private UserCharactersRepository userCharactersRepository;
 
     @Autowired
@@ -51,10 +55,12 @@ public class UserDataIntegrationTest
     @BeforeEach
     public void init()
     {
+        userStatsRepository.deleteAll();
         userCharactersRepository.deleteAll();
         userRepository.deleteAll();
         final User user = new User("test-user", "test@example.com", "password");
         userRepository.saveAndFlush(user);
+        userStatsRepository.saveAndFlush(new UserStats(user.getId().orElseThrow()));
         final List<UserCharacter> userCharacters = List.of(new UserCharacter(CharacterType.FIRST_CHARACTER, user.getId().orElseThrow(), 1, 1),
                 new UserCharacter(CharacterType.SECOND_CHARACTER, user.getId().orElseThrow(), 10, 11));
         userCharactersRepository.saveAllAndFlush(userCharacters);
@@ -63,8 +69,10 @@ public class UserDataIntegrationTest
     @Test
     public void test_get_user_data_user_logged() throws Exception
     {
+        //XXX repair
+
         final UserAuthDetails user = new UserAuthDetails("test-user", "password", 1);
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/user/starting_data").with((user(user))))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/user/data").with((user(user))))
                 .andExpect(status().isOk())
                 .andExpect(content().json(mapper.writeValueAsString(new UserDataResponse(
                         List.of(new CharacterData(CharacterType.FIRST_CHARACTER, 100, 100, 1, OptionalInt.of(10), 1),
@@ -77,7 +85,8 @@ public class UserDataIntegrationTest
     @WithAnonymousUser
     public void test_get_user_data_user_not_logged() throws Exception
     {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/user/starting_data"))
-                .andExpect(status().isUnauthorized());
+        // XXX some in test is no cleaning of match repo
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/user/data"))
+                .andExpect(status().isForbidden());
     }
 }

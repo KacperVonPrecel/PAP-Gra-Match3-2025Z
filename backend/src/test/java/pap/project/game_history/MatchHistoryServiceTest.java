@@ -7,10 +7,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pap.project.game_history.model.MatchFromHistoryData;
+import pap.project.user_stats.UserStats;
+import pap.project.user_stats.UserStatsRepository;
 import pap.project.users.User;
 import pap.project.users.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -24,6 +27,9 @@ public class MatchHistoryServiceTest
 
     @Mock
     private MatchRepository matchRepository;
+
+    @Mock
+    private UserStatsRepository userStatsRepository;
 
     @InjectMocks
     private MatchHistoryService matchHistoryService;
@@ -47,10 +53,18 @@ public class MatchHistoryServiceTest
                 "password"
         );
 
-        final List<Match> matches = List.of(Match.createMatchForTest(playerOne, playerTwo, finishTime, 20, -10));
-        Mockito.when(matchRepository.findMatchesBeforeFinishTime(anyLong(), anyLong(), any())).thenReturn(matches);
+        final UserStats userStatsOne = new UserStats(1);
+        final UserStats userStatsTwo = new UserStats(2);
 
-        final List<MatchFromHistoryData> matchesList = matchHistoryService.loadMatches(1, finishTime, 10);
+        final List<Match> matches = List.of(Match.createMatchForTest(playerOne, playerTwo, finishTime, 20, -10));
+        Mockito.when(matchRepository.findMatchesBeforeRecordId(anyLong(), anyLong(), any())).thenReturn(matches);
+
+        Mockito.when(userRepository.existsById(1)).thenReturn(true);
+        Mockito.when(userStatsRepository.findUserStatsById(1)).thenReturn(Optional.of(userStatsOne));
+        Mockito.when(userStatsRepository.findUserStatsById(2)).thenReturn(Optional.of(userStatsTwo));
+
+        final LoadHistoryMatchesData matchesListData = matchHistoryService.loadMatches(1, finishTime, 10);
+        final List<MatchFromHistoryData> matchesList = matchesListData.getMatches();
         assertEquals(1, matchesList.size());
         final MatchFromHistoryData matchFromHistoryData = matchesList.getFirst();
         assertEquals(playerOne.getId().orElseThrow(), matchFromHistoryData.playerId());

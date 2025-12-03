@@ -59,9 +59,11 @@ public class RegisterServiceTest
     @Test
     void test_register_user_registered()
     {
+        //XXX repair
+
         when(userRepository.existsByUsername(registerRequest.username())).thenReturn(false);
         when(passwordEncoder.encode(registerRequest.password())).thenReturn("password");
-        when(userRepository.save(any())).thenReturn(new User(registerRequest.username(), registerRequest.email(), "password"));
+        when(userRepository.save(any())).thenReturn(User.createUserForTests(1, registerRequest.username(), registerRequest.email(), "password"));
         final RegisterResult result = registerService.registerUser("", registerRequest);
         assertEquals(RegisterResult.REGISTERED, result);
     }
