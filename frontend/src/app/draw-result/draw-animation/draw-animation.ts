@@ -13,6 +13,7 @@ export class DrawAnimation {
   resultEntry = input<DrawResultEntry>();
 
   ngOnInit(){
+    const entry = this.resultEntry();
     setTimeout(()=>this.finished.emit(), 2000)
   }
 

@@ -31,6 +31,11 @@ export class DrawResultPage {
   }
 
   onAnimationFinished() {
-    this.router.navigate(['/main/home/draw']);
+    this.currentEntry++;
+      if (this.currentEntry + 1< this.result.results.length) {
+      }
+      else{
+      this.router.navigate(['/main/home/draw']);
+      }
   }
 }

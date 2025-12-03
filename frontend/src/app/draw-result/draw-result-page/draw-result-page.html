@@ -1,5 +1,5 @@
 <app-firefly-background></app-firefly-background>
-<app-draw-animation>
-    [resultEntry]="result[currentEntry]"
+<app-draw-animation
+    [resultEntry]="result.results[this.currentEntry]"
     (finished)="onAnimationFinished()"
-</app-draw-animation>
+></app-draw-animation>
