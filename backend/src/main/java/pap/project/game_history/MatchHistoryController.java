@@ -6,8 +6,11 @@ import jakarta.validation.constraints.Positive;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import pap.project.game_history.model.DataNotFoundException;
+import pap.project.user_data.UserDataService;
+import pap.project.users.UserAuthDetails;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -31,8 +34,8 @@ public class MatchHistoryController
 
     @GetMapping ("/load")
     public @NonNull LoadHistoryMatchesData load(
-            //XXXK - change long to Long in userId, make some tests to it; It is for loading matches for current session user or other user
-            @RequestParam @Positive long userId,
+            @NonNull Authentication authentication,
+            @RequestParam @Positive Long userId,
             @RequestParam @Positive long latestRecordId,
             @RequestParam @Min(MIN_RECORD_SIZE) @Max(MAX_RECORD_SIZE) int size
             )
@@ -41,8 +44,11 @@ public class MatchHistoryController
         final String logPrefix = String.format(LOG_PREFIX, requestId);
         LOG.info("%s new load request from user of id: ".formatted(logPrefix, userId));
 
+        if (userId == null)
+            userId = ((UserAuthDetails) authentication.getPrincipal()).getUserId();
+
         final LoadHistoryMatchesData loadedData = matchHistoryService.loadMatches(userId, latestRecordId, size);
-        //XXXK - later split the exception into two seperate ones
+
         if (loadedData == null) throw new DataNotFoundException(String.format(LOG_PREFIX, requestId));
         LOG.info("%s load ended result: SUCCESS".formatted(logPrefix));
         return loadedData;
