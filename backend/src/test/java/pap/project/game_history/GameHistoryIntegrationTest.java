@@ -56,9 +56,9 @@ public class GameHistoryIntegrationTest
     @BeforeEach
     void init ()
     {
+        userStatsRepository.deleteAll();
         matchRepository.deleteAll();
         userRepository.deleteAll();
-        userStatsRepository.deleteAll();
     }
 
     @Test
@@ -236,7 +236,7 @@ public class GameHistoryIntegrationTest
 
     @Test
     @WithMockUser
-    public void test_load_matches_no_user_in_DB() throws Exception
+    public void test_load_matches_user_not_found_in_DB() throws Exception
     {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/match_history/load")
                         .param("size", "10")
@@ -245,6 +245,22 @@ public class GameHistoryIntegrationTest
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    @WithMockUser
+    public void test_load_matches_latest_match_not_found_in_DB() throws Exception
+    {
+        final User user1 = new User("test-user1", "test-user1@gmail.com", "password1");
+        userRepository.saveAndFlush(user1);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/match_history/load")
+                        .param("size", "10")
+                        .param("userId",  String.valueOf(user1.getId().orElseThrow()))
+                        .param("latestRecordId", String.valueOf(1))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
 
     // XXXK tests for user which is not logged
     // invalid input for controller, for example too large size etc. - if this test don't pass probably it's missing @Valid (I'm not sure if it required) annotation on controller method params.

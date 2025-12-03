@@ -7,9 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
-import pap.project.game_history.model.MatchFromHistoryData;
+import pap.project.game_history.model.DataNotFoundException;
 
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
@@ -42,8 +41,9 @@ public class MatchHistoryController
         final String logPrefix = String.format(LOG_PREFIX, requestId);
         LOG.info("%s new load request from user of id: ".formatted(logPrefix, userId));
 
-        //XXXK - make an exception for userNotFound; return Null and throw exception that Spring will handle
         final LoadHistoryMatchesData loadedData = matchHistoryService.loadMatches(userId, latestRecordId, size);
+        //XXXK - later split the exception into two seperate ones
+        if (loadedData == null) throw new DataNotFoundException(String.format(LOG_PREFIX, requestId));
         LOG.info("%s load ended result: SUCCESS".formatted(logPrefix));
         return loadedData;
     }

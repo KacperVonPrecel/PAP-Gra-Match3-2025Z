@@ -2,6 +2,7 @@ package pap.project.game_history;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import pap.project.game_history.model.MatchFromHistoryData;
 import pap.project.user_stats.UserStatsRepository;
@@ -30,9 +31,10 @@ public class MatchHistoryService
      * @param latestRecordId latest match id from which to load records
      * @param size maximum number of records which should be returned by this function
      */
-    public @NonNull LoadHistoryMatchesData loadMatches(long userId, long latestRecordId, int size)
+    public @Nullable LoadHistoryMatchesData loadMatches(long userId, long latestRecordId, int size)
     {
-        if(!matchRepository.existsById(userId))
+        if(!userRepository.existsById(userId)) return null;
+        if(!matchRepository.existsById(latestRecordId)) return null;
         List<Match> loadedMatches = matchRepository.findMatchesBeforeRecordId(userId, latestRecordId, PageRequest.of(0, size + 1));
         boolean isMoreToLoad = loadedMatches.size() == size + 1;
         if (isMoreToLoad)
