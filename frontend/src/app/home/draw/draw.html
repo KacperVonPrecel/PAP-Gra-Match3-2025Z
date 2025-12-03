@@ -6,7 +6,8 @@
             <button id="prev-draw" matFab (click)="previous()">
                 <mat-icon>arrow_back_ios</mat-icon>
             </button>
-            <button id="draw-button" mat-button [disabled]="amount * drawType.price > (userData | async)!.currency">
+            <button id="draw-button" mat-button [disabled]="amount * drawType.price > (userData | async)!.currency"
+                (click)="draw()">
                 Draw
             </button>
             <button id="next-draw" matFab (click)="next()">

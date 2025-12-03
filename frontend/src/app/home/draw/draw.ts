@@ -4,6 +4,8 @@ import { UserData, UserDataService, DrawRequest, DrawType } from '../../user-dat
 import { Observable } from 'rxjs';
 import { MatIcon, MatIconModule } from "@angular/material/icon";
 import { AsyncPipe } from '@angular/common';
+import { Router } from '@angular/router';
+import { DrawResultService } from '../../draw-result/draw-result-service';
 
 @Component({
   selector: 'app-draw',
@@ -16,7 +18,11 @@ import { AsyncPipe } from '@angular/common';
   styleUrl: './draw.scss',
 })
 export class Draw {
-  constructor(private userDataService: UserDataService){};
+  constructor(
+    private userDataService: UserDataService,
+    private router: Router,
+    private drawResultService: DrawResultService
+  ){}
 
   private _selected = 0;
   private _amount = 0;
@@ -75,6 +81,8 @@ export class Draw {
       amount: this._amount,
     };
     this.userDataService.draw(drawRequest).subscribe((result)=>{
+      this.drawResultService.setResult(result);
+      this.router.navigate(['/main/draw-result']);
     })
   }
 }
