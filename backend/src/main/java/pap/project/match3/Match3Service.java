@@ -64,6 +64,16 @@ public class Match3Service {
         return games.get(gameId);
     }
 
+    public void fillBoard(int gameId)
+    {
+        games.get(gameId).fillBoard();
+    }
+
+    public void dropFloatingBlocks(int gameId)
+    {
+        games.get(gameId).dropFloatingBlocks();
+    }
+
     public boolean swapBlocks(int gameId, Match3Board.MoveRequest moveRequest)
     {
         if (games.containsKey(gameId))
@@ -76,11 +86,5 @@ public class Match3Service {
     {
         if (games.containsKey(gameId))
             games.get(gameId).destroyMatchedBlocks();
-    }
-
-    public void fillInBlocks(int gameId)
-    {
-        if (games.containsKey(gameId))
-            games.get(gameId).fillInBlocks();
     }
 }

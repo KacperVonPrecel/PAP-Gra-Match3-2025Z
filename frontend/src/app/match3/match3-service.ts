@@ -46,6 +46,14 @@ export class Match3Service {
     console.log("board updated");
   }
 
+  fillBoard(gameId: number): void {
+    this.client.publish({ destination: `/app/board/${gameId}/fillBoard`, body: '{}' });
+  }
+
+  dropFloatingBlocks(gameId: number): void {
+    this.client.publish({ destination: `/app/board/${gameId}/dropFloatingBlocks`, body: '{}' });
+  }
+
   // TODO: Handle swap success status
   swapBlocks(gameId: number, moveRequest: MoveRequest): void {
     this.client.publish({
@@ -56,10 +64,6 @@ export class Match3Service {
 
   destroyMatchedBlocks(gameId: number): void {
     this.client.publish({ destination: `/app/board/${gameId}/destroyMatchedBlocks`, body: `{}` });
-  }
-
-  fillInBlocks(gameId: number): void {
-    this.client.publish({ destination: `/app/board/${gameId}/fillInBlocks`, body: `{}` });
   }
 }
 

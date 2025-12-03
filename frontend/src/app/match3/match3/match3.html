@@ -12,5 +12,6 @@
 <input #targetCol type="number" id="targetColumn"><br>
 <button (click)="makeMove(+sourceRow.value, +sourceCol.value, +targetRow.value, +targetCol.value)">Make move</button><br>
 <br>
+<button (click)="fillBoard()">Fill Board</button><br>
+<button (click)="dropFloatingBlocks()">Drop Floating Blocks</button><br>
 <button (click)="destroyMatchedBlocks()">Destroy Matched Blocks</button><br>
-<button (click)="fillInBlocks()">Fill in Blocks</button><br>

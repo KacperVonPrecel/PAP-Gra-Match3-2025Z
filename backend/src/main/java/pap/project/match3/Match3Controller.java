@@ -23,6 +23,18 @@ public class Match3Controller
         return service.getBoard(gameId).getBlocks();
     }
 
+    @MessageMapping("/board/{gameId}/fillBoard")
+    public void fillBoard(@DestinationVariable Integer gameId)
+    {
+        service.fillBoard(gameId);
+    }
+
+    @MessageMapping("/board/{gameId}/dropFloatingBlocks")
+    public void dropFloatingBlocks(@DestinationVariable Integer gameId)
+    {
+        service.dropFloatingBlocks(gameId);
+    }
+
     @MessageMapping("/board/{gameId}/swap")
     public boolean swapBlocks(@DestinationVariable Integer gameId, Match3Board.MoveRequest moveRequest)
     {
@@ -34,11 +46,5 @@ public class Match3Controller
     public void destroyMatchedBlocks(@DestinationVariable Integer gameId)
     {
         service.destroyMatchedBlocks(gameId);
-    }
-
-    @MessageMapping("/board/{gameId}/fillInBlocks")
-    public void fillInBlocks(@DestinationVariable Integer gameId)
-    {
-        service.fillInBlocks(gameId);
     }
 }

@@ -18,12 +18,51 @@ public class Match3Board
         this.board = board;
         this.matchableShapes = matchableShapes;
 
-        fillInBlocks();
+        fillBoard();
     }
 
     public Match3Block[][] getBlocks()
     {
         return board;
+    }
+
+    public void fillBoard()
+    {
+        for (Match3Block[] row : board)
+        {
+            for (Match3Block block : row)
+            {
+                if (block.getBlockType() == Match3Block.BlockType.Empty)
+                    block.setBlockType(randomBlockType());
+            }
+        }
+    }
+
+    public void dropFloatingBlocks()
+    {
+        // TODO: There may also be a better algorithm for this
+        for (int i = board.length - 1; i >= 0; i--)
+        {
+            for (int j = board[i].length - 1; j >= 0; j--)
+            {
+                if (board[i][j].getBlockType() != Match3Block.BlockType.Empty)
+                    continue;
+
+                int above = 1;
+                while (!isOutOfBounds(i - above, j))
+                {
+                    if (board[i - above][j].getBlockType() != Match3Block.BlockType.Empty)
+                    {
+                        MoveRequest moveRequest = new MoveRequest(i, j, i - above, j);
+                        forceSwapBlocks(moveRequest);
+
+                        break;
+                    }
+
+                    above++;
+                }
+            }
+        }
     }
 
     public boolean swapBlocks(MoveRequest moveRequest)
@@ -32,10 +71,7 @@ public class Match3Board
         if (!areBlocksSwappable(moveRequest))
             return false;
 
-        Match3Block temp = board[moveRequest.sourceRow()][moveRequest.sourceColumn()];
-
-        board[moveRequest.sourceRow()][moveRequest.sourceColumn()] = board[moveRequest.targetRow()][moveRequest.targetColumn()];
-        board[moveRequest.targetRow()][moveRequest.targetColumn()] = temp;
+        forceSwapBlocks(moveRequest);
 
         return true;
     }
@@ -50,17 +86,12 @@ public class Match3Board
         }
     }
 
-    // TODO: Distinction between randomize and fill in (the latter should make blocks fall)
-    public void fillInBlocks()
+    private void forceSwapBlocks(MoveRequest moveRequest)
     {
-        for (Match3Block[] row : board)
-        {
-            for (Match3Block block : row)
-            {
-                if (block.getBlockType() == Match3Block.BlockType.Empty)
-                    block.setBlockType(randomBlockType());
-            }
-        }
+        Match3Block temp = board[moveRequest.sourceRow()][moveRequest.sourceColumn()];
+
+        board[moveRequest.sourceRow()][moveRequest.sourceColumn()] = board[moveRequest.targetRow()][moveRequest.targetColumn()];
+        board[moveRequest.targetRow()][moveRequest.targetColumn()] = temp;
     }
 
     private List<Match3Block> findMatchedBlocks()

@@ -48,6 +48,16 @@ export class Match3 {
     this.board = output;
   }
 
+  fillBoard(): void {
+    if (this.gameId != undefined)
+      this.socket.fillBoard(this.gameId);
+  }
+
+  dropFloatingBlocks(): void {
+    if (this.gameId != undefined)
+      this.socket.dropFloatingBlocks(this.gameId);
+  }
+
   makeMove(sourceRow: number, sourceColumn: number, targetRow: number, targetColumn: number): void {
     if (this.gameId == undefined)
       return;
@@ -65,11 +75,5 @@ export class Match3 {
   destroyMatchedBlocks(): void {
     if (this.gameId != undefined)
       this.socket.destroyMatchedBlocks(this.gameId);
-  }
-
-  fillInBlocks(): void {
-    if (this.gameId != undefined) {
-      this.socket.fillInBlocks(this.gameId);
-    }
   }
 }
