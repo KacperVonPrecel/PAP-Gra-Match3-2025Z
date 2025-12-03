@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import pap.project.game_history.model.MatchFromHistoryData;
 import pap.project.user_stats.UserStatsRepository;
 import pap.project.users.User;
+import pap.project.users.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,11 +16,13 @@ public class MatchHistoryService
 {
     private final @NonNull MatchRepository matchRepository;
     private final @NonNull UserStatsRepository userStatsRepository;
+    private final @NonNull UserRepository userRepository;
 
-    public MatchHistoryService(@NonNull MatchRepository matchRepository, @NonNull UserStatsRepository userStatsRepository)
+    public MatchHistoryService(@NonNull MatchRepository matchRepository, @NonNull UserStatsRepository userStatsRepository, @NonNull UserRepository userRepository)
     {
         this.matchRepository = matchRepository;
         this.userStatsRepository = userStatsRepository;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -29,6 +32,7 @@ public class MatchHistoryService
      */
     public @NonNull LoadHistoryMatchesData loadMatches(long userId, long latestRecordId, int size)
     {
+        if(!matchRepository.existsById(userId))
         List<Match> loadedMatches = matchRepository.findMatchesBeforeRecordId(userId, latestRecordId, PageRequest.of(0, size + 1));
         boolean isMoreToLoad = loadedMatches.size() == size + 1;
         if (isMoreToLoad)

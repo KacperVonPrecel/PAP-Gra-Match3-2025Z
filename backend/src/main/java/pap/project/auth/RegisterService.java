@@ -1,6 +1,7 @@
 package pap.project.auth;
 
 import jakarta.persistence.PersistenceException;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -33,6 +34,7 @@ public class RegisterService
     /**
      * @return information if user was successfully registered.
      */
+    @Transactional
     public @NonNull RegisterResult registerUser(@NonNull String logPrefix, @NonNull RegisterRequest registerRequest)
     {
         logPrefix += "-" + LOG_PREFIX;

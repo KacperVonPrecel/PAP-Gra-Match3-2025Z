@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
@@ -17,8 +18,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import pap.project.user_stats.UserStats;
+import pap.project.user_stats.UserStatsRepository;
 import pap.project.users.User;
 import pap.project.users.UserRepository;
+
+import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.*;
@@ -43,8 +48,8 @@ public class GameHistoryIntegrationTest
     @MockitoSpyBean
     private UserRepository userRepository;
 
-    @Autowired
-    private ObjectMapper mapper;
+    @MockitoSpyBean
+    private UserStatsRepository userStatsRepository;
 
     private final long finishTime = 1000166400;
 
@@ -53,68 +58,192 @@ public class GameHistoryIntegrationTest
     {
         matchRepository.deleteAll();
         userRepository.deleteAll();
+        userStatsRepository.deleteAll();
     }
 
     @Test
     @WithMockUser
-    public void test_load_matches_success() throws Exception
+    public void test_load_matches_no_more_records() throws Exception
     {
         final User user1 = new User("test-user1", "test-user1@gmail.com", "password1");
         final User user2 = new User("test-user2", "test-user2@gmail.com", "password2");
         userRepository.saveAndFlush(user1);
         userRepository.saveAndFlush(user2);
 
-        matchRepository.save(
-                new Match(
-                        user1.getId().orElseThrow(),
-                        user2.getId().orElseThrow(),
-                        finishTime,
-                        20,
-                        -10
-                ));
+        final UserStats userStats1 = new UserStats(user1.getId().orElseThrow());
+        final UserStats userStats2 = new UserStats(user2.getId().orElseThrow());
+        userStatsRepository.saveAllAndFlush(List.of(userStats1, userStats2));
 
-        matchRepository.save(
-                new Match(
-                        user2.getId().orElseThrow(),
-                        user1.getId().orElseThrow(),
-                        finishTime + 10000,
-                        10,
-                        -5
-                ));
+        long i = 0;
+        for(i = 0; i < 9; i++)
+        {
+            matchRepository.saveAndFlush(new Match(
+                    user1.getId().orElseThrow(),
+                    user2.getId().orElseThrow(),
+                    finishTime + (i * 10000),
+                    20,
+                    -10
+            ));
+        }
+
+        final Match newestMatch = new Match(
+                user1.getId().orElseThrow(),
+                user2.getId().orElseThrow(),
+                finishTime + 100000,
+                20,
+                -10);
+        matchRepository.saveAndFlush(newestMatch);
+        final long newestMatchId = newestMatch.getId().orElseThrow();
+
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/match_history/load")
                         .param("size", "10")
                         .param("userId", String.valueOf(user1.getId().orElseThrow()))
-                        .param("latestRecordId", String.valueOf(finishTime + 5000))
+                        .param("latestRecordId", String.valueOf(newestMatchId))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$").isNotEmpty())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].playerId").value(user1.getId().orElseThrow()))
-                .andExpect(jsonPath("$[0].playerUsername").value("test-user1"))
-                .andExpect(jsonPath("$[0].opponentsUsername").value("test-user2"))
-                .andExpect(jsonPath("$[0].playerEloPoints").value(100))
-                .andExpect(jsonPath("$[0].opponentsEloPoints").value(100));
+                .andExpect(jsonPath("$.moreToLoad").isBoolean())
+                .andExpect(jsonPath("$.moreToLoad").value(false))
+
+                .andExpect(jsonPath("$.matches").isArray())
+                .andExpect(jsonPath("$.matches").isNotEmpty())
+                .andExpect(jsonPath("$.matches", hasSize(10)))
+
+                .andExpect(jsonPath("$.matches[0].playerId").value(user1.getId().orElseThrow()))
+                .andExpect(jsonPath("$.matches[0].playerUsername").value("test-user1"))
+                .andExpect(jsonPath("$.matches[0].opponentsUsername").value("test-user2"))
+                .andExpect(jsonPath("$.matches[0].playerEloPoints").value(100))
+                .andExpect(jsonPath("$.matches[0].opponentsEloPoints").value(100))
+                .andExpect(jsonPath("$.matches[0].isPlayerWinner").value(true));
     }
 
     @Test
     @WithMockUser
-    public void test_load_matches_failure() throws Exception
+    public void test_load_matches_are_more_records() throws Exception
     {
-        final User user = new User("test-user1", "test-user1@gmail.com", "password1");
-        userRepository.saveAndFlush(user);
+        final User user1 = new User("test-user1", "test-user1@gmail.com", "password1");
+        final User user2 = new User("test-user2", "test-user2@gmail.com", "password2");
+        userRepository.saveAndFlush(user1);
+        userRepository.saveAndFlush(user2);
 
-        when(matchRepository.findMatchesBeforeRecordId(anyLong(), anyLong(), any(Pageable.class)))
-                .thenThrow(new PersistenceException("Database error"));
+        final UserStats userStats1 = new UserStats(user1.getId().orElseThrow());
+        final UserStats userStats2 = new UserStats(user2.getId().orElseThrow());
+        userStatsRepository.saveAllAndFlush(List.of(userStats1, userStats2));
+
+        long i = 0;
+        for(i = 0; i < 4; i++)
+        {
+            matchRepository.saveAndFlush(new Match(
+                    user1.getId().orElseThrow(),
+                    user2.getId().orElseThrow(),
+                    finishTime + (i * 10000),
+                    20,
+                    -10
+            ));
+        }
+
+        final Match matchFive = new Match(
+                user1.getId().orElseThrow(),
+                user2.getId().orElseThrow(),
+                finishTime + 50000,
+                20,
+                -10);
+        matchRepository.saveAndFlush(matchFive);
+
+        for(i = 6; i < 14; i++)
+        {
+            matchRepository.saveAndFlush(new Match(
+                    user1.getId().orElseThrow(),
+                    user2.getId().orElseThrow(),
+                    finishTime + (i * 10000),
+                    20,
+                    -10
+            ));
+        }
+
+        final Match matchFourteen = new Match(
+                user1.getId().orElseThrow(),
+                user2.getId().orElseThrow(),
+                finishTime + 140000,
+                20,
+                -10);
+        matchRepository.saveAndFlush(matchFourteen);
+        final long matchFifteenId = matchFourteen.getId().orElseThrow();
+
+        matchRepository.saveAndFlush(new Match(
+                user1.getId().orElseThrow(),
+                user2.getId().orElseThrow(),
+                finishTime + 150000,
+                20,
+                -10
+        ));
+
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/match_history/load")
-                    .param("size", "10")
-                    .param("userId", String.valueOf(user.getId().orElseThrow()))
-                    .param("latestRecordTime", String.valueOf(finishTime + 5000))
+                        .param("size", "10")
+                        .param("userId", String.valueOf(user1.getId().orElseThrow()))
+                        .param("latestRecordId", String.valueOf(matchFifteenId))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.moreToLoad").isBoolean())
+                .andExpect(jsonPath("$.moreToLoad").value(true))
+
+                .andExpect(jsonPath("$.matches").isArray())
+                .andExpect(jsonPath("$.matches").isNotEmpty())
+                .andExpect(jsonPath("$.matches", hasSize(10)))
+                .andExpect(jsonPath("$.matches[9].finishTime").value(matchFive.getFinishTime()))
+                .andExpect(jsonPath("$.matches[0].finishTime").value(matchFourteen.getFinishTime()));
+    }
+
+    @Test
+    @WithMockUser
+    public void test_load_matches_wrong_size() throws Exception
+    {
+        final User user1 = new User("test-user1", "test-user1@gmail.com", "password1");
+        userRepository.saveAndFlush(user1);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/match_history/load")
+                    .param("size", "9")
+                    .param("userId",  String.valueOf(user1.getId().orElseThrow()))
+                    .param("latestRecordId", String.valueOf(1))
                     .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isBadRequest());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/match_history/load")
+                        .param("size", "101")
+                        .param("userId",  String.valueOf(user1.getId().orElseThrow()))
+                        .param("latestRecordId", String.valueOf(1))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithAnonymousUser
+    public void test_load_matches_user_not_logged() throws Exception
+    {
+        final User user1 = new User("test-user1", "test-user1@gmail.com", "password1");
+        userRepository.saveAndFlush(user1);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/match_history/load")
+                        .param("size", "10")
+                        .param("userId",  String.valueOf(user1.getId().orElseThrow()))
+                        .param("latestRecordId", String.valueOf(1))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser
+    public void test_load_matches_no_user_in_DB() throws Exception
+    {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/match_history/load")
+                        .param("size", "10")
+                        .param("userId",  "1")
+                        .param("latestRecordId", String.valueOf(1))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
     // XXXK tests for user which is not logged

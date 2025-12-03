@@ -32,6 +32,7 @@ public class MatchHistoryController
 
     @GetMapping ("/load")
     public @NonNull LoadHistoryMatchesData load(
+            //XXXK - change long to Long in userId, make some tests to it; It is for loading matches for current session user or other user
             @RequestParam @Positive long userId,
             @RequestParam @Positive long latestRecordId,
             @RequestParam @Min(MIN_RECORD_SIZE) @Max(MAX_RECORD_SIZE) int size
@@ -41,6 +42,7 @@ public class MatchHistoryController
         final String logPrefix = String.format(LOG_PREFIX, requestId);
         LOG.info("%s new load request from user of id: ".formatted(logPrefix, userId));
 
+        //XXXK - make an exception for userNotFound; return Null and throw exception that Spring will handle
         final LoadHistoryMatchesData loadedData = matchHistoryService.loadMatches(userId, latestRecordId, size);
         LOG.info("%s load ended result: SUCCESS".formatted(logPrefix));
         return loadedData;

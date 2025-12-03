@@ -21,7 +21,7 @@ public class UserStats {
     private Long id;
 
     @Column (name = "user_id")
-    private Long userId;
+    private long userId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "user_id", insertable = false, updatable = false)

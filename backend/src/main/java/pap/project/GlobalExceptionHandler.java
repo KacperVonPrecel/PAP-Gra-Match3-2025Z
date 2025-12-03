@@ -11,6 +11,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler
 {
     @ExceptionHandler(Exception.class)
+    public @NonNull ResponseEntity<String> handleNoUserInDB(@NonNull PersistenceException exception)
+    {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)
     public @NonNull ResponseEntity<String> handleException(@NonNull PersistenceException ex)
     {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
