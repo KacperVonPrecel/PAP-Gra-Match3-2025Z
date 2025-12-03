@@ -21,4 +21,13 @@ public record UserData(
                 matchPlayed + 1,
                 won ? matchWon + 1 : matchWon);
     }
+
+    public @NonNull UserData changeUserDataAfterDrawing(int cost)
+    {
+        return new UserData(userCharacters,
+                currency - cost,
+                eloPoints,
+                matchPlayed,
+                matchWon);
+    }
 }
