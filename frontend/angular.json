@@ -19,6 +19,7 @@
           "options": {
             "browser": "src/main.ts",
             "polyfills": [
+              "src/polyfills.ts",
               "zone.js",
               "@angular/localize/init"
             ],
@@ -101,5 +102,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

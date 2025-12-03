@@ -9,6 +9,7 @@ import { userDataGuard } from './user-data/user-data-service';
 import { Draw } from './home/draw/draw';
 import { DrawResultControllerPage } from './draw-result/draw-result-page/draw-result-controller-page';
 import { HistoryComponent } from './history/history-component/history-component';
+import { Match3 } from './match3/match3/match3';
 
 export const routes: Routes = [
 	{
@@ -57,5 +58,10 @@ export const routes: Routes = [
 				title: 'DrawResultPage'
 			}
 		]
-	}
+	},
+    {
+        path: 'match3',
+        component: Match3,
+        title: 'Match3'
+    }
 ];
