@@ -1,0 +1,17 @@
+<pre id="board">{{ board }}</pre><br>
+
+<input #gameId type="number" id="gameId"><br>
+<button (click)="connect(+gameId.value)">Connect</button><br>
+<button (click)="disconnect()">Disconnect</button><br>
+<br>
+<button (click)="fetchBoard()">Fetch board</button><br>
+<br>
+<input #sourceRow type="number" id="sourceRow"><br>
+<input #sourceCol type="number" id="sourceColumn"><br>
+<input #targetRow type="number" id="targetRow"><br>
+<input #targetCol type="number" id="targetColumn"><br>
+<button (click)="makeMove(+sourceRow.value, +sourceCol.value, +targetRow.value, +targetCol.value)">Make move</button><br>
+<br>
+<button (click)="fillBoard()">Fill Board</button><br>
+<button (click)="dropFloatingBlocks()">Drop Floating Blocks</button><br>
+<button (click)="destroyMatchedBlocks()">Destroy Matched Blocks</button><br>

@@ -7,13 +7,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pap.project.game_history.MatchRepository;
 import pap.project.user_data.model.UserData;
-import pap.project.users.UserRepository;
+import pap.project.user_stats.UserStats;
+import pap.project.user_stats.UserStatsRepository;
 import pap.project.users.characters.UserCharacter;
 import pap.project.users.characters.UserCharactersRepository;
 import pap.project.users.characters.model.CharacterType;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -23,7 +24,7 @@ import static org.mockito.Mockito.*;
 public class UserDataServiceTest
 {
     @Mock
-    private UserRepository userRepository;
+    private UserStatsRepository userStatsRepository;
 
     @Mock
     private UserCharactersRepository userCharactersRepository;
@@ -39,6 +40,7 @@ public class UserDataServiceTest
     {
         final List<UserCharacter> userCharacters = List.of(new UserCharacter(CharacterType.FIRST_CHARACTER, 1, 1, 1));
         when(userCharactersRepository.findAllByUserId(anyLong())).thenReturn(userCharacters);
+        when(userStatsRepository.findUserStatsByUserId(anyLong())).thenReturn(Optional.of(new UserStats(1)));
 
         final UserData userData = userDataService.getUserData(1);
 
@@ -52,6 +54,7 @@ public class UserDataServiceTest
     {
         final List<UserCharacter> userCharacters = List.of(new UserCharacter(CharacterType.FIRST_CHARACTER, 1, 1, 1));
         when(userCharactersRepository.findAllByUserId(anyLong())).thenReturn(userCharacters);
+        when(userStatsRepository.findUserStatsByUserId(anyLong())).thenReturn(Optional.of(new UserStats(1)));
 
         final UserData userData = userDataService.getUserData(1);
 
@@ -69,9 +72,13 @@ public class UserDataServiceTest
     {
         final List<UserCharacter> userCharacters1 = List.of(new UserCharacter(CharacterType.FIRST_CHARACTER, 1, 1, 1));
         when(userCharactersRepository.findAllByUserId(1)).thenReturn(userCharacters1);
+        when(userStatsRepository.findUserStatsByUserId(1)).thenReturn(Optional.of(new UserStats(1)));
+
 
         final List<UserCharacter> userCharacters2 = List.of(new UserCharacter(CharacterType.FIRST_CHARACTER, 2, 1, 1));
         when(userCharactersRepository.findAllByUserId(2)).thenReturn(userCharacters2);
+        when(userStatsRepository.findUserStatsByUserId(2)).thenReturn(Optional.of(new UserStats(2)));
+
 
         userDataService.processGameEnd(1, 2, 123);
 

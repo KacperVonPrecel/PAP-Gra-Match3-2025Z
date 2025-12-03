@@ -1,0 +1,7 @@
+<div id="content">
+	<ul id="history-list" appScrollable (scrollState)="onScrollState($event)">
+		@for (item of historyElements; track $index) {
+			<app-history-element [historyMatchData]="item" [now]="now"></app-history-element>
+		}
+	</ul>
+</div>

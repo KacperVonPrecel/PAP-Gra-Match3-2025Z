@@ -1,6 +1,5 @@
 package pap.project.game_history;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,9 +18,9 @@ public interface MatchRepository extends JpaRepository<Match, Long>
         FROM Match m
         JOIN m.winner w
         JOIN m.loser l
-        WHERE m.finishTime <= :time
+        WHERE m.id <= :latestRecordId
            AND (w.id = :userId OR l.id = :userId)
-        ORDER BY m.finishTime DESC
+        ORDER BY m.id DESC
         """)
-    @NonNull List<Match> findMatchesBeforeFinishTime(@Param("userId") long userId, @Param("time") long time, @NonNull Pageable pageable);
+    @NonNull List<Match> findMatchesBeforeRecordId(@Param("userId") long userId, @Param("latestRecordId") long latestRecordId, @NonNull Pageable pageable);
 }

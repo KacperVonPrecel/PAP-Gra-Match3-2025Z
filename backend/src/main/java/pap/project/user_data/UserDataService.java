@@ -7,7 +7,8 @@ import pap.project.game_history.Match;
 import pap.project.game_history.MatchRepository;
 import pap.project.user_data.model.UserData;
 import pap.project.user_data.model.UserSessionData;
-import pap.project.users.UserRepository;
+import pap.project.user_stats.UserStats;
+import pap.project.user_stats.UserStatsRepository;
 import pap.project.users.characters.UserCharacter;
 import pap.project.users.characters.UserCharactersRepository;
 
@@ -22,20 +23,20 @@ public class UserDataService
     private static final int CURRENCY_WINNER = 500;
     private static final int CURRENCY_LOSER = 200;
 
-    private final @NonNull UserRepository userRepository;
     private final @NonNull UserCharactersRepository userCharactersRepository;
     private final @NonNull MatchRepository matchRepository;
+    private final @NonNull UserStatsRepository userStatsRepository;
     // XXX it should be cleaned with some interval from userSessionData.
     private final @NonNull ConcurrentHashMap<Long, UserSessionData> userSessionData = new ConcurrentHashMap<>();
 
     public UserDataService(
-            @NonNull UserRepository userRepository,
             @NonNull UserCharactersRepository userCharactersRepository,
-            @NonNull MatchRepository matchRepository)
+            @NonNull MatchRepository matchRepository,
+            @NonNull UserStatsRepository userStatsRepository)
     {
-        this.userRepository = userRepository;
         this.userCharactersRepository = userCharactersRepository;
         this.matchRepository = matchRepository;
+        this.userStatsRepository = userStatsRepository;
     }
 
     /**
@@ -90,11 +91,23 @@ public class UserDataService
 
             final UserData winnerNewUserData = winnerUserSessionData.getUserData().changeUserDataAfterGame(ELO_UP, CURRENCY_WINNER, true);
             winnerUserSessionData.setUserData(winnerNewUserData);
-            userRepository.updateUserAfterEndGame(winnerUserSessionData.getUserData().eloPoints(), winnerUserSessionData.getUserData().currency(), winnerId);
+            userStatsRepository.updateUserStatsAfterGameEnd(
+                    winnerUserSessionData.getUserData().matchPlayed(),
+                    winnerUserSessionData.getUserData().matchWon(),
+                    winnerUserSessionData.getUserData().eloPoints(),
+                    winnerUserSessionData.getUserData().currency(),
+                    winnerId
+                    );
 
             final UserData loserNewUserData = loserUserSessionData.getUserData().changeUserDataAfterGame(ELO_DOWN, CURRENCY_LOSER, false);
             loserUserSessionData.setUserData(loserNewUserData);
-            userRepository.updateUserAfterEndGame(loserUserSessionData.getUserData().eloPoints(), loserUserSessionData.getUserData().currency(), winnerId);;
+            userStatsRepository.updateUserStatsAfterGameEnd(
+                    loserUserSessionData.getUserData().matchPlayed(),
+                    loserUserSessionData.getUserData().matchWon(),
+                    loserUserSessionData.getUserData().eloPoints(),
+                    loserUserSessionData.getUserData().currency(),
+                    loserId
+                    );
 
             final Match match = new Match(
                     winnerId,
@@ -118,9 +131,8 @@ public class UserDataService
     private void loadUserSessionData(@NonNull UserSessionData userSessionData, long userId)
     {
         final List<UserCharacter> userCharacters = userCharactersRepository.findAllByUserId(userId);
-        final int money = 100; //XXXK load from DB.
-        final UserData loadedUserData = new UserData(userCharacters, money, 0, 0, 0); //XXXK load from DB.
+        final UserStats userData = userStatsRepository.findUserStatsByUserId(userId).orElseThrow();
+        final UserData loadedUserData = new UserData(userCharacters, userData.getCurrency(), userData.getEloPoints(), userData.getMatchPlayed(), userData.getMatchWon());
         userSessionData.setUserData(loadedUserData);
-
     }
 }

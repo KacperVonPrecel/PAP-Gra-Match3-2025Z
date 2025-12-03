@@ -13,7 +13,7 @@
 		<router-outlet></router-outlet>
 	</div>
 	<nav id="navbar">
-		<button matFab [extended]="!smallScreen">
+		<button matFab [extended]="!smallScreen" [routerLinkActive]="['selected']" routerLink="/main/home/history">
 			<mat-icon>history</mat-icon>
 			@if (!smallScreen) {
 				<span class="button-text" i18n>History</span>
