@@ -81,6 +81,7 @@ export class Draw {
       amount: this._amount,
     };
     this.userDataService.draw(drawRequest).subscribe((result)=>{
+      if (!result) return;
       this.drawResultService.setResult(result);
       this.router.navigate(['/main/draw-result']);
     })
