@@ -109,7 +109,7 @@ public class Match3Board
 
     private boolean blockMatchesShape(int row, int column, MatchableShape shape)
     {
-        if (!isInBounds(row, column))
+        if (isOutOfBounds(row, column))
             return false;
 
         Match3Block.BlockType thisBlockType = board[row][column].getBlockType();
@@ -119,7 +119,7 @@ public class Match3Board
 
         for (MatchableShape.RelativeCoordinates coordinates : shape.getRelativeCoordinates())
         {
-            if (!isInBounds(row + coordinates.x(), column + coordinates.y()))
+            if (isOutOfBounds(row + coordinates.x(), column + coordinates.y()))
                 return false;
 
             if (!(board[row +  coordinates.x()][column + coordinates.y()].getBlockType() == thisBlockType))
@@ -129,15 +129,16 @@ public class Match3Board
         return true;
     }
 
-    private boolean isInBounds(int row, int column) {
-        if (row < 0 || row >= board.length || column < 0 || column >= board[0].length)
-            return false;
-
-        return board[row][column].getBlockType() != Match3Block.BlockType.Disabled;
+    private boolean isOutOfBounds(int row, int column)
+    {
+        return row < 0 || row >= board.length || column < 0 || column >= board[0].length || board[row][column].getBlockType() == Match3Block.BlockType.Disabled;
     }
 
     private boolean areBlocksSwappable(MoveRequest moveRequest)
     {
+        if (isOutOfBounds(moveRequest.sourceRow(), moveRequest.sourceColumn()) || isOutOfBounds(moveRequest.targetRow(), moveRequest.targetColumn()))
+            return false;
+
         int rowDistance = Math.abs(moveRequest.targetRow() - moveRequest.sourceRow());
         int columnDistance = Math.abs(moveRequest.targetColumn() - moveRequest.sourceColumn());
 
