@@ -1,9 +1,14 @@
 <app-firefly-background></app-firefly-background>
 <div id="content-container">
-    <app-draw-animation id="animation"
+    @if(!showSummary){
+        <app-draw-animation class="content"
         [resultEntry]="result.results[currentEntry]"
         (finished)="onAnimationFinished()">
     </app-draw-animation>
+    } @else{
+        <app-draw-summary class="content"></app-draw-summary>
+    }
+
     <div id="skip-button-container">
         <button id="skip-button" mat-button (click)="skip()">Skip</button>
     </div>

@@ -84,7 +84,8 @@ export class UserDataService {
 	// Also handling game and should be here. Like updating currency after win/loss.
 	// This methods should update the _userData BehaviorSubject accordingly.
 
-	draw(drawRequest: DrawRequest): Observable<DrawResult> {
+	draw(drawRequest: DrawRequest, cost:number): Observable<DrawResult> {
+		this._userData.subscribe((res)=>res!.currency-=cost);
 		const result: DrawResult = {
 			results:[
 				{characterType: CharacterType.FIRST_CHARACTER, amount: 1},
@@ -125,9 +126,9 @@ export enum CharacterType {
 }
 
 export enum DrawType {
-	COMMON = 'Common',
-	UNCOMMON = 'Uncommon',
-	RARE = 'Rare'
+	COMMON = 'COMMON',
+	UNCOMMON = 'UNCOMMON',
+	RARE = 'RARE'
 }
 
 export interface DrawRequest {

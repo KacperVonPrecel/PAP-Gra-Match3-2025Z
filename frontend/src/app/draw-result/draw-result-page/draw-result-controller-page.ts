@@ -5,20 +5,24 @@ import { DrawResultService } from '../draw-result-service';
 import { Router } from '@angular/router';
 import { DrawAnimation } from "../draw-animation/draw-animation";
 import { MatButtonModule } from '@angular/material/button';
+import { DrawSummary } from "./draw-summary/draw-summary";
 
 @Component({
   selector: 'app-draw-result-page',
   imports: [
     FireflyBackground,
     DrawAnimation,
-    MatButtonModule
-  ],
+    MatButtonModule,
+    DrawSummary
+],
   templateUrl: './draw-result-controller-page.html',
   styleUrl: './draw-result-controller-page.scss',
 })
 export class DrawResultControllerPage {
   private _result!: DrawResult;
   private _currentEntry:number = 0;
+  private _showSummary: boolean = false;
+  private summaryTimeout = 0;
   constructor(
     private drawResultService: DrawResultService,
     private router: Router
@@ -37,6 +41,10 @@ export class DrawResultControllerPage {
     return this._currentEntry
   }
 
+  get showSummary(): boolean{
+    return this._showSummary;
+  }
+
   get result(){
     return this._result;
   }
@@ -48,11 +56,24 @@ export class DrawResultControllerPage {
       }
       else{
         console.log("ENTERED");
-        this.router.navigate(['/main/home/draw']);
+        this._showSummary = true;
+        this.summaryTimeout = setTimeout(() =>
+          {
+            this.router.navigate(['/main/home/draw']);
+          }, 3000);
       }
   }
 
   skip():void {
-    this.router.navigate(['/main/home/draw']);
+    if(!this._showSummary){
+      this._showSummary = true;
+      this.summaryTimeout = setTimeout(() =>
+          {
+            this.router.navigate(['/main/home/draw']);
+          }, 3000);
+    }else{
+      clearTimeout(this.summaryTimeout);
+      this.router.navigate(['/main/home/draw']);
+    }
   }
 }

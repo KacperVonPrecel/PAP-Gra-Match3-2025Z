@@ -48,7 +48,7 @@ export const routes: Routes = [
 				canActivate: [userDataGuard],
 				path: 'draw-result',
 				component: DrawResultControllerPage,
-				title: 'DrawResultPage',
+				title: 'DrawResultPage'
 			}
 		]
 	}

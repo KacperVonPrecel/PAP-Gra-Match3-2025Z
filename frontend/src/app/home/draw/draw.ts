@@ -77,10 +77,10 @@ export class Draw {
 
   draw(){
     const drawRequest: DrawRequest = {
-      drawType: this._drawData[this._selected].name,
-      amount: this._amount,
+    drawType: this._drawData[this._selected].name,
+    amount: this._amount,
     };
-    this.userDataService.draw(drawRequest).subscribe((result)=>{
+    this.userDataService.draw(drawRequest, this.amount * this._drawData[this._selected].price).subscribe((result)=>{
       if (!result) return;
       this.drawResultService.setResult(result);
       this.router.navigate(['/main/draw-result']);
