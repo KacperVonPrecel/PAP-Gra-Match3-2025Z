@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DrawResultPage } from './draw-result-page';
+import { DrawResultControllerPage } from './draw-result-controller-page';
 
 describe('DrawResultPage', () => {
-  let component: DrawResultPage;
-  let fixture: ComponentFixture<DrawResultPage>;
+  let component: DrawResultControllerPage;
+  let fixture: ComponentFixture<DrawResultControllerPage>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DrawResultPage]
+      imports: [DrawResultControllerPage]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(DrawResultPage);
+    fixture = TestBed.createComponent(DrawResultControllerPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

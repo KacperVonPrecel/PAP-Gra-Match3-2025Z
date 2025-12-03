@@ -7,7 +7,7 @@ import { Home } from './home/home';
 import { HomePage } from './home/home-page/home-page';
 import { userDataGuard } from './user-data/user-data-service';
 import { Draw } from './home/draw/draw';
-import { DrawResultPage } from './draw-result/draw-result-page/draw-result-page';
+import { DrawResultControllerPage} from './draw-result/draw-result-page/draw-result-controller-page';
 
 export const routes: Routes = [
 	{
@@ -47,7 +47,7 @@ export const routes: Routes = [
 			{
 				canActivate: [userDataGuard],
 				path: 'draw-result',
-				component: DrawResultPage,
+				component: DrawResultControllerPage,
 				title: 'DrawResultPage',
 			}
 		]
