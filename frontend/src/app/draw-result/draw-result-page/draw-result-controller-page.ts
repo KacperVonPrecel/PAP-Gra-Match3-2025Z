@@ -10,32 +10,46 @@ import { DrawAnimation } from "../draw-animation/draw-animation";
   imports: [
     FireflyBackground,
     DrawAnimation],
-  templateUrl: './draw-result-page.html',
-  styleUrl: './draw-result-page.scss',
+  templateUrl: './draw-result-controller-page.html',
+  styleUrl: './draw-result-controller-page.scss',
 })
-export class DrawResultPage {
-  result!: DrawResult;
-  currentEntry:number = 0;
+export class DrawResultControllerPage {
+  private _result!: DrawResult;
+  private _currentEntry:number = 0;
   constructor(
     private drawResultService: DrawResultService,
     private router: Router
   ){
-    this.result = this.drawResultService.getResult();
+    this._result = this.drawResultService.getResult();
   }
 
   ngAfterViewInit() {
-    if (!this.result) {
+    if (!this._result) {
       this.router.navigate(['/main/home/draw']);
       return;
     }
   }
 
-  onAnimationFinished() {
-    this.currentEntry++;
-      if (this.currentEntry + 1< this.result.results.length) {
+  get currentEntry(): number{
+    return this._currentEntry
+  }
+
+  get result(){
+    return this._result;
+  }
+
+  onAnimationFinished(): void {
+    this._currentEntry++;
+      if (this.currentEntry < this._result.results.length) {
+        console.log("IF");
       }
       else{
-      this.router.navigate(['/main/home/draw']);
+        console.log("ENTERED");
+        this.router.navigate(['/main/home/draw']);
       }
+  }
+
+  skip():void {
+    this.router.navigate(['/main/home/draw']);
   }
 }

@@ -12,9 +12,10 @@ export class DrawAnimation {
   finished = output<void>();
   resultEntry = input<DrawResultEntry>();
 
-  ngOnInit(){
+  ngOnChanges(){
     const entry = this.resultEntry();
     setTimeout(()=>this.finished.emit(), 2000)
+    console.log("ANIMATION FINISHED")
   }
 
 }
