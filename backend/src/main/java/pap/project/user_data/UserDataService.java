@@ -133,32 +133,36 @@ public class UserDataService
     {
         final UserSessionData userDataSession = userSessionData.computeIfAbsent(userId, _ -> new UserSessionData());
         userDataSession.lock();
-        final int cost = switch(request.drawType())
+        try
         {
-            case COMMON -> 25;
-            case UNCOMMON -> 50;
-            case RARE -> 100;
-        } * request.amount();
+            final int cost = switch(request.drawType())
+            {
+                case COMMON -> 25;
+                case UNCOMMON -> 50;
+                case RARE -> 100;
+            } * request.amount();
 
-        if (cost > userDataSession.getUserData().currency())
-            throw new RuntimeException("XXX");
+            if (cost > userDataSession.getUserData().currency())
+                throw new RuntimeException("XXX");
 
-        userDataSession.getUserData().changeUserDataAfterDrawing(cost);
-        int x = 0;
+            userDataSession.getUserData().changeUserDataAfterDrawing(cost);
+            int x = 0;
 
-        for (int i = 0; i < request.amount(); i++) {
-            x += new Random().nextBoolean() ? 1 : 0;
+            for (int i = 0; i < request.amount(); i++) {
+                x += new Random().nextBoolean() ? 1 : 0;
+            }
+
+            final List<DrawResultEntry> result = new ArrayList<>();
+            int characterOne = x;
+            int characterTwo = request.amount() - x;
+            if (characterOne != 0)
+                result.add(new DrawResultEntry(CharacterType.FIRST_CHARACTER, characterOne));
+            if (characterTwo != 0)
+                result.add(new DrawResultEntry(CharacterType.FIRST_CHARACTER, characterTwo));
+            return new DrawCharacterResponse(result);
+        } finally {
+            userDataSession.unlock();
         }
-
-        final List<DrawResultEntry> result = new ArrayList<>();
-        int characterOne = x;
-        int characterTwo = request.amount() - x;
-        if (characterOne != 0)
-            result.add(new DrawResultEntry(CharacterType.FIRST_CHARACTER, characterOne));
-        if (characterTwo != 0)
-            result.add(new DrawResultEntry(CharacterType.FIRST_CHARACTER, characterTwo));
-        userDataSession.unlock();
-        return new DrawCharacterResponse(result);
     }
 
     /**
