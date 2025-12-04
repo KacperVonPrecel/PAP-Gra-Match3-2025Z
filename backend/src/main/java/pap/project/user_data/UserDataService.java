@@ -157,6 +157,7 @@ public class UserDataService
             result.add(new DrawResultEntry(CharacterType.FIRST_CHARACTER, characterOne));
         if (characterTwo != 0)
             result.add(new DrawResultEntry(CharacterType.FIRST_CHARACTER, characterTwo));
+        userDataSession.unlock();
         return new DrawCharacterResponse(result);
     }
 
