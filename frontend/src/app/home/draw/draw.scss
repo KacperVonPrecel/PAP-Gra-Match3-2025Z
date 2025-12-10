@@ -29,12 +29,24 @@
 		#draw-button {
 			padding: 2rem 2rem;
 			font-size: 1.5rem;
-			box-shadow: 2px 2px 6px rgba(102, 78, 76, 0.5);
+			//box-shadow: 2px 2px 6px rgba(102, 78, 76, 0.5);
+			box-shadow: 0 8px 20px rgba(249, 212, 187);
+			animation: buttonGlow 2s infinite alternate;
+		}
+		@keyframes buttonGlow {
+			from {
+				box-shadow: 0 16px 30px rgba(240, 226, 163, 0.9);
+			}
+			to {
+				box-shadow: 0 4px 20px rgba(226, 213, 139, 0.9);
+			}
 		}
 		#draw-button[disabled] {
 			cursor: not-allowed;
 			box-shadow: none;
 			filter: grayscale(75%);
+			animation: none;
+			box-shadow: none;
 		}
 		.draw-selection-but {
 			background: rgba(240, 226, 163, 0.9);
