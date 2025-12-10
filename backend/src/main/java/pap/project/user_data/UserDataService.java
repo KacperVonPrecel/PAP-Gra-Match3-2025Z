@@ -156,9 +156,9 @@ public class UserDataService
             int characterOne = x;
             int characterTwo = request.amount() - x;
             if (characterOne != 0)
-                result.add(new DrawResultEntry(CharacterType.FIRST_CHARACTER, characterOne));
+                result.add(new DrawResultEntry(CharacterType.AMETHYST_ENCHANTRESS, characterOne));
             if (characterTwo != 0)
-                result.add(new DrawResultEntry(CharacterType.FIRST_CHARACTER, characterTwo));
+                result.add(new DrawResultEntry(CharacterType.AMETHYST_ENCHANTRESS, characterTwo));
             return new DrawCharacterResponse(result);
         } finally {
             userDataSession.unlock();

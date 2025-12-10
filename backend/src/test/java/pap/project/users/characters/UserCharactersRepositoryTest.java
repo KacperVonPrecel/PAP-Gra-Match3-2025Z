@@ -38,7 +38,7 @@ public class UserCharactersRepositoryTest
     @Test
     public void test_foreign_key_violation_if_user_not_exists()
     {
-        assertThrows(DataIntegrityViolationException.class, () -> userCharactersRepository.saveAndFlush(new UserCharacter(CharacterType.FIRST_CHARACTER, 1, 1, 1)));
+        assertThrows(DataIntegrityViolationException.class, () -> userCharactersRepository.saveAndFlush(new UserCharacter(CharacterType.AMETHYST_ENCHANTRESS, 1, 1, 1)));
     }
 
     @Test
@@ -47,7 +47,7 @@ public class UserCharactersRepositoryTest
         final User user = new User("test-user", "test-user@example.com", "hashedPassword");
         userRepository.saveAndFlush(user);
         assertTrue(user.getId().isPresent());
-        assertDoesNotThrow(() -> userCharactersRepository.saveAndFlush(new UserCharacter(CharacterType.FIRST_CHARACTER, user.getId().getAsLong(), 1, 1)));
+        assertDoesNotThrow(() -> userCharactersRepository.saveAndFlush(new UserCharacter(CharacterType.AMETHYST_ENCHANTRESS, user.getId().getAsLong(), 1, 1)));
     }
 
     @Test
@@ -56,8 +56,8 @@ public class UserCharactersRepositoryTest
         final User user = new User("test-user", "test-user@example.com", "hashedPassword");
         userRepository.save(user);
         assertTrue(user.getId().isPresent());
-        assertDoesNotThrow(() -> userCharactersRepository.saveAndFlush(new UserCharacter(CharacterType.FIRST_CHARACTER, user.getId().getAsLong(), 1, 1)));
-        assertThrows(DataIntegrityViolationException.class, () -> userCharactersRepository.saveAndFlush(new UserCharacter(CharacterType.FIRST_CHARACTER, user.getId().getAsLong(), 1, 1)));
+        assertDoesNotThrow(() -> userCharactersRepository.saveAndFlush(new UserCharacter(CharacterType.AMETHYST_ENCHANTRESS, user.getId().getAsLong(), 1, 1)));
+        assertThrows(DataIntegrityViolationException.class, () -> userCharactersRepository.saveAndFlush(new UserCharacter(CharacterType.AMETHYST_ENCHANTRESS, user.getId().getAsLong(), 1, 1)));
     }
 
 
@@ -90,8 +90,8 @@ public class UserCharactersRepositoryTest
         userRepository.saveAndFlush(user);
         assertTrue(user.getId().isPresent());
 
-        assertDoesNotThrow(() -> userCharactersRepository.saveAndFlush(new UserCharacter(CharacterType.FIRST_CHARACTER, user.getId().getAsLong(), 1, 1)));
-        assertDoesNotThrow(() -> userCharactersRepository.saveAndFlush(new UserCharacter(CharacterType.SECOND_CHARACTER, user.getId().getAsLong(), 1, 1)));
+        assertDoesNotThrow(() -> userCharactersRepository.saveAndFlush(new UserCharacter(CharacterType.AMETHYST_ENCHANTRESS, user.getId().getAsLong(), 1, 1)));
+        assertDoesNotThrow(() -> userCharactersRepository.saveAndFlush(new UserCharacter(CharacterType.TRASH_MAN, user.getId().getAsLong(), 1, 1)));
 
         final List<UserCharacter> userCharacters = userCharactersRepository.findAllByUserId(user.getId().getAsLong());
         assertNotNull(userCharacters);
