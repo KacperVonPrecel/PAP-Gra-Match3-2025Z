@@ -68,10 +68,11 @@ export class Draw {
 		this.userDataService.draw(drawRequest, this.amount * this._drawData[this._selected].price).subscribe((result) => {
 			if (!result) return;
 			this.router.navigate(['/main/draw-result'], {
-				state: { result }
+				state: {
+					result: result,
+					drawType: this.drawType.name
+				}
 			});
-			//this.drawResultService.setResult(result);
-			//this.router.navigate(['/main/draw-result']);
 		});
 	}
 }

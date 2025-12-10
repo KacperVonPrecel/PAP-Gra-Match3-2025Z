@@ -14,6 +14,8 @@ export class DrawAnimation {
 	private drawingContext!: CanvasRenderingContext2D;
 	finished = output<void>();
 	resultEntry = input.required<DrawResultEntry>();
+	colorSignal = input.required<string>();
+	private baseColor: string = 'rgba(193, 211, 127)';
 	private width!: number;
 	private height!: number;
 	private svgImage: HTMLImageElement = new Image();
@@ -76,7 +78,7 @@ export class DrawAnimation {
 			this.drawingContext.arc(x, y, circleRadius, 0, Math.PI * 2);
 			const gradient = this.drawingContext.createRadialGradient(x, y, 0, x, y, circleRadius * 2);
 
-			gradient.addColorStop(0, `rgba(193, 211, 127, 1)`);
+			gradient.addColorStop(0, this.colorSignal() ?? this.baseColor);
 			gradient.addColorStop(1, 'transparent');
 			this.drawingContext.fillStyle = gradient;
 			this.drawingContext.arc(x, y, circleRadius * 3, 0, Math.PI * 2);
@@ -104,7 +106,7 @@ export class DrawAnimation {
 		const y = this.height / 2;
 		this.drawingContext.beginPath();
 		const gradient = this.drawingContext.createRadialGradient(x, y, 0, x, y, circleRadius * 2);
-		gradient.addColorStop(0, `rgba(193, 211, 127, 1)`);
+		gradient.addColorStop(0, this.colorSignal() ?? this.baseColor);
 		gradient.addColorStop(1, 'transparent');
 		this.drawingContext.fillStyle = gradient;
 		this.drawingContext.arc(x, y, circleRadius * 3, 0, Math.PI * 2);

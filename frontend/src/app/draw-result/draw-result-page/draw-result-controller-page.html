@@ -1,7 +1,8 @@
 <app-firefly-background></app-firefly-background>
 <div id="content-container">
 	@if (!showSummary) {
-		<app-draw-animation class="content" [resultEntry]="result.results[currentEntry]" (finished)="onAnimationFinished()"> </app-draw-animation>
+		<app-draw-animation class="content" [resultEntry]="result.results[currentEntry]" [colorSignal]="color" (finished)="onAnimationFinished()">
+		</app-draw-animation>
 	} @else {
 		<app-draw-summary class="content" [_result]="result.results"></app-draw-summary>
 	}
