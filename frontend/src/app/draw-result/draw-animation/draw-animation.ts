@@ -11,12 +11,11 @@ import { CommonModule } from '@angular/common';
 export class DrawAnimation {
 	@ViewChild('animationCanvas', { static: true })
 	canvasRef!: ElementRef<HTMLCanvasElement>;
-	private drawing_context!: CanvasRenderingContext2D;
+	private drawingContext!: CanvasRenderingContext2D;
 	finished = output<void>();
 	resultEntry = input<DrawResultEntry>();
 	private width!: number;
 	private height!: number;
-	transformStyle: string = 'translate(0px, 0px)';
 	private circles = [
 		{ alpha: (Math.PI * 2) / 3, startingAlpha: (Math.PI * 2) / 3 },
 		{ alpha: (Math.PI * 4) / 3, startingAlpha: (Math.PI * 4) / 3 },
@@ -24,15 +23,14 @@ export class DrawAnimation {
 	];
 
 	ngOnChanges() {
-		if (this.drawing_context) {
-			const entry = this.resultEntry();
+		if (this.drawingContext) {
 			this.startSpiralAnimation();
 			console.log('ANIMATION FINISHED');
 		}
 	}
 
 	ngAfterViewInit() {
-		this.drawing_context = this.canvasRef.nativeElement.getContext('2d')!;
+		this.drawingContext = this.canvasRef.nativeElement.getContext('2d')!;
 		this.resizeCanvas();
 		this.startSpiralAnimation();
 	}
@@ -45,49 +43,71 @@ export class DrawAnimation {
 	}
 
 	startSpiralAnimation() {
-		const beggining_radius = Math.min(this.width, this.height) / 2;
+		const begginingRadius = Math.min(this.width, this.height) / 2;
 		const centerX = this.width / 2;
 		const centerY = this.height / 2;
 
 		for (const circle of this.circles) {
 			circle.alpha = circle.startingAlpha;
 		}
-		this.animate(centerX, centerY, beggining_radius);
+		this.animateSpiral(centerX, centerY, begginingRadius);
 	}
 
-	animate(centerX: number, centerY: number, begginingRadius: number) {
-		const alpha_step = 0.05;
-		const circle_radius = 30;
-		const radial_change = -35 * (begginingRadius / 1080); //b in the equation
-		this.drawing_context.clearRect(0, 0, this.width, this.height);
+	animateSpiral(centerX: number, centerY: number, begginingRadius: number) {
+		const alphaStep = 0.05;
+		const circleRadius = 30;
+		const radialChange = -35 * (begginingRadius / 1080); //b in the equation
+		this.drawingContext.clearRect(0, 0, this.width, this.height);
 		for (const circle of this.circles) {
-			circle.alpha += alpha_step;
+			circle.alpha += alphaStep;
 			/*
       archimedean spiral in polar cords: r(alpha) = a + b*alpha
       a - beggining radius, b - how much the radius grows when alpha += 1 radian
 
       in cartesian: x = r * cos(alpha), y = r * sin(alpha)
     */
-			const radius_from_center = begginingRadius + radial_change * circle.alpha;
+			const radiusFromCenter = begginingRadius + radialChange * circle.alpha;
 			//translating so center coordinates are the origin
-			const x = centerX + radius_from_center * Math.cos(circle.alpha);
-			const y = centerY + radius_from_center * Math.sin(circle.alpha);
+			const x = centerX + radiusFromCenter * Math.cos(circle.alpha);
+			const y = centerY + radiusFromCenter * Math.sin(circle.alpha);
 
-			this.drawing_context.beginPath();
-			this.drawing_context.arc(x, y, circle_radius, 0, Math.PI * 2);
-			const gradient = this.drawing_context.createRadialGradient(x, y, 0, x, y, circle_radius * 2);
+			this.drawingContext.beginPath();
+			this.drawingContext.arc(x, y, circleRadius, 0, Math.PI * 2);
+			const gradient = this.drawingContext.createRadialGradient(x, y, 0, x, y, circleRadius * 2);
 
 			gradient.addColorStop(0, `rgba(193, 211, 127, 1)`);
 			gradient.addColorStop(1, 'transparent');
-			this.drawing_context.fillStyle = gradient;
-			this.drawing_context.arc(x, y, circle_radius * 3, 0, Math.PI * 2);
-			this.drawing_context.fill();
+			this.drawingContext.fillStyle = gradient;
+			this.drawingContext.arc(x, y, circleRadius * 3, 0, Math.PI * 2);
+			this.drawingContext.fill();
 
-			if (radius_from_center <= 0) {
-				this.finished.emit();
+			if (radiusFromCenter <= 0) {
+				this.animateCharacter(2);
 				return;
 			}
 		}
-		requestAnimationFrame(() => this.animate(centerX, centerY, begginingRadius));
+		//requestAnimationFrame -> call before next repaint, next frame
+		requestAnimationFrame(() => this.animateSpiral(centerX, centerY, begginingRadius));
+	}
+
+	animateCharacter(circleRadius: number) {
+		const circleRadiusStep = 5 * (Math.min(this.height, this.width) / 1080);
+		this.drawingContext.clearRect(0, 0, this.width, this.height);
+		const x = this.width / 2;
+		const y = this.height / 2;
+		this.drawingContext.beginPath();
+		const gradient = this.drawingContext.createRadialGradient(x, y, 0, x, y, circleRadius * 2);
+		gradient.addColorStop(0, `rgba(193, 211, 127, 1)`);
+		gradient.addColorStop(1, 'transparent');
+		this.drawingContext.fillStyle = gradient;
+		this.drawingContext.arc(x, y, circleRadius * 3, 0, Math.PI * 2);
+		this.drawingContext.fill();
+
+		if (circleRadius > Math.min(this.height, this.width)) {
+			this.finished.emit();
+			console.log('ENTERED');
+			return;
+		}
+		requestAnimationFrame(() => this.animateCharacter(circleRadius + circleRadiusStep));
 	}
 }
