@@ -120,7 +120,18 @@ export interface CharacterData {
 
 export enum CharacterType {
 	AMETHYST_ENCHANTRESS = 'AMETHYST_ENCHANTRESS',
-	TRASH_MAN = 'TRASH_MAN'
+	TRASH_MAN = 'TRASH_MAN',
+	SACRED_CAT = 'SACRED_CAT',
+	EMERALD_CORE_KNIGHT = 'EMERALD_CORE_KNIGHT',
+	RUBY_HORNED_DAME = 'RUBY_HORNED_DAME'
+}
+
+export enum CharacterFile {
+	AMETHYST_ENCHANTRESS = 'amethyst_enchantress.svg',
+	TRASH_MAN = 'trash_man.svg',
+	SACRED_CAT = 'sacred_cat.svg',
+	EMERALD_CORE_KNIGHT = 'emerald_core_knight.svg',
+	RUBY_HORNED_DAME = 'ruby_horned_dame.svg'
 }
 
 export enum DrawType {
