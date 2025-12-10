@@ -2,13 +2,13 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="210mm"
-   height="297mm"
-   viewBox="0 0 210 297"
+   width="311"
+   height="525"
+   viewBox="0 0 82.285411 138.90617"
    version="1.1"
    id="svg4787"
-   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
-   sodipodi:docname="crystalred.svg"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   sodipodi:docname="ruby.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -26,12 +26,12 @@
      showgrid="false"
      inkscape:zoom="0.93806818"
      inkscape:cx="337.92853"
-     inkscape:cy="613.49485"
-     inkscape:window-width="1551"
-     inkscape:window-height="987"
-     inkscape:window-x="2234"
-     inkscape:window-y="697"
-     inkscape:window-maximized="0"
+     inkscape:cy="357.64991"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
      inkscape:current-layer="layer1" />
   <defs
      id="defs4784" />
@@ -41,7 +41,7 @@
      id="layer1">
     <g
        id="g4541"
-       transform="matrix(9.962984,0,0,7.8969453,-791.48035,-545.91086)">
+       transform="matrix(9.962984,0,0,7.8969453,-853.24958,-634.47496)">
       <path
          id="path3699"
          style="fill:#a02c2c;fill-opacity:1;stroke-width:0.1641"

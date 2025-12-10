@@ -2,13 +2,13 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="210mm"
-   height="297mm"
-   viewBox="0 0 210 297"
+   width="560"
+   height="586"
+   viewBox="0 0 148.16688 155.04588"
    version="1.1"
    id="svg1"
-   inkscape:version="1.4.2 (ebf0e940, 2025-05-08)"
-   sodipodi:docname="krystal_czar.svg"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   sodipodi:docname="hematite.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -24,14 +24,14 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      inkscape:zoom="0.18529742"
-     inkscape:cx="466.81708"
-     inkscape:cy="550.46638"
-     inkscape:window-width="896"
-     inkscape:window-height="399"
-     inkscape:window-x="0"
-     inkscape:window-y="25"
-     inkscape:window-maximized="0"
-     inkscape:current-layer="layer1" />
+     inkscape:cx="469.51544"
+     inkscape:cy="121.42641"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g43" />
   <defs
      id="defs1" />
   <g
@@ -40,7 +40,7 @@
      id="layer1">
     <g
        id="g43"
-       transform="matrix(1.5759443,0,0,1.6549025,-77.207016,-210.10645)">
+       transform="matrix(1.5759443,0,0,1.6549025,-107.19259,-274.36126)">
       <ellipse
          style="fill:#333333;stroke-width:0.264583"
          id="path26"

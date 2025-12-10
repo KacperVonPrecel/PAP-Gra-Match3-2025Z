@@ -2,13 +2,13 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="210mm"
-   height="297mm"
-   viewBox="0 0 210 297"
+   width="471"
+   height="423"
+   viewBox="0 0 124.61884 111.91868"
    version="1.1"
    id="svg6571"
-   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
-   sodipodi:docname="COREGOLEM.svg"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   sodipodi:docname="emerald.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -26,12 +26,12 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:zoom="0.914906"
-     inkscape:cx="312.05391"
-     inkscape:cy="560.71334"
-     inkscape:window-width="3840"
-     inkscape:window-height="2036"
-     inkscape:window-x="-12"
-     inkscape:window-y="-12"
+     inkscape:cx="312.05392"
+     inkscape:cy="297.84481"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1" />
   <defs
@@ -72,7 +72,7 @@
     <g
        id="g3975"
        inkscape:label="core"
-       transform="matrix(4.1631967,0,0,4.02045,-281.53247,-330.83224)">
+       transform="matrix(4.1631967,0,0,4.02045,-322.30851,-413.5411)">
       <ellipse
          style="fill:#55d400;fill-opacity:1;stroke-width:0.270688"
          id="path3668-7"
@@ -119,7 +119,7 @@
     <g
        id="g4762-9"
        clip-path="url(#clipPath4764-1)"
-       transform="matrix(4.1631967,0,0,4.02045,-465.36158,-331.12742)">
+       transform="matrix(4.1631967,0,0,4.02045,-506.13762,-413.83628)">
       <g
          inkscape:label="Clip"
          id="g4760-2"
@@ -161,7 +161,7 @@
     <g
        id="g4762-9-0"
        clip-path="url(#clipPath4764-1-6)"
-       transform="matrix(4.1631967,0,0,4.02045,-483.74435,-301.37637)">
+       transform="matrix(4.1631967,0,0,4.02045,-524.52039,-384.08523)">
       <g
          inkscape:label="Clip"
          id="g4760-2-2">
@@ -202,7 +202,7 @@
     <g
        id="g4762"
        clip-path="url(#clipPath4764)"
-       transform="matrix(4.1631967,0,0,4.02045,-467.10228,-313.53208)">
+       transform="matrix(4.1631967,0,0,4.02045,-507.87832,-396.24094)">
       <g
          inkscape:label="Clip"
          id="g4760">
