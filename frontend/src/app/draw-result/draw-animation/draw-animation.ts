@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, HostListener, input, output, ViewChild } from '@angular/core';
-import { DrawResultEntry } from '../../user-data/user-data-service';
+import { characterFileMap, DrawResultEntry } from '../../user-data/user-data-service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -13,9 +13,10 @@ export class DrawAnimation {
 	canvasRef!: ElementRef<HTMLCanvasElement>;
 	private drawingContext!: CanvasRenderingContext2D;
 	finished = output<void>();
-	resultEntry = input<DrawResultEntry>();
+	resultEntry = input.required<DrawResultEntry>();
 	private width!: number;
 	private height!: number;
+	private svgImage: HTMLImageElement = new Image();
 	private circles = [
 		{ alpha: (Math.PI * 2) / 3, startingAlpha: (Math.PI * 2) / 3 },
 		{ alpha: (Math.PI * 4) / 3, startingAlpha: (Math.PI * 4) / 3 },
@@ -82,7 +83,11 @@ export class DrawAnimation {
 			this.drawingContext.fill();
 
 			if (radiusFromCenter <= 0) {
-				this.animateCharacter(2);
+				this.svgImage.onload = () => {
+					this.animateCharacter(2);
+				};
+				this.svgImage.src = 'assets/characters/' + characterFileMap[this.resultEntry().characterType];
+
 				return;
 			}
 		}
@@ -91,7 +96,9 @@ export class DrawAnimation {
 	}
 
 	animateCharacter(circleRadius: number) {
-		const circleRadiusStep = 5 * (Math.min(this.height, this.width) / 1080);
+		const scale = Math.min(this.height, this.width) / 1080;
+		const maxRadius = Math.min(this.height, this.width) * 0.8;
+		const circleRadiusStep = scale;
 		this.drawingContext.clearRect(0, 0, this.width, this.height);
 		const x = this.width / 2;
 		const y = this.height / 2;
@@ -103,9 +110,26 @@ export class DrawAnimation {
 		this.drawingContext.arc(x, y, circleRadius * 3, 0, Math.PI * 2);
 		this.drawingContext.fill();
 
-		if (circleRadius > Math.min(this.height, this.width)) {
-			this.finished.emit();
-			console.log('ENTERED');
+		if (this.svgImage.complete) {
+			const imgWidth = this.svgImage.naturalWidth;
+			const imgHeight = this.svgImage.naturalHeight;
+			const imgScaledHeight = Math.min(1.5 * circleRadius, 0.8 * this.height);
+			const imgScaledWidth = (imgScaledHeight * imgWidth) / imgHeight;
+			const imgX = x - imgScaledWidth / 2;
+			const imgY = y - imgScaledHeight / 2;
+			//saving before changing alpha, so the alpha changes just for the image
+			this.drawingContext.save();
+			const alpha = Math.min(circleRadius / maxRadius, 1);
+			this.drawingContext.globalAlpha = alpha;
+
+			this.drawingContext.drawImage(this.svgImage, imgX, imgY, imgScaledWidth, imgScaledHeight);
+		}
+
+		if (circleRadius > maxRadius) {
+			setTimeout(() => {
+				this.finished.emit();
+				console.log('FINISHED');
+			}, 5000);
 			return;
 		}
 		requestAnimationFrame(() => this.animateCharacter(circleRadius + circleRadiusStep));

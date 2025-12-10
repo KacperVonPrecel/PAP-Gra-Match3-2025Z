@@ -126,13 +126,13 @@ export enum CharacterType {
 	RUBY_HORNED_DAME = 'RUBY_HORNED_DAME'
 }
 
-export enum CharacterFile {
-	AMETHYST_ENCHANTRESS = 'amethyst_enchantress.svg',
-	TRASH_MAN = 'trash_man.svg',
-	SACRED_CAT = 'sacred_cat.svg',
-	EMERALD_CORE_KNIGHT = 'emerald_core_knight.svg',
-	RUBY_HORNED_DAME = 'ruby_horned_dame.svg'
-}
+export const characterFileMap: { [key in CharacterType]: string } = {
+	[CharacterType.AMETHYST_ENCHANTRESS]: 'amethyst_enchantress.svg',
+	[CharacterType.TRASH_MAN]: 'trash_man.svg',
+	[CharacterType.SACRED_CAT]: 'sacred_cat.svg',
+	[CharacterType.EMERALD_CORE_KNIGHT]: 'emerald_core_knight.svg',
+	[CharacterType.RUBY_HORNED_DAME]: 'ruby_horned_dame.svg'
+};
 
 export enum DrawType {
 	COMMON = 'COMMON',
