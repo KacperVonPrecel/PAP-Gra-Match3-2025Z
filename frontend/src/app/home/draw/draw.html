@@ -1,30 +1,28 @@
 <div id="content">
-        <div class="content-box" id="draw-type-div">
-            <span id="draw-type">{{drawType.name}}</span>
-        </div>
-        <div class="content-box" id="draw-button-div">
-            <button id="prev-draw" matFab (click)="previous()">
-                <mat-icon>arrow_back_ios</mat-icon>
-            </button>
-            <button id="draw-button" mat-button [disabled]="amount <= 0 || amount * drawType.price > (userData | async)!.currency"
-                (click)="draw()">
-                Draw
-            </button>
-            <button id="next-draw" matFab (click)="next()">
-                <mat-icon>arrow_forward_ios</mat-icon>
-            </button>
-        </div>
-        <div class="content-box" id="amount-selection-div">
-            <div id="amount-display">
-                <button id="lower-amount" matIconButton (click)="decrease_amount()">
-                    <mat-icon fontIcon="arrow_back_ios"></mat-icon>
-                </button>
-                <span class="amount-text" id="amount" i18n>Number of draws: {{amount}}</span>
-                <span class="amount-text" id="price" i18n>Price: {{amount * drawType.price}}</span>
-                <button id="increase-amount" matIconButton (click)="increase_amount()">
-                    <mat-icon fontIcon="arrow_forward_ios"></mat-icon>
-                </button>
-            </div>
-
-        </div>
+	<div class="content-box" id="draw-type-div">
+		<span id="draw-type">{{ drawType.name }}</span>
+	</div>
+	<div class="content-box" id="draw-button-div">
+		<button id="prev-draw" matFab (click)="previous()">
+			<mat-icon>arrow_back_ios</mat-icon>
+		</button>
+		<button id="draw-button" mat-button [disabled]="amount <= 0 || amount * drawType.price > (userData | async)!.currency" (click)="draw()">
+			Draw
+		</button>
+		<button id="next-draw" matFab (click)="next()">
+			<mat-icon>arrow_forward_ios</mat-icon>
+		</button>
+	</div>
+	<div class="content-box" id="amount-selection-div">
+		<div id="amount-display">
+			<button id="lower-amount" matIconButton (click)="decrease_amount()">
+				<mat-icon fontIcon="arrow_back_ios"></mat-icon>
+			</button>
+			<span class="amount-text" id="amount" i18n>Number of draws: {{ amount }}</span>
+			<span class="amount-text" id="price" i18n>Price: {{ amount * drawType.price }}</span>
+			<button id="increase-amount" matIconButton (click)="increase_amount()">
+				<mat-icon fontIcon="arrow_forward_ios"></mat-icon>
+			</button>
+		</div>
+	</div>
 </div>

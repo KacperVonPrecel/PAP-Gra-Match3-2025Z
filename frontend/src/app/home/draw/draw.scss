@@ -1,101 +1,78 @@
-#content
-{
-    background-color: rgba(240, 226, 163, 0.2);
-    margin-left: 5rem;
-    margin-right: 5rem;
-    //margin-bottom: 2rem;
-    border-radius: 1rem;
-    box-sizing: border-box;
-    //padding: 1rem;
-    display: flex;
+#content {
+	button {
+		background-color: rgba(102, 78, 76);
+		color: white;
+	}
+	display: flex;
+	flex-direction: column;
+	min-height: 100%;
+	.content-box {
+		display: flex;
+		flex: 1;
+		align-items: center;
+	}
+	#draw-type-div {
+		justify-content: center;
+		margin-top: 1rem;
+		#draw-type {
+			font-size: 2rem;
+			color: white;
+			text-shadow: 5px 5px 6px rgba(102, 78, 76, 1);
+		}
+	}
+	#draw-button-div {
+		justify-content: space-around;
+		#draw-button {
+			padding: 2rem 2rem;
+			font-size: 1.5rem;
+			box-shadow: 2px 2px 6px rgba(102, 78, 76, 0.5);
+		}
+		#draw-button[disabled] {
+			cursor: not-allowed;
+			box-shadow: none;
+			filter: grayscale(75%);
+		}
+		#prev-draw {
+			//margin-right: auto;
+		}
+		#next-draw {
+			//margin-left: auto;
+		}
+	}
+	#amount-selection-div {
+		justify-content: center;
+		margin-bottom: 1rem;
+		#amount-display {
+			flex-shrink: 1;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background-color: rgba(240, 226, 163, 0.8);
+			padding: 2rem;
 
-    button
-    {
-        background-color: rgba(102, 78, 76);
-        color: white;
-    }
-    display: flex;
-    flex-direction: column;
-    min-height: 100%;
-    .content-box
-    {
-        display: flex;
-        flex: 1;
-        align-items: center;
-    }
-    #draw-type-div{
-        justify-content: center;
-        margin-top: 1rem;
-        #draw-type
-        {
-            font-size: 2rem;
-            color:white;
-            text-shadow: 5px 5px 6px rgba(102, 78, 76 ,1);
-        }
-    }
-    #draw-button-div
-    {
-        justify-content: space-around;
-        #draw-button{
-            padding: 2rem 2rem;
-            font-size: 1.5rem;
-            box-shadow: 2px 2px 6px rgba(102, 78, 76,0.5);
-        }
-        #draw-button[disabled] {
-            cursor: not-allowed;
-            box-shadow: none;
-            filter: grayscale(75%);
-}
-        #prev-draw
-        {
-            //margin-right: auto;
-        }
-        #next-draw
-        {
-            //margin-left: auto;
-        }
-    }
-    #amount-selection-div
-    {
-        justify-content: center;
-        margin-bottom: 1rem;
-        #amount-display
-        {
-            flex-shrink: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: rgba(240, 226, 163, 0.8);
-            padding: 2rem;
-
-            border-radius: 10px;
+			border-radius: 10px;
 			border-width: 2px;
 			border-style: solid;
 			border-color: rgb(240, 226, 163, 0.6);
 			box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.2);
 
-            #lower-amount
-            {
-                margin-right: 3rem;
-            }
-            #increase-amount
-            {
-                margin-left: 3rem;
-            }
-            .amount-text{
-                color: rgba(102, 78, 76 ,1);
-                text-shadow: rgba(0, 0, 0, 0.2);
-                font-size: 1.1rem;
-            }
-            #amount
-            {
-                //padding-right: 0.1rem;
-            }
-            #price
-            {
-                padding-left: 1rem;
-            }
-
-        }
-    }
+			#lower-amount {
+				margin-right: 3rem;
+			}
+			#increase-amount {
+				margin-left: 3rem;
+			}
+			.amount-text {
+				color: rgba(102, 78, 76, 1);
+				text-shadow: rgba(0, 0, 0, 0.2);
+				font-size: 1.1rem;
+			}
+			#amount {
+				//padding-right: 0.1rem;
+			}
+			#price {
+				padding-left: 1rem;
+			}
+		}
+	}
 }
