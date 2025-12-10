@@ -1,7 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FireflyBackground } from '../../background/firefly-background/firefly-background';
 import { DrawResult } from '../../user-data/user-data-service';
-import { DrawResultService } from '../draw-result-service';
 import { Router } from '@angular/router';
 import { DrawAnimation } from '../draw-animation/draw-animation';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,11 +17,18 @@ export class DrawResultControllerPage {
 	private _currentEntry: number = 0;
 	private _showSummary: boolean = false;
 	private summaryTimeout = 0;
-	constructor(
-		private drawResultService: DrawResultService,
-		private router: Router
-	) {
-		this._result = this.drawResultService.getResult();
+	private router = inject(Router);
+	constructor() {
+		//private drawResultService: DrawResultService,
+		//this._result = this.drawResultService.getResult();
+		const nav = this.router.currentNavigation();
+		const state = nav?.extras.state as { result: DrawResult };
+		if (!state?.result) {
+			this.router.navigate(['/main/home/draw']);
+			return;
+		}
+
+		this._result = state.result;
 	}
 
 	ngAfterViewInit() {

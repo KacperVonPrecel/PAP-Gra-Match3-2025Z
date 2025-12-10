@@ -3,7 +3,7 @@
 	@if (!showSummary) {
 		<app-draw-animation class="content" [resultEntry]="result.results[currentEntry]" (finished)="onAnimationFinished()"> </app-draw-animation>
 	} @else {
-		<app-draw-summary class="content"></app-draw-summary>
+		<app-draw-summary class="content" [_result]="result.results"></app-draw-summary>
 	}
 
 	<div id="skip-button-container">
