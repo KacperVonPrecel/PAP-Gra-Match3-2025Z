@@ -11,7 +11,7 @@ describe('UserDataService', () => {
 	const userData: UserData = {
 		characters: [
 			{
-				characterType: CharacterType.FIRST_CHARACTER,
+				characterType: CharacterType.AMETHYST_ENCHANTRESS,
 				damage: 100,
 				health: 1000,
 				level: 1,
@@ -19,7 +19,7 @@ describe('UserDataService', () => {
 				currentCopiesCount: 5
 			},
 			{
-				characterType: CharacterType.SECOND_CHARACTER,
+				characterType: CharacterType.TRASH_MAN,
 				damage: 150,
 				health: 800,
 				level: 2,
@@ -31,7 +31,7 @@ describe('UserDataService', () => {
 	};
 
 	const maxLevelCharacterData: CharacterData = {
-		characterType: CharacterType.FIRST_CHARACTER,
+		characterType: CharacterType.AMETHYST_ENCHANTRESS,
 		damage: 300,
 		health: 2000,
 		level: 10,

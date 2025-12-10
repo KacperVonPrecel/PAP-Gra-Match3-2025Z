@@ -84,13 +84,13 @@ export class UserDataService {
 	// Also handling game and should be here. Like updating currency after win/loss.
 	// This methods should update the _userData BehaviorSubject accordingly.
 
-	draw(drawRequest: DrawRequest, cost:number): Observable<DrawResult> {
-		this._userData.subscribe((res)=>res!.currency-=cost);
-		return this.http.post('api/user/draw_characters', drawRequest, {responseType: 'json'}).pipe(
+	draw(drawRequest: DrawRequest, cost: number): Observable<DrawResult> {
+		this._userData.subscribe((res) => (res!.currency -= cost));
+		return this.http.post('api/user/draw_characters', drawRequest, { responseType: 'json' }).pipe(
 			map((result) => {
-					return result as DrawResult;
-				})
-		)
+				return result as DrawResult;
+			})
+		);
 	}
 }
 
@@ -119,8 +119,8 @@ export interface CharacterData {
 }
 
 export enum CharacterType {
-	FIRST_CHARACTER = 'FIRST_CHARACTER',
-	SECOND_CHARACTER = 'SECOND_CHARACTER'
+	AMETHYST_ENCHANTRESS = 'AMETHYST_ENCHANTRESS',
+	TRASH_MAN = 'TRASH_MAN'
 }
 
 export enum DrawType {
@@ -134,11 +134,10 @@ export interface DrawRequest {
 	amount: number;
 }
 
-export interface DrawResultEntry{
+export interface DrawResultEntry {
 	characterType: CharacterType;
 	amount: number;
 }
-export interface DrawResult
-{
+export interface DrawResult {
 	results: DrawResultEntry[];
 }
