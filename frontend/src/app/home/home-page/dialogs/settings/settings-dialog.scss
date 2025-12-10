@@ -1,12 +1,15 @@
-#close-button
-{
-    background-color: rgba(102, 78, 76);
-    color: white;
+.settings-buttons {
+	background-color: rgba(102, 78, 76);
+	color: white;
+}
+#content {
+	display: flex;
+	flex-direction: column;
 }
 
 //because its rendered in the parent (home-page)
 :host {
-  display: block;
-  background-color: rgba(240, 226, 163);
-  padding: 20px;
+	display: block;
+	background-color: rgba(240, 226, 163);
+	padding: 20px;
 }
