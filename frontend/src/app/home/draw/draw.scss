@@ -14,10 +14,20 @@
 	#draw-type-div {
 		justify-content: center;
 		margin-top: 1rem;
-		#draw-type {
+		#draw-type-background {
+			border-radius: 10px;
+			border-width: 2px;
+			border-style: solid;
+			border-color: rgb(240, 226, 163, 0.6);
+			box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.2);
+
+			background: rgb(240, 226, 163, 0.6);
+			padding: 1rem;
 			font-size: 2rem;
 			color: white;
-			text-shadow: 5px 5px 6px rgba(102, 78, 76, 1);
+			#draw-type {
+				text-shadow: 5px 5px 6px rgba(102, 78, 76, 1);
+			}
 		}
 	}
 	#draw-button-div {
