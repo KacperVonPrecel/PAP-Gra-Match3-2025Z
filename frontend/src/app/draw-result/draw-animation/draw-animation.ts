@@ -98,7 +98,7 @@ export class DrawAnimation {
 	animateCharacter(circleRadius: number) {
 		const scale = Math.min(this.height, this.width) / 1080;
 		const maxRadius = Math.min(this.height, this.width) * 0.8;
-		const circleRadiusStep = scale;
+		const circleRadiusStep = 1.5 * scale;
 		this.drawingContext.clearRect(0, 0, this.width, this.height);
 		const x = this.width / 2;
 		const y = this.height / 2;
@@ -123,13 +123,27 @@ export class DrawAnimation {
 			this.drawingContext.globalAlpha = alpha;
 
 			this.drawingContext.drawImage(this.svgImage, imgX, imgY, imgScaledWidth, imgScaledHeight);
+
+			/*
+			styling in ts so it gets scaled with the circleRadius -
+			in css we would need to update the size every frame manually as well,
+			and the text wouldnt be on the canvas, but below it or overlayed over it -
+			seems more difficult
+			*/
+			const fontSize = 20 * scale + 30 * (circleRadius / maxRadius);
+			this.drawingContext.font = `${fontSize}px sans-serif`;
+			this.drawingContext.fillStyle = `rgba(255, 255, 255)`;
+			this.drawingContext.textAlign = 'center';
+			this.drawingContext.textBaseline = 'top';
+			const textY = imgY + imgScaledHeight + 10;
+			this.drawingContext.fillText('x ' + this.resultEntry().amount.toString(), x, textY);
 		}
 
 		if (circleRadius > maxRadius) {
 			setTimeout(() => {
 				this.finished.emit();
 				console.log('FINISHED');
-			}, 5000);
+			}, 3000);
 			return;
 		}
 		requestAnimationFrame(() => this.animateCharacter(circleRadius + circleRadiusStep));
