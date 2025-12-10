@@ -58,7 +58,7 @@ export class DrawAnimation {
 	animate(centerX: number, centerY: number, begginingRadius: number) {
 		const alpha_step = 0.05;
 		const circle_radius = 30;
-		const radial_change = -10; //b in the equation
+		const radial_change = -35 * (begginingRadius / 1080); //b in the equation
 		this.drawing_context.clearRect(0, 0, this.width, this.height);
 		for (const circle of this.circles) {
 			circle.alpha += alpha_step;
