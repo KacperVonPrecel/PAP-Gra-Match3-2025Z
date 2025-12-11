@@ -1,11 +1,11 @@
 .firefly-background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  background-image: url('../../../assets/backgrounds/tlo_temp.png');
-  background-size: cover;
-  background-position: center;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+	background-image: url('../../../assets/backgrounds/tlo_temp.png'); //XXX change url
+	background-size: cover;
+	background-position: center;
 }

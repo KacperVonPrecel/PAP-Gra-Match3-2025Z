@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, Input, input } from '@angular/core';
 import { Router } from '@angular/router';
 import { DrawResult, DrawResultEntry } from '../../../user-data/user-data-service';
 import { MatList, MatListItem } from '@angular/material/list';
@@ -10,21 +10,12 @@ import { MatList, MatListItem } from '@angular/material/list';
 	styleUrl: './draw-summary.scss'
 })
 export class DrawSummary {
-	//private _result!: DrawResult;
-	_result = input.required<DrawResultEntry[]>();
-	constructor(
-		//private drawResultService: DrawResultService,
-		private router: Router
-	) {}
+	@Input() result!: DrawResultEntry[];
+	constructor(private router: Router) {}
 
 	ngAfterViewInit() {
-		if (!this._result()) {
+		if (!this.result) {
 			this.router.navigate(['/main/home/draw']);
-			return;
 		}
-	}
-
-	get result() {
-		return this._result();
 	}
 }

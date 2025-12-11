@@ -14,6 +14,6 @@ import { AsyncPipe } from '@angular/common';
 export class SettingsDialog {
 	constructor(private userDataService: UserDataService) {}
 	get userData(): Observable<UserData> {
-		return this.userDataService.userData;
+		return this.userDataService.userDataObservable;
 	}
 }

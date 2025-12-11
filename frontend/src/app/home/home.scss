@@ -33,10 +33,12 @@
 			font-size: 2rem;
 			color: white;
 		}
+
 		#settings {
 			margin-right: auto;
 		}
-		#utility-buttons-wrapper {
+
+		#data-contener {
 			display: flex;
 			flex: 1;
 			flex-direction: row;
@@ -44,6 +46,7 @@
 		}
 	}
 
+	//XXX maybe change it a little bit
 	#content {
 		flex: 1;
 		min-height: 0;

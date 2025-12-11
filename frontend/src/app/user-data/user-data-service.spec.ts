@@ -35,7 +35,7 @@ describe('UserDataService', () => {
 		damage: 300,
 		health: 2000,
 		level: 10,
-		requiredCopiesForNextLevel: null, // Max level
+		requiredCopiesForNextLevel: null,
 		currentCopiesCount: 50
 	};
 
@@ -108,7 +108,7 @@ describe('UserDataService', () => {
 
 	describe('userData observable', () => {
 		it('should throw error if accessed before data is loaded', (done) => {
-			service.userData.subscribe({
+			service.userDataObservable.subscribe({
 				next: () => fail('Should not emit'),
 				error: (error: Error) => {
 					expect(error.message).toBe('User data not loaded yet.');
@@ -122,7 +122,7 @@ describe('UserDataService', () => {
 			const req = httpMock.expectOne('api/user/data');
 			req.flush(userData);
 
-			service.userData.subscribe((data: UserData) => {
+			service.userDataObservable.subscribe((data: UserData) => {
 				expect(data).toEqual(userData);
 				done();
 			});
@@ -140,17 +140,17 @@ describe('UserDataService', () => {
 			req.flush(userData);
 
 			setTimeout(() => {
-				service.userData.subscribe((data: UserData) => {
+				service.userDataObservable.subscribe((data: UserData) => {
 					expect(data).toEqual(userData);
 					checkDone();
 				});
 
-				service.userData.subscribe((data: UserData) => {
+				service.userDataObservable.subscribe((data: UserData) => {
 					expect(data).toEqual(userData);
 					checkDone();
 				});
 
-				service.userData.subscribe((data: UserData) => {
+				service.userDataObservable.subscribe((data: UserData) => {
 					expect(data).toEqual(userData);
 					checkDone();
 				});
@@ -168,7 +168,7 @@ describe('UserDataService', () => {
 			req.flush(mockDataWithMaxLevel);
 
 			setTimeout(() => {
-				service.userData.subscribe((data: UserData) => {
+				service.userDataObservable.subscribe((data: UserData) => {
 					expect(data.characters[0].requiredCopiesForNextLevel).toBeNull();
 					expect(data.characters[0].level).toBe(10);
 					done();
@@ -240,8 +240,7 @@ describe('UserDataService', () => {
 			req1.flush(userData);
 
 			setTimeout(() => {
-				// Subscribe to userData
-				subscription = service.userData.subscribe((data: UserData) => {
+				subscription = service.userDataObservable.subscribe((data: UserData) => {
 					values.push(data);
 
 					if (values.length === 2) {
@@ -252,7 +251,6 @@ describe('UserDataService', () => {
 					}
 				});
 
-				// Load updated data
 				const updatedUserData: UserData = {
 					characters: userData.characters,
 					currency: 7500 // Updated currency
@@ -271,4 +269,10 @@ describe('UserDataService', () => {
 			//XXX
 		});
 	});
+
+	describe('draw', () => {
+		//XXXW
+
+		// XXXW Test for error inside tap() 
+	})
 });

@@ -1,10 +1,9 @@
-<app-firefly-background></app-firefly-background>
 <div id="content-container">
 	@if (!showSummary) {
-		<app-draw-animation class="content" [resultEntry]="result.results[currentEntry]" [colorSignal]="color" (finished)="onAnimationFinished()">
+		<app-draw-animation class="content" [resultEntry]="result.results[currentEntry]" [circleColor]="color" (finished)="onAnimationFinished()">
 		</app-draw-animation>
 	} @else {
-		<app-draw-summary class="content" [_result]="result.results"></app-draw-summary>
+		<app-draw-summary class="content" [result]="result.results"></app-draw-summary>
 	}
 
 	<div id="skip-button-container">

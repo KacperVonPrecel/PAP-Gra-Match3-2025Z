@@ -1,7 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from '@angular/router';
-import { BehaviorSubject, delay, map, Observable, of, retry, shareReplay, Subscription } from 'rxjs';
+import { BehaviorSubject, catchError, delay, EMPTY, map, Observable, of, retry, shareReplay, Subscription, take, tap } from 'rxjs';
 import { UserDataLoadingPage } from './user-data-loading-page/user-data-loading-page';
 
 @Injectable({
@@ -22,10 +22,10 @@ export class UserDataService {
 	}
 
 	/**
-	 * Observable that emits the user data once it's loaded.
-	 * Throws an error if accessed before data is loaded.
+	 * @returns observable that emits the user data once it's loaded.
+	 * @throws an error if accessed before data is loaded.
 	 */
-	get userData(): Observable<UserData> {
+	get userDataObservable(): Observable<UserData> {
 		return this._userData.asObservable().pipe(
 			map((userData) => {
 				if (!userData) {
@@ -37,8 +37,18 @@ export class UserDataService {
 	}
 
 	/**
+	 * @returns Current user data value.
+	 * @throws an error if accessed before data is loaded.
+	 */
+	get userData(): UserData {
+		const userData = this._userData.value;
+		if (userData === undefined) throw new Error('User data not loaded yet.');
+		return userData;
+	}
+
+	/**
 	 * It should be called to start loading user data when navigating to loading page.
-	 * After data is loaded it will be available through {@link userData} observable.
+	 * After data is loaded it will be available through {@link userDataObservable} observable.
 	 * After navigating away from loading page call {@link endLoadingUserData} to stop loading process.
 	 * It cannot be multiple loading processes at the same time. If it already is already working loading process this method will throw an error.
 	 */
@@ -84,11 +94,40 @@ export class UserDataService {
 	// Also handling game and should be here. Like updating currency after win/loss.
 	// This methods should update the _userData BehaviorSubject accordingly.
 
+	/**
+	 * @param cost cannot be negative. It need to be lower than {@link userData} {@link UserData#currency}, otherwise error will be thrown.
+	 * @returns observable which need be subscribed to perform request. It shouldn't be unsubscribed because server possibly can perform change in user state
+	 * and page won't be updated about that.
+	 */
 	draw(drawRequest: DrawRequest, cost: number): Observable<DrawResult> {
-		this._userData.subscribe((res) => (res!.currency -= cost));
+		if (cost < 0) throw Error('Cost cannot be negative');
+		if (this.userData.currency < cost) throw Error('Too much high cost');
+		// XXX handle maybe some errors, but what's possible options only 404 bad_request if not enough money. In this case move back to login screen.
 		return this.http.post('api/user/draw_characters', drawRequest, { responseType: 'json' }).pipe(
 			map((result) => {
 				return result as DrawResult;
+			}),
+			catchError((error: HttpErrorResponse) => {
+				// XXXW handle error 0 - NO_INTERNET. Show user error
+				return EMPTY;
+			}),
+			tap(() => {
+				const oldUserData = this.userData;
+				const currentCurrency = oldUserData.currency - cost;
+				// It shouldn't happen because before calling request currency value was checked if it enough.
+				// But possibly something can change currency in memory during this request, and this means some error in code,
+				// because it shouldn't be possible during request.
+
+				if (currentCurrency < 0) throw Error('Currency cannot be negative');
+				// XXXW change also characters data append characters count or create new character if in prev data it was absent.
+				this._userData.next({
+					characters: oldUserData.characters,
+					currency: currentCurrency
+				});
+			}),
+			catchError((error: Error) => {
+				//XXXW move back user to loading page.
+				return EMPTY;
 			})
 		);
 	}
@@ -104,18 +143,18 @@ export const userDataGuard: CanActivateFn = (route: ActivatedRouteSnapshot, stat
 };
 
 export interface UserData {
-	characters: CharacterData[];
-	currency: number;
+	readonly characters: CharacterData[];
+	readonly currency: number;
 }
 
 export interface CharacterData {
-	characterType: CharacterType;
-	damage: number;
-	health: number;
-	level: number;
+	readonly characterType: CharacterType;
+	readonly damage: number;
+	readonly health: number;
+	readonly level: number;
 	/** If it is null it means that character has reached max level. */
-	requiredCopiesForNextLevel: number | null;
-	currentCopiesCount: number;
+	readonly requiredCopiesForNextLevel: number | null;
+	readonly currentCopiesCount: number;
 }
 
 export enum CharacterType {
@@ -141,14 +180,14 @@ export enum DrawType {
 }
 
 export interface DrawRequest {
-	drawType: DrawType;
-	amount: number;
+	readonly drawType: DrawType;
+	readonly amount: number;
 }
 
 export interface DrawResultEntry {
-	characterType: CharacterType;
-	amount: number;
+	readonly characterType: CharacterType;
+	readonly amount: number;
 }
 export interface DrawResult {
-	results: DrawResultEntry[];
+	readonly results: DrawResultEntry[];
 }

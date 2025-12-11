@@ -1,10 +1,9 @@
-<app-firefly-background></app-firefly-background>
 <div id="main">
 	<div id="utility-bar">
 		<button id="settings" matFab (click)="openSettings()">
 			<mat-icon>settings</mat-icon>
 		</button>
-		<div id="utility-buttons-wrapper">
+		<div id="data-contener">
 			<span class="label" id="rank" (click)="openRanking()" i18n>{{ rank }} rank</span>
 			<span class="label" i18n>{{ (userData | async)!.currency }} money</span>
 		</div>
