@@ -1,0 +1,29 @@
+<div class="content">
+	<div class="game-status">
+		@if (historyMatchData.isPlayerWinner) {
+			<span class="win">Victory</span>
+		} @else {
+			<span class="lose">Defeat</span>
+		}
+	</div>
+
+	<span class="vs">VS</span>
+	<div class="usernames-contener">
+		<span class="username">{{ historyMatchData.playerUsername }}</span>
+		&nbsp;
+		<span class="elo-change"> ({{ historyMatchData.playerEloChange }})</span>
+		<span class="divider"></span>
+
+		<span class="divider"></span>
+		<span class="username">{{ historyMatchData.opponentsUsername }}</span>
+		&nbsp;
+		<span class="elo-change">({{ historyMatchData.opponentsEloChange }})</span>
+	</div>
+	<div class="characters-contener">
+		<div class="characters"></div>
+
+		<span class="divider"> </span>
+		<div class="characters"></div>
+	</div>
+	<div class="time">{{ msToHumanReadable() }} ago</div>
+</div>

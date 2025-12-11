@@ -6,14 +6,15 @@ import pap.project.game_history.model.MatchFromHistoryData;
 import java.util.Collections;
 import java.util.List;
 
+//XXXK record
 public class LoadHistoryMatchesData {
     private final @NonNull List<MatchFromHistoryData> matches;
-    private final boolean isMoreToLoad;
+    private final boolean moreToLoad;
 
     public LoadHistoryMatchesData(@NonNull List<MatchFromHistoryData> matches, boolean moreToLoad)
     {
         this.matches = Collections.unmodifiableList(matches);
-        this.isMoreToLoad = moreToLoad;
+        this.moreToLoad = moreToLoad;
     }
 
     /**
@@ -26,6 +27,6 @@ public class LoadHistoryMatchesData {
 
     public boolean isMoreToLoad()
     {
-        return isMoreToLoad;
+        return moreToLoad;
     }
 }

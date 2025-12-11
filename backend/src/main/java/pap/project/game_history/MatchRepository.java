@@ -18,7 +18,7 @@ public interface MatchRepository extends JpaRepository<Match, Long>
         FROM Match m
         JOIN m.winner w
         JOIN m.loser l
-        WHERE m.id <= :latestRecordId
+        WHERE m.id < :latestRecordId
            AND (w.id = :userId OR l.id = :userId)
         ORDER BY m.id DESC
         """)

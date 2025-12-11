@@ -1,0 +1,35 @@
+#content {
+	//background-color: rgba(240, 226, 163, 0.2);
+	//border-radius: 40px;
+	width: 50%;
+	height: 100%;
+	max-height: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	// display: flex;
+	// flex-direction: column;
+
+	#history-list {
+		//background-color: white;
+		height: 100%;
+		overflow-y: auto;
+		list-style-type: none;
+		padding: 0;
+		margin-left: auto;
+		margin-right: auto;
+		margin-top: 0%;
+		padding-inline-end: 0.3rem;
+
+		.history-element {
+		}
+	}
+}
+
+nav ul {
+	height: 200px;
+	width: 18%;
+}
+nav ul {
+	overflow: hidden;
+	overflow-y: scroll;
+}

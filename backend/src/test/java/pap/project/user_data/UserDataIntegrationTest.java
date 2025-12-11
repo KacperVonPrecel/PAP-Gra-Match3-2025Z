@@ -61,8 +61,8 @@ public class UserDataIntegrationTest
         final User user = new User("test-user", "test@example.com", "password");
         userRepository.saveAndFlush(user);
         userStatsRepository.saveAndFlush(new UserStats(user.getId().orElseThrow()));
-        final List<UserCharacter> userCharacters = List.of(new UserCharacter(CharacterType.FIRST_CHARACTER, user.getId().orElseThrow(), 1, 1),
-                new UserCharacter(CharacterType.SECOND_CHARACTER, user.getId().orElseThrow(), 10, 11));
+        final List<UserCharacter> userCharacters = List.of(new UserCharacter(CharacterType.AMETHYST_ENCHANTRESS, user.getId().orElseThrow(), 1, 1),
+                new UserCharacter(CharacterType.TRASH_MAN, user.getId().orElseThrow(), 10, 11));
         userCharactersRepository.saveAllAndFlush(userCharacters);
     }
 
@@ -75,8 +75,8 @@ public class UserDataIntegrationTest
         mockMvc.perform(MockMvcRequestBuilders.get("/api/user/data").with((user(user))))
                 .andExpect(status().isOk())
                 .andExpect(content().json(mapper.writeValueAsString(new UserDataResponse(
-                        List.of(new CharacterData(CharacterType.FIRST_CHARACTER, 100, 100, 1, OptionalInt.of(10), 1),
-                                new CharacterData(CharacterType.SECOND_CHARACTER, 1000, 1000, 10, OptionalInt.of(100), 11)),
+                        List.of(new CharacterData(CharacterType.AMETHYST_ENCHANTRESS, 100, 100, 1, OptionalInt.of(10), 1),
+                                new CharacterData(CharacterType.TRASH_MAN, 1000, 1000, 10, OptionalInt.of(100), 11)),
                         100
                 ))));
     }

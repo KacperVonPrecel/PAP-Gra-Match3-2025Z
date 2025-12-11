@@ -1,0 +1,155 @@
+#content {
+	button {
+		background-color: rgba(102, 78, 76);
+		color: white;
+	}
+	display: flex;
+	flex-direction: column;
+	min-height: 100%;
+	.content-box {
+		display: flex;
+		flex: 1;
+		align-items: center;
+	}
+	#draw-type-div {
+		justify-content: center;
+		margin-top: 1rem;
+		#draw-type-background {
+			border-radius: 10px;
+			border-width: 2px;
+			border-style: solid;
+			border-color: rgb(240, 226, 163, 0.6);
+			box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.2);
+
+			background: rgb(240, 226, 163, 0.6);
+			padding: 1rem;
+			font-size: 2rem;
+			color: white;
+			#draw-type {
+				text-shadow: 5px 5px 6px rgba(102, 78, 76, 1);
+			}
+		}
+	}
+	#draw-button-div {
+		justify-content: center;
+		display: flex;
+		align-items: center;
+		gap: 2rem;
+
+		#draw-button {
+			padding: 2rem 2rem;
+			font-size: 1.5rem;
+			//box-shadow: 2px 2px 6px rgba(102, 78, 76, 0.5);
+			box-shadow: 0 8px 20px rgba(249, 212, 187);
+			animation: buttonGlow 2s infinite alternate;
+		}
+		@keyframes buttonGlow {
+			from {
+				box-shadow: 0 16px 30px rgba(240, 226, 163, 0.9);
+			}
+			to {
+				box-shadow: 0 4px 20px rgba(226, 213, 139, 0.9);
+			}
+		}
+		#draw-button[disabled] {
+			cursor: not-allowed;
+			box-shadow: none;
+			filter: grayscale(75%);
+			animation: none;
+			box-shadow: none;
+		}
+		.draw-selection-but {
+			background: rgba(240, 226, 163, 0.9);
+			color: rgba(102, 78, 76, 1);
+			border: none;
+			border-radius: 50%;
+			width: 3rem;
+			height: 3rem;
+			font-size: 1.5rem;
+		}
+		#prev-draw {
+			//margin-right: auto;
+		}
+		#next-draw {
+			//margin-left: auto;
+		}
+	}
+	#amount-selection-div {
+		justify-content: center;
+		margin-bottom: 1rem;
+		display: flex;
+		#amount-display {
+			flex-shrink: 1;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background-color: rgba(240, 226, 163, 0.95);
+			padding: 2rem;
+
+			border-radius: 16px;
+			border-width: 2px;
+			border-style: solid;
+			border-color: rgb(240, 226, 163, 0.6);
+			box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.2);
+
+			font-size: 2rem;
+
+			#lower-amount {
+				margin-right: 2rem;
+			}
+			#increase-amount {
+				margin-left: 2rem;
+			}
+			.amount-text {
+				color: rgba(102, 78, 76, 1);
+				text-shadow: rgba(0, 0, 0, 0.2);
+				margin-left: 1rem;
+				margin-right: 1rem;
+			}
+			.amount-icon {
+				color: rgba(102, 78, 76, 1);
+			}
+			#amount {
+				//padding-right: 0.1rem;
+			}
+			#price {
+				//padding-left: 1rem;
+			}
+		}
+	}
+}
+
+@media (min-width: 1024px) {
+	#content {
+		#draw-button-div {
+			gap: 4rem;
+		}
+	}
+}
+
+@media (max-width: 900px) {
+	#content {
+		#amount-selection-div {
+			#amount-display {
+				padding: 1rem;
+				font-size: 1.1rem;
+				#lower-amount {
+					margin-right: 1rem;
+				}
+				#increase-amount {
+					margin-left: 1rem;
+				}
+				.amount-text {
+					margin-left: 0.5rem;
+					margin-right: 0.5rem;
+				}
+				.amount-but {
+					width: 2rem;
+					height: 2rem;
+					font-size: 1rem;
+					padding: 0.25rem;
+				}
+			}
+		}
+	}
+}

@@ -7,10 +7,14 @@ import pap.project.game_history.Match;
 import pap.project.game_history.MatchRepository;
 import pap.project.user_data.model.UserData;
 import pap.project.user_data.model.UserSessionData;
+import pap.project.user_data.model.controller.DrawCharacterRequest;
+import pap.project.user_data.model.controller.DrawCharacterResponse;
+import pap.project.user_data.model.controller.DrawResultEntry;
 import pap.project.user_stats.UserStats;
 import pap.project.user_stats.UserStatsRepository;
 import pap.project.users.characters.UserCharacter;
 import pap.project.users.characters.UserCharactersRepository;
+import pap.project.users.characters.model.CharacterType;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -123,6 +127,43 @@ public class UserDataService
             loserUserSessionData.unlock();
         }
     }
+    
+    @Transactional
+    public DrawCharacterResponse drawCharacters(@NonNull DrawCharacterRequest request, long userId)
+    {
+        final UserSessionData userDataSession = userSessionData.computeIfAbsent(userId, _ -> new UserSessionData());
+        userDataSession.lock();
+        try
+        {
+            final int cost = switch(request.drawType())
+            {
+                case COMMON -> 25;
+                case UNCOMMON -> 50;
+                case RARE -> 100;
+            } * request.amount();
+
+            if (cost > userDataSession.getUserData().currency())
+                throw new RuntimeException("XXX");
+
+            userDataSession.getUserData().changeUserDataAfterDrawing(cost);
+            int x = 0;
+
+            for (int i = 0; i < request.amount(); i++) {
+                x += new Random().nextBoolean() ? 1 : 0;
+            }
+
+            final List<DrawResultEntry> result = new ArrayList<>();
+            int characterOne = x;
+            int characterTwo = request.amount() - x;
+            if (characterOne != 0)
+                result.add(new DrawResultEntry(CharacterType.AMETHYST_ENCHANTRESS, characterOne));
+            if (characterTwo != 0)
+                result.add(new DrawResultEntry(CharacterType.AMETHYST_ENCHANTRESS, characterTwo));
+            return new DrawCharacterResponse(result);
+        } finally {
+            userDataSession.unlock();
+        }
+    }
 
     /**
      * This function don't lock for user id.
@@ -131,7 +172,7 @@ public class UserDataService
     private void loadUserSessionData(@NonNull UserSessionData userSessionData, long userId)
     {
         final List<UserCharacter> userCharacters = userCharactersRepository.findAllByUserId(userId);
-        final UserStats userData = userStatsRepository.findUserStatsById(userId).orElseThrow();
+        final UserStats userData = userStatsRepository.findUserStatsByUserId(userId).orElseThrow();
         final UserData loadedUserData = new UserData(userCharacters, userData.getCurrency(), userData.getEloPoints(), userData.getMatchPlayed(), userData.getMatchWon());
         userSessionData.setUserData(loadedUserData);
     }

@@ -17,11 +17,19 @@ public class UserSessionData
         this.userData = null;
     }
 
+    /**
+     * It can be called without problems multiple times in one thread without calling {@link #unlock()} before it,
+     * but it's required to call {@link #unlock()} the same times these method was called after it.
+     * For more information look {@link ReentrantLock}.
+     */
     public void lock()
     {
         lock.lock();
     }
 
+    /**
+     * For more information look {@link #unlock()}
+     */
     public boolean lockWithTimeout(long milliseconds)
     {
         try

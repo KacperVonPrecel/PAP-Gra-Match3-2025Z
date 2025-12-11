@@ -1,0 +1,82 @@
+#main {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+
+	#utility-bar {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		padding: 1rem;
+		padding-bottom: 5rem;
+		background: linear-gradient(to top, rgb(240, 226, 163, 0), rgb(240, 226, 163, 0.8));
+
+		button {
+			background-color: rgba(102, 78, 76);
+			color: white;
+		}
+
+		#rank {
+			cursor: pointer;
+		}
+
+		.label {
+			border-radius: 10px;
+			border-width: 2px;
+			border-style: solid;
+			border-color: rgb(240, 226, 163, 0.6);
+			box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.2);
+
+			background: rgb(240, 226, 163, 0.6);
+			padding: 1rem;
+			// margin-top: 0.5rem;
+			font-size: 2rem;
+			color: white;
+		}
+
+		#settings {
+			margin-right: auto;
+		}
+
+		#data-contener {
+			display: flex;
+			flex: 1;
+			flex-direction: row;
+			justify-content: space-around;
+		}
+	}
+
+	//XXX maybe change it a little bit
+	#content {
+		flex: 1;
+		min-height: 0;
+		background-color: rgba(240, 226, 163, 0.2);
+		margin-left: 5rem;
+		margin-right: 5rem;
+		border-radius: 1rem;
+		box-sizing: border-box;
+		padding: 1rem;
+	}
+
+	#navbar {
+		overflow-y: hidden;
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		padding: 1rem;
+		padding-top: 5rem;
+		background: linear-gradient(to bottom, rgb(240, 226, 163, 0), rgb(240, 226, 163, 0.8));
+
+		button {
+			color: white;
+			background-color: rgba(102, 78, 76);
+			margin: 0 1rem;
+			flex: 1;
+			max-width: 300px;
+
+			&.selected {
+				background-color: rgb(94, 139, 107);
+			}
+		}
+	}
+}

@@ -1,0 +1,41 @@
+<div id="main">
+	<div id="utility-bar">
+		<button id="settings" matFab (click)="openSettings()">
+			<mat-icon>settings</mat-icon>
+		</button>
+		<div id="data-contener">
+			<span class="label" id="rank" (click)="openRanking()" i18n>{{ rank }} rank</span>
+			<span class="label" i18n>{{ (userData | async)!.currency }} money</span>
+		</div>
+	</div>
+	<div id="content">
+		<router-outlet></router-outlet>
+	</div>
+	<nav id="navbar">
+		<button matFab [extended]="!smallScreen" [routerLinkActive]="['selected']" routerLink="/main/home/history">
+			<mat-icon>history</mat-icon>
+			@if (!smallScreen) {
+				<span class="button-text" i18n>History</span>
+			}
+		</button>
+		<button matFab [extended]="!smallScreen" [routerLinkActive]="['selected']" routerLink="/main/home/home-page">
+			<mat-icon>home</mat-icon>
+			@if (!smallScreen) {
+				<span i18n>Home</span>
+			}
+		</button>
+		<button matFab [extended]="!smallScreen">
+			<mat-icon>face</mat-icon>
+			@if (!smallScreen) {
+				<span i18n>Characters</span>
+			}
+		</button>
+
+		<button matFab [extended]="!smallScreen" [routerLinkActive]="['selected']" routerLink="/main/home/draw">
+			<mat-icon>casino</mat-icon>
+			@if (!smallScreen) {
+				<span i18n>Draw</span>
+			}
+		</button>
+	</nav>
+</div>

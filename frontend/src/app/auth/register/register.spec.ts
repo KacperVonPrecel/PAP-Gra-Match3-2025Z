@@ -195,7 +195,6 @@ describe('Register', () => {
 		expect(component.confirmPasswordControl.hasError('passwordMismatch')).toBeTrue();
 	});
 
-	/** Test nie przechodzi harnessy nie wykrywają błędów dla całego formularza. */
 	it('check if form show errors when passwords do not match', async () => {
 		await passwordInputHarness.setValue('TestPassword123!');
 		await confirmPasswordInputHarness.setValue('DifferentPassword123!');

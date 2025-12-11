@@ -49,6 +49,7 @@ public class MatchHistoryService
             final long opponentId = opponent.getId().orElseThrow();
 
             return new MatchFromHistoryData(
+                    match.getId().orElseThrow(),
                     playerId,
                     player.getUsername(),
                     opponentId,
@@ -56,8 +57,8 @@ public class MatchHistoryService
                     match.getFinishTime(),
                     (isPlayerWinner) ? match.getWinnerEloChange() : match.getLoserEloChange(),
                     (isPlayerWinner) ? match.getLoserEloChange() : match.getWinnerEloChange(),
-                    userStatsRepository.findUserStatsById(playerId).orElseThrow().getEloPoints(),
-                    userStatsRepository.findUserStatsById(opponentId).orElseThrow().getEloPoints(),
+                    userStatsRepository.findUserStatsByUserId(playerId).orElseThrow().getEloPoints(),
+                    userStatsRepository.findUserStatsByUserId(opponentId).orElseThrow().getEloPoints(),
                     isPlayerWinner
             );
         }).toList();

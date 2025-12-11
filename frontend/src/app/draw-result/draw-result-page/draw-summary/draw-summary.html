@@ -1,0 +1,11 @@
+<div id="list-container">
+	<div id="background">
+		<mat-list>
+			@for (result_entry of result; track result_entry.characterType) {
+				<mat-list-item class="list-item">
+					<span class="list-item-text" i18n>You got {{ result_entry.amount }} {{ result_entry.characterType }}!</span>
+				</mat-list-item>
+			}
+		</mat-list>
+	</div>
+</div>

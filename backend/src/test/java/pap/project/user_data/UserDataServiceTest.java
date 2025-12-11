@@ -38,9 +38,9 @@ public class UserDataServiceTest
     @Test
     public void test_get_user_data_no_user_data_in_memory()
     {
-        final List<UserCharacter> userCharacters = List.of(new UserCharacter(CharacterType.FIRST_CHARACTER, 1, 1, 1));
+        final List<UserCharacter> userCharacters = List.of(new UserCharacter(CharacterType.AMETHYST_ENCHANTRESS, 1, 1, 1));
         when(userCharactersRepository.findAllByUserId(anyLong())).thenReturn(userCharacters);
-        when(userStatsRepository.findUserStatsById(anyLong())).thenReturn(Optional.of(new UserStats(1)));
+        when(userStatsRepository.findUserStatsByUserId(anyLong())).thenReturn(Optional.of(new UserStats(1)));
 
         final UserData userData = userDataService.getUserData(1);
 
@@ -52,9 +52,9 @@ public class UserDataServiceTest
     @Test
     public void test_get_user_data_get_data_from_memory_if_loaded_previously()
     {
-        final List<UserCharacter> userCharacters = List.of(new UserCharacter(CharacterType.FIRST_CHARACTER, 1, 1, 1));
+        final List<UserCharacter> userCharacters = List.of(new UserCharacter(CharacterType.AMETHYST_ENCHANTRESS, 1, 1, 1));
         when(userCharactersRepository.findAllByUserId(anyLong())).thenReturn(userCharacters);
-        when(userStatsRepository.findUserStatsById(anyLong())).thenReturn(Optional.of(new UserStats(1)));
+        when(userStatsRepository.findUserStatsByUserId(anyLong())).thenReturn(Optional.of(new UserStats(1)));
 
         final UserData userData = userDataService.getUserData(1);
 
@@ -70,14 +70,14 @@ public class UserDataServiceTest
     @Test
     public void test_process_game_end_no_user_data_in_memory()
     {
-        final List<UserCharacter> userCharacters1 = List.of(new UserCharacter(CharacterType.FIRST_CHARACTER, 1, 1, 1));
+        final List<UserCharacter> userCharacters1 = List.of(new UserCharacter(CharacterType.AMETHYST_ENCHANTRESS, 1, 1, 1));
         when(userCharactersRepository.findAllByUserId(1)).thenReturn(userCharacters1);
-        when(userStatsRepository.findUserStatsById(1)).thenReturn(Optional.of(new UserStats(1)));
+        when(userStatsRepository.findUserStatsByUserId(1)).thenReturn(Optional.of(new UserStats(1)));
 
 
-        final List<UserCharacter> userCharacters2 = List.of(new UserCharacter(CharacterType.FIRST_CHARACTER, 2, 1, 1));
+        final List<UserCharacter> userCharacters2 = List.of(new UserCharacter(CharacterType.AMETHYST_ENCHANTRESS, 2, 1, 1));
         when(userCharactersRepository.findAllByUserId(2)).thenReturn(userCharacters2);
-        when(userStatsRepository.findUserStatsById(2)).thenReturn(Optional.of(new UserStats(2)));
+        when(userStatsRepository.findUserStatsByUserId(2)).thenReturn(Optional.of(new UserStats(2)));
 
 
         userDataService.processGameEnd(1, 2, 123);
