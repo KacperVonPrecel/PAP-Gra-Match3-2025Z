@@ -52,7 +52,7 @@ export class DrawResultControllerPage {
 	}
 
 	onAnimationFinished(): void {
-		if (this.currentEntry > this.result.results.length) {
+		if (this.currentEntry + 1 >= this.result.results.length) {
 			this.showSummaryToUser();
 		} else {
 			this._currentEntry++;
