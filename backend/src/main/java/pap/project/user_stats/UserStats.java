@@ -30,6 +30,8 @@ public class UserStats {
     @Column(name = "currency", nullable = false)
     private int currency = STARTING_CURRENCY;
 
+//    XXX @OneToMany dodać na postać pewnie FK i tutaj mieć listę postaci, bo ułatwi zapis
+
     protected UserStats() {}
 
     public UserStats(long userId) {

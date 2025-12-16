@@ -60,6 +60,7 @@ public class RegisterService
             return RegisterResult.REGISTERED;
         } catch (PersistenceException wyj)
         {
+            // XXX chyba łapanie wyjątku jest złe, bo chyba zostanie to zcommitowane do bazy danych mimo jednego błędu zapisu.
             LOG.warn("%s error saving to database".formatted(logPrefix), wyj);
             return RegisterResult.DATABASE_ERROR;
         }

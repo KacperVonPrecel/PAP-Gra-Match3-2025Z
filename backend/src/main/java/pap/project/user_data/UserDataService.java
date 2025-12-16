@@ -18,6 +18,7 @@ import pap.project.users.characters.model.CharacterType;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Service
 public class UserDataService
@@ -145,21 +146,14 @@ public class UserDataService
             if (cost > userDataSession.getUserData().currency())
                 throw new RuntimeException("XXX");
 
-            userDataSession.getUserData().changeUserDataAfterDrawing(cost);
-            int x = 0;
+            //XXX save to db result (new characters and money update
+            userDataSession.setUserData(userDataSession.getUserData().changeUserDataAfterDrawing(cost));
 
-            for (int i = 0; i < request.amount(); i++) {
-                x += new Random().nextBoolean() ? 1 : 0;
-            }
-
-            final List<DrawResultEntry> result = new ArrayList<>();
-            int characterOne = x;
-            int characterTwo = request.amount() - x;
-            if (characterOne != 0)
-                result.add(new DrawResultEntry(CharacterType.AMETHYST_ENCHANTRESS, characterOne));
-            if (characterTwo != 0)
-                result.add(new DrawResultEntry(CharacterType.AMETHYST_ENCHANTRESS, characterTwo));
-            return new DrawCharacterResponse(result);
+            return new DrawCharacterResponse(new Random().ints(request.amount(), 0, CharacterType.values().length)
+                    .mapToObj(i -> CharacterType.values()[i])
+                    .collect(Collectors.toMap(w -> w, _ -> 1, Integer::sum))
+                    .entrySet().stream().map(e -> new DrawResultEntry(e.getKey(), e.getValue()))
+                .toList());
         } finally {
             userDataSession.unlock();
         }
