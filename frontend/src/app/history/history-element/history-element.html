@@ -21,7 +21,7 @@
 	</div>
 	<div class="characters-contener">
 		<div class="characters">
-			@for (character of historyMatchData.playerCharacters; track $index) {
+			@for (character of historyMatchData.playerCharacters.reverse(); track $index) {
 				<app-history-character-component [character]="character"></app-history-character-component>
 			}
 		</div>
