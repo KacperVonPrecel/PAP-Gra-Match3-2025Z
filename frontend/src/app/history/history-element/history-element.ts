@@ -1,9 +1,10 @@
 import { Component, Input } from '@angular/core';
 import { HistoryMatchData } from '../history-service';
+import { HistoryCharacterComponent } from "./history-character-component/history-character-component";
 
 @Component({
 	selector: 'app-history-element',
-	imports: [],
+	imports: [HistoryCharacterComponent],
 	templateUrl: './history-element.html',
 	styleUrl: './history-element.scss'
 })

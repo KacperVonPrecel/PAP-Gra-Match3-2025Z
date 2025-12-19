@@ -1,0 +1,22 @@
+.contener {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	height: 100%;
+
+	.divider {
+		flex: 1;
+	}
+
+	.character-img {
+		width: 3rem;
+		margin-left: 8px;
+		margin-right: 8px;
+	}
+
+	.level {
+		color: rgb(138, 127, 245);
+		font-weight: 1000;
+		font-size: 1rem;
+	}
+}

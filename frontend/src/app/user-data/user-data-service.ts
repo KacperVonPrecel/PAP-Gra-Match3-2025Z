@@ -165,7 +165,11 @@ export enum CharacterType {
 	RUBY_HORNED_DAME = 'RUBY_HORNED_DAME'
 }
 
-export const characterFileMap: { [key in CharacterType]: string } = {
+export function getCharacterFileName(characterType: CharacterType): string {
+	return 'assets/characters/' + characterFileMap[characterType];
+}
+
+const characterFileMap: { [key in CharacterType]: string } = {
 	[CharacterType.AMETHYST_ENCHANTRESS]: 'amethyst_enchantress.svg',
 	[CharacterType.TRASH_MAN]: 'trash_man.svg',
 	[CharacterType.SACRED_CAT]: 'sacred_cat.svg',

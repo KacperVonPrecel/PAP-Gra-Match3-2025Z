@@ -9,6 +9,8 @@
 	display: flex;
 	flex-direction: column;
 
+	min-width: 450px;
+
 	& > * {
 		margin-bottom: 6px;
 	}
@@ -48,6 +50,20 @@
 		margin-bottom: -1.7rem;
 		text-align: center;
 		font-size: 1.5rem;
+	}
+
+	.characters-contener {
+		display: flex;
+
+		.divider {
+			flex: 1;
+		}
+
+		.characters {
+			display: flex;
+			flex-direction: row;
+			align-content: flex-end;
+		}
 	}
 	.time {
 		color: #423231;

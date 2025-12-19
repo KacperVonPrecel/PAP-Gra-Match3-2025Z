@@ -12,7 +12,7 @@ import {
 	output,
 	ViewChild
 } from '@angular/core';
-import { characterFileMap, DrawResultEntry } from '../../user-data/user-data-service';
+import { DrawResultEntry, getCharacterFileName } from '../../user-data/user-data-service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -72,7 +72,7 @@ export class DrawAnimation implements OnChanges, AfterViewInit, OnDestroy {
 		{ alpha: 0, startingAlpha: 0 }
 	];
 
-	ngAfterViewInit() : void {
+	ngAfterViewInit(): void {
 		this.drawingContext = this.canvasRef.nativeElement.getContext('2d')!;
 		this.resizeCanvas();
 		this.startAnimation();
@@ -97,7 +97,7 @@ export class DrawAnimation implements OnChanges, AfterViewInit, OnDestroy {
 
 	startAnimation() {
 		// Preload character asset, to not unecesarly wait after ending of spriral animation.
-		this.svgImage.src = 'assets/characters/' + characterFileMap[this.resultEntry.characterType];
+		this.svgImage.src = getCharacterFileName(this.resultEntry.characterType);
 
 		// Reset last animation start timestamp
 		this.animationSpiralStartTimestamp = undefined;

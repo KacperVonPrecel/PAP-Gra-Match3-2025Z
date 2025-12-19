@@ -2,6 +2,7 @@ package pap.project.game_history.model;
 
 import org.springframework.lang.NonNull;
 
+import java.util.List;
 import java.util.OptionalLong;
 
 public record MatchFromHistoryData(
@@ -15,6 +16,8 @@ public record MatchFromHistoryData(
         int opponentsEloChange,
         int playerEloPoints,
         int opponentsEloPoints,
+        @NonNull List<HistoryCharacterData> playerCharacters,
+        @NonNull List<HistoryCharacterData> opponentCharacters,
         boolean isPlayerWinner
 )
 {}

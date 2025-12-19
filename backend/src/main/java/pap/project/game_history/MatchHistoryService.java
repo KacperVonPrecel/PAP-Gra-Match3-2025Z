@@ -4,10 +4,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import pap.project.game_history.model.HistoryCharacterData;
 import pap.project.game_history.model.MatchFromHistoryData;
 import pap.project.user_stats.UserStatsRepository;
 import pap.project.users.User;
 import pap.project.users.UserRepository;
+import pap.project.users.characters.model.CharacterType;
 
 import java.util.List;
 
@@ -59,6 +61,12 @@ public class MatchHistoryService
                     (isPlayerWinner) ? match.getLoserEloChange() : match.getWinnerEloChange(),
                     userStatsRepository.findUserStatsByUserId(playerId).orElseThrow().getEloPoints(),
                     userStatsRepository.findUserStatsByUserId(opponentId).orElseThrow().getEloPoints(),
+                    List.of(new HistoryCharacterData(CharacterType.AMETHYST_ENCHANTRESS, 50),
+                            new HistoryCharacterData(CharacterType.TRASH_MAN, 12),
+                            new HistoryCharacterData(CharacterType.SACRED_CAT, 1)),
+                    List.of(new HistoryCharacterData(CharacterType.EMERALD_CORE_KNIGHT, 23),
+                            new HistoryCharacterData(CharacterType.RUBY_HORNED_DAME, 40),
+                            new HistoryCharacterData(CharacterType.AMETHYST_ENCHANTRESS, 1)),
                     isPlayerWinner
             );
         }).toList();

@@ -20,10 +20,17 @@
 		<span class="elo-change">({{ historyMatchData.opponentsEloChange }})</span>
 	</div>
 	<div class="characters-contener">
-		<div class="characters"></div>
-
+		<div class="characters">
+			@for (character of historyMatchData.playerCharacters; track $index) {
+				<app-history-character-component [character]="character"></app-history-character-component>
+			}
+		</div>
 		<span class="divider"> </span>
-		<div class="characters"></div>
+		<div class="characters">
+			@for (character of historyMatchData.opponentCharacters; track $index) {
+				<app-history-character-component [character]="character"></app-history-character-component>
+			}
+		</div>
 	</div>
 	<div class="time">{{ msToHumanReadable() }} ago</div>
 </div>

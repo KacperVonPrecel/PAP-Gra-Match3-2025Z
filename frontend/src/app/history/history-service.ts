@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
+import { CharacterType } from '../user-data/user-data-service';
 
 @Injectable({
 	providedIn: 'root'
@@ -36,5 +37,12 @@ export interface HistoryMatchData {
 	finishTime: bigint;
 	playerEloChange: number;
 	opponentsEloChange: number;
+	playerCharacters: HistoryCharacterData[];
+	opponentCharacters: HistoryCharacterData[];
 	isPlayerWinner: boolean;
+}
+
+export interface HistoryCharacterData {
+	characterType: CharacterType;
+	level: number;
 }
