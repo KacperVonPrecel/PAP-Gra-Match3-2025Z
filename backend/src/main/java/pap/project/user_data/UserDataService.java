@@ -30,6 +30,7 @@ public class UserDataService
     private static final int ELO_UP = 20;
     private static final int CURRENCY_WINNER = 500;
     private static final int CURRENCY_LOSER = 200;
+    private static final int BASE_CHARACTER_LEVEL = 1;
 
     private final @NonNull UserCharactersRepository userCharactersRepository;
     private final @NonNull MatchRepository matchRepository;
@@ -149,8 +150,8 @@ public class UserDataService
             if (cost > userDataSession.getUserData().currency())
                 throw new RuntimeException("XXX");
 
-            //XXX save to db result (new characters and money update
             userDataSession.setUserData(userDataSession.getUserData().changeUserDataAfterDrawing(cost));
+            userStatsRepository.updateUserStatsAfterDrawing(userDataSession.getUserData().currency(), userId);
 
             List<DrawResultEntry> drawResults = Stream.generate(() -> {
                 Rarity drawRarity = drawRarity(request.drawType());
@@ -161,6 +162,35 @@ public class UserDataService
                     .entrySet().stream()
                     .map(e -> new DrawResultEntry(e.getKey(), e.getValue()))
                     .toList();
+
+            Set<CharacterType> drawnTypes = drawResults.stream()
+                    .map(DrawResultEntry::characterType)
+                    .collect(Collectors.toSet());
+
+            List<UserCharacter> existingCharacters = userCharactersRepository.findByUserIdAndCharacterTypeIn(userId, drawnTypes);
+
+            Map<CharacterType, UserCharacter> characterInventoryMap = existingCharacters.stream()
+                    .collect(Collectors.toMap(UserCharacter::getCharacterType, c -> c));
+
+            List<UserCharacter> charactersToSave = new ArrayList<>();
+
+            for (DrawResultEntry entry : drawResults)
+            {
+                CharacterType type = entry.characterType();
+                int count = entry.amount();
+
+                UserCharacter character = characterInventoryMap.get(type);
+                if (character == null)
+                {
+                    character = new UserCharacter(type, userId, BASE_CHARACTER_LEVEL, count);
+                    characterInventoryMap.put(type, character);
+                } else
+                {
+                    character.setCopiesCount(character.getCopiesCount() + count);
+                }
+                charactersToSave.add(character);
+            }
+            userCharactersRepository.saveAll(charactersToSave);
 
             return new DrawCharacterResponse(drawResults);
         } finally {
