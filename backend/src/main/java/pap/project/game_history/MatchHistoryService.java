@@ -32,6 +32,7 @@ public class MatchHistoryService
      * @param latestRecordId latest match id from which to load records
      * @param size maximum number of records which should be returned by this function
      */
+    // TODO XXXK: load used characters in the match
     public @Nullable LoadHistoryMatchesData loadMatches(long userId, long latestRecordId, int size)
     {
         if(!userRepository.existsById(userId)) return null;
