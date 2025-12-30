@@ -12,6 +12,6 @@ import java.util.Set;
 public interface UserCharactersRepository extends JpaRepository<UserCharacter, Long>
 {
     @NonNull List<UserCharacter> findAllByUserId(long userId);
-
+    @NonNull UserCharacter findById(long id);
     List<UserCharacter> findByUserIdAndCharacterTypeIn(long userId, Set<CharacterType> types);
 }

@@ -4,7 +4,10 @@ import jakarta.transaction.Transactional;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import pap.project.game_history.Match;
+import pap.project.game_history.MatchCharacters;
+import pap.project.game_history.MatchCharactersRepository;
 import pap.project.game_history.MatchRepository;
+import pap.project.game_history.model.HistoryCharacterData;
 import pap.project.user_data.model.UserData;
 import pap.project.user_data.model.UserSessionData;
 import pap.project.user_data.model.controller.DrawCharacterRequest;
@@ -35,17 +38,20 @@ public class UserDataService
     private final @NonNull UserCharactersRepository userCharactersRepository;
     private final @NonNull MatchRepository matchRepository;
     private final @NonNull UserStatsRepository userStatsRepository;
+    private final @NonNull MatchCharactersRepository matchCharactersRepository;
     // XXX it should be cleaned with some interval from userSessionData.
     private final @NonNull ConcurrentHashMap<Long, UserSessionData> userSessionData = new ConcurrentHashMap<>();
 
     public UserDataService(
             @NonNull UserCharactersRepository userCharactersRepository,
             @NonNull MatchRepository matchRepository,
-            @NonNull UserStatsRepository userStatsRepository)
+            @NonNull UserStatsRepository userStatsRepository,
+            @NonNull MatchCharactersRepository matchCharactersRepository)
     {
         this.userCharactersRepository = userCharactersRepository;
         this.matchRepository = matchRepository;
         this.userStatsRepository = userStatsRepository;
+        this.matchCharactersRepository = matchCharactersRepository;
     }
 
     /**
@@ -71,7 +77,7 @@ public class UserDataService
      * This function can take long time to execute, so don't call this in thread which need to do something else.
      */
     @Transactional
-    public void processGameEnd(long winnerId, long loserId, long finishTime)
+    public void processGameEnd(long winnerId, long loserId, long finishTime, List<HistoryCharacterData> winnerCharacters, List<HistoryCharacterData> loserCharacters)
     {
         final UserSessionData winnerUserSessionData = userSessionData.computeIfAbsent(winnerId, _ -> new UserSessionData());
         final UserSessionData loserUserSessionData  = userSessionData.computeIfAbsent(loserId, _ -> new UserSessionData());
@@ -88,7 +94,7 @@ public class UserDataService
             {
                 Thread.interrupted();
             }
-            processGameEnd(winnerId, loserId, finishTime);
+            processGameEnd(winnerId, loserId, finishTime, winnerCharacters, loserCharacters);
         }
 
         try
@@ -125,7 +131,15 @@ public class UserDataService
                     ELO_UP,
                     ELO_DOWN
             );
+            final MatchCharacters matchCharacters = new MatchCharacters(
+                    match,
+                    winnerCharacters,
+                    loserCharacters
+            );
+
+            matchCharactersRepository.save(matchCharacters);
             matchRepository.save(match);
+
         } finally
         {
             winnerUserSessionData.unlock();

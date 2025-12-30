@@ -18,6 +18,7 @@ public class UserStats {
     private long id;
 
     @OneToOne(fetch = FetchType.LAZY)
+    @MapsId
     @JoinColumn (name = "user_id", insertable = false, updatable = false)
     private User user;
 
