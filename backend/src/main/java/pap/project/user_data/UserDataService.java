@@ -10,16 +10,14 @@ import pap.project.game_history.MatchRepository;
 import pap.project.game_history.model.HistoryCharacterData;
 import pap.project.user_data.model.UserData;
 import pap.project.user_data.model.UserSessionData;
-import pap.project.user_data.model.controller.DrawCharacterRequest;
-import pap.project.user_data.model.controller.DrawCharacterResponse;
-import pap.project.user_data.model.controller.DrawResultEntry;
-import pap.project.user_data.model.controller.DrawType;
+import pap.project.user_data.model.controller.*;
 import pap.project.user_stats.UserStats;
 import pap.project.user_stats.UserStatsRepository;
 import pap.project.users.characters.UserCharacter;
 import pap.project.users.characters.UserCharactersRepository;
 import pap.project.users.characters.model.CharacterType;
 import pap.project.users.characters.model.Rarity;
+import pap.project.users.characters.model.controller.CharacterData;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -207,6 +205,42 @@ public class UserDataService
             userCharactersRepository.saveAll(charactersToSave);
 
             return new DrawCharacterResponse(drawResults);
+        } finally {
+            userDataSession.unlock();
+        }
+    }
+
+    @Transactional
+    public UpgradeCharacterResponse upgradeCharacter(@NonNull UpgradeCharacterRequest request, long userId, List<CharacterData> charactersData)
+    {
+        final UserSessionData userDataSession = userSessionData.computeIfAbsent(userId, _ -> new UserSessionData());
+        userDataSession.lock();
+        try
+        {
+            UserCharacter userCharacterToUpgrade = userCharactersRepository.findById(request.characterId());
+
+            if (userCharacterToUpgrade.getUserId() != userId)
+            {
+                throw new RuntimeException("This is not your character");
+            }
+            final CharacterData upgradeCharacterData = charactersData.stream()
+                    .filter(c -> c.characterType() == userCharacterToUpgrade.getCharacterType())
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("No such character type exist"));
+
+            if (userCharacterToUpgrade.getCopiesCount() < upgradeCharacterData.requiredCopiesForNextLevel().orElseThrow())
+            {
+                throw new RuntimeException("You don't have enough copies for this character");
+            }
+
+            userCharacterToUpgrade.setCopiesCount(userCharacterToUpgrade.getCopiesCount() - upgradeCharacterData.requiredCopiesForNextLevel().orElseThrow());
+            userCharacterToUpgrade.setLevel(userCharacterToUpgrade.getLevel() + 1);
+            userCharactersRepository.save(userCharacterToUpgrade);
+
+            userDataSession.setUserData(userDataSession.getUserData().changeUserDataAfterUpgrading(userCharacterToUpgrade));
+
+            return new UpgradeCharacterResponse();
+
         } finally {
             userDataSession.unlock();
         }

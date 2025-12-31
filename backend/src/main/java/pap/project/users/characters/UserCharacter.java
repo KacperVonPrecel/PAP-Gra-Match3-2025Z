@@ -85,4 +85,9 @@ public class UserCharacter
     {
         this.copiesCount = copiesCount;
     }
+
+    public void setLevel(int level)
+    {
+        this.level = level;
+    }
 }

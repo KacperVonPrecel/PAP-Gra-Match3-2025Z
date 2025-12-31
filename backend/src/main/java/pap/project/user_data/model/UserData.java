@@ -30,4 +30,19 @@ public record UserData(
                 matchPlayed,
                 matchWon);
     }
+
+    public @NonNull UserData changeUserDataAfterUpgrading(@NonNull UserCharacter updatedCharacter)
+    {
+        List<UserCharacter> newUserCharacters = userCharacters.stream()
+                .map(c -> c.getId().equals(updatedCharacter.getId()) ? updatedCharacter : c)
+                .toList();
+
+        return new UserData(
+                newUserCharacters,
+                currency,
+                eloPoints,
+                matchPlayed,
+                matchWon);
+    }
+
 }
