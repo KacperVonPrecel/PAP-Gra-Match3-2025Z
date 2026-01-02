@@ -246,6 +246,33 @@ public class UserDataService
         }
     }
 
+    @Transactional
+    public SetActiveTeamResponse setActiveTeam(@NonNull SetActiveTeamRequest request, long userId)
+    {
+        if (new HashSet<>(request.newTeamIds()).size() < request.newTeamIds().size())
+        {
+            throw new IllegalArgumentException("Team cannot contain any duplicate characters");
+        }
+
+        final UserSessionData userDataSession = userSessionData.computeIfAbsent(userId, _ -> new UserSessionData());
+        userDataSession.lock();
+        try
+        {
+            List<UserCharacter> selectedCharacters = userCharactersRepository.findByUserIdAndIdIn(userId, request.newTeamIds());
+            if (selectedCharacters.size() != request.newTeamIds().size()) {
+                throw new SecurityException("You don't have some of the selected characters");
+            }
+
+            userStatsRepository.updateUserStatsActiveTeam(request.newTeamIds(), userId);
+            userDataSession.setUserData(userDataSession.getUserData().changeUserDataActiveTeam(request.newTeamIds()));
+
+            return new SetActiveTeamResponse(userDataSession.getUserData().activeTeamIds());
+
+        } finally {
+            userDataSession.unlock();
+        }
+    }
+
     /**
      * This function don't lock for user id.
      * @param userSessionData this function change state of given object by calling {@link UserSessionData#setUserData(UserData)} for this object.
@@ -254,7 +281,7 @@ public class UserDataService
     {
         final List<UserCharacter> userCharacters = userCharactersRepository.findAllByUserId(userId);
         final UserStats userData = userStatsRepository.findUserStatsByUserId(userId).orElseThrow();
-        final UserData loadedUserData = new UserData(userCharacters, userData.getCurrency(), userData.getEloPoints(), userData.getMatchPlayed(), userData.getMatchWon());
+        final UserData loadedUserData = new UserData(userCharacters, userData.getActiveTeamIds(), userData.getCurrency(), userData.getEloPoints(), userData.getMatchPlayed(), userData.getMatchWon());
         userSessionData.setUserData(loadedUserData);
     }
 

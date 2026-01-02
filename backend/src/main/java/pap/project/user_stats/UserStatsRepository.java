@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -20,4 +21,9 @@ public interface UserStatsRepository extends JpaRepository<UserStats, Long>
     @Modifying (clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE UserStats u SET u.currency = ?1 WHERE u.id = ?2")
     void updateUserStatsAfterDrawing(int currency, long id);
+
+    @Modifying (clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE UserStats u SET u.activeTeamIds = ?1 WHERE u.id = ?2")
+    void updateUserStatsActiveTeam(List<Long> activeTeamIds, long id);
+
 }

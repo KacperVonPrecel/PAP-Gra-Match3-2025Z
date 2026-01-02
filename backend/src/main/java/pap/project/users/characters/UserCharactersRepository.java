@@ -14,4 +14,5 @@ public interface UserCharactersRepository extends JpaRepository<UserCharacter, L
     @NonNull List<UserCharacter> findAllByUserId(long userId);
     @NonNull UserCharacter findById(long id);
     List<UserCharacter> findByUserIdAndCharacterTypeIn(long userId, Set<CharacterType> types);
+    List<UserCharacter> findByUserIdAndIdIn(long userId, List<Long> ids);
 }
