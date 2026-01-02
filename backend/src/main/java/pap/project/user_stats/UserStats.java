@@ -7,7 +7,10 @@ import java.util.List;
 
 @Entity
 @Table (
-        name = "user_stats"
+        name = "user_stats",
+        indexes = {
+                @Index(name = "idx_user_stats_elo_points", columnList = "elo_points, total_wins")
+        }
 )
 public class UserStats {
     private static final int STARTING_CURRENCY = 1000;
@@ -37,8 +40,6 @@ public class UserStats {
     @CollectionTable(name = "user_active_team", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "active_team_ids", nullable = false)
     private List<Long> activeTeamIds;
-
-//    XXX @OneToMany dodać na postać pewnie FK i tutaj mieć listę postaci, bo ułatwi zapis
 
     protected UserStats() {}
 

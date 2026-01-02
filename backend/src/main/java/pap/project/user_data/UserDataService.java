@@ -102,6 +102,8 @@ public class UserDataService
             if (loserUserSessionData.getUserData() == null)
                 loadUserSessionData(loserUserSessionData, loserId);
 
+            // TODO XXXK: Add elo and currency changes calculation
+
             final UserData winnerNewUserData = winnerUserSessionData.getUserData().changeUserDataAfterGame(ELO_UP, CURRENCY_WINNER, true);
             winnerUserSessionData.setUserData(winnerNewUserData);
             userStatsRepository.updateUserStatsAfterGameEnd(
