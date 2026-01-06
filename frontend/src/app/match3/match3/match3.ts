@@ -2,78 +2,79 @@ import { Component } from '@angular/core';
 import { Board, Match3Service, MoveRequest } from '../match3-service';
 
 @Component({
-  selector: 'app-match3',
-  imports: [],
-  templateUrl: './match3.html',
-  styleUrl: './match3.scss',
+	selector: 'app-match3',
+	imports: [],
+	templateUrl: './match3.html',
+	styleUrl: './match3.scss'
 })
 export class Match3 {
-  private gameId?: number;
+	private gameId?: number;
 
-  public board: String = "";
-  
-  constructor(
-    private socket: Match3Service,
-  ) { }
+	public board: String = '';
 
-  connect(gameId: number): void {
-    this.gameId = gameId;
-    this.socket.subscribeToGame(this.gameId);
-    this.socket.board$.subscribe(board => { this.updateBoard(board) });
-    this.fetchBoard();
-  }
+	constructor(private socket: Match3Service) {}
 
-  disconnect(): void {
-    if (this.gameId != undefined) {
-      this.socket.unsubscribeFromGame();
-      this.gameId = undefined;
-    }
-  }
+	ngOnInit(): void {
+		const state = this.socket.getMockInitialState();
+		//render board
+	}
 
-  fetchBoard(): void {
-    if (this.gameId != undefined)
-      this.socket?.updateBoard(this.gameId);
-  }
+	connect(gameId: number): void {
+		console.log(gameId);
+		this.gameId = gameId;
+		this.socket.subscribeToGame(this.gameId);
+		this.socket.board$.subscribe((board) => {
+			this.updateBoard(board);
+		});
+		this.fetchBoard();
+	}
 
-  updateBoard(board: Board): void {
-    const boardBlocks = board.board;
+	disconnect(): void {
+		if (this.gameId != undefined) {
+			this.socket.unsubscribeFromGame();
+			this.gameId = undefined;
+		}
+	}
 
-    let output = "";
-    for (let i = 0; i < boardBlocks.length; i++) {
-      for (let j = 0; j < boardBlocks[i].length; j++) {
-        output += boardBlocks[i][j].blockType.toString();
-      }
-      output += "\n";
-    }
-    this.board = output;
-  }
+	fetchBoard(): void {
+		if (this.gameId != undefined) this.socket?.updateBoard(this.gameId);
+	}
 
-  fillBoard(): void {
-    if (this.gameId != undefined)
-      this.socket.fillBoard(this.gameId);
-  }
+	updateBoard(board: Board): void {
+		const boardBlocks = board.board;
 
-  dropFloatingBlocks(): void {
-    if (this.gameId != undefined)
-      this.socket.dropFloatingBlocks(this.gameId);
-  }
+		let output = '';
+		for (let i = 0; i < boardBlocks.length; i++) {
+			for (let j = 0; j < boardBlocks[i].length; j++) {
+				output += boardBlocks[i][j].blockType.toString();
+			}
+			output += '\n';
+		}
+		this.board = output;
+	}
 
-  makeMove(sourceRow: number, sourceColumn: number, targetRow: number, targetColumn: number): void {
-    if (this.gameId == undefined)
-      return;
+	fillBoard(): void {
+		if (this.gameId != undefined) this.socket.fillBoard(this.gameId);
+	}
 
-    const moveRequest: MoveRequest = {
-      sourceRow: sourceRow,
-      sourceColumn: sourceColumn,
-      targetRow: targetRow,
-      targetColumn: targetColumn
-    }
+	dropFloatingBlocks(): void {
+		if (this.gameId != undefined) this.socket.dropFloatingBlocks(this.gameId);
+	}
 
-    this.socket.swapBlocks(this.gameId, moveRequest);
-  }
+	makeMove(sourceRow: number, sourceColumn: number, targetRow: number, targetColumn: number): void {
+		if (this.gameId == undefined) return;
 
-  destroyMatchedBlocks(): void {
-    if (this.gameId != undefined)
-      this.socket.destroyMatchedBlocks(this.gameId);
-  }
+		const moveRequest: MoveRequest = {
+			sourceRow: sourceRow,
+			sourceColumn: sourceColumn,
+			targetRow: targetRow,
+			targetColumn: targetColumn
+		};
+
+		this.socket.swapBlocks(this.gameId, moveRequest);
+	}
+
+	destroyMatchedBlocks(): void {
+		if (this.gameId != undefined) this.socket.destroyMatchedBlocks(this.gameId);
+	}
 }
