@@ -1,11 +1,7 @@
 import { CrystalType, MoveRequest } from './match3-service';
 export interface GameState {
-	allowedMoves: MoveRequest[];
-	board: GameBoard;
 	currentPlayer: Player;
-	animationSteps: AnimationStep[];
-	animationIndex?: number;
-	lastMove?: PlayerMove;
+	boardState: BoardState;
 }
 
 export interface Crystal {
@@ -21,9 +17,6 @@ export enum CrystalState {
 	SWAPPED = 'swapped'
 }
 
-export interface GameBoard {
-	board: Crystal[][];
-}
 export enum Player {
 	ME = 'ME',
 	OPPONENT = 'OPPONENT'
@@ -55,4 +48,13 @@ export interface FallingBlock {
 export interface NewBlock {
 	position: Position;
 	crystal: Crystal;
+}
+
+export interface BoardState {
+	board: Crystal[][];
+	allowedMoves: MoveRequest[];
+	canPlayerMove: boolean;
+	animationSteps: AnimationStep[];
+	animationIndex?: number;
+	lastMove?: PlayerMove;
 }

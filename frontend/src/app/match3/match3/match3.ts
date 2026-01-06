@@ -1,22 +1,30 @@
 import { Component } from '@angular/core';
 import { Board, Match3Service, MoveRequest } from '../match3-service';
+import { BoardState, GameState } from '../game-state';
+import { GameBoard } from './board/game-board';
 
 @Component({
 	selector: 'app-match3',
-	imports: [],
+	imports: [GameBoard],
 	templateUrl: './match3.html',
 	styleUrl: './match3.scss'
 })
 export class Match3 {
 	private gameId?: number;
-
+	private gameState?: GameState; //nullable because if we dont connect, no state
 	public board: String = '';
 
 	constructor(private socket: Match3Service) {}
 
 	ngOnInit(): void {
-		const state = this.socket.getMockInitialState();
-		//render board
+		this.gameState = this.socket.getMockInitialState();
+	}
+
+	get boardState(): BoardState | null {
+		if (this.gameState) {
+			return this.gameState.boardState;
+		}
+		return null;
 	}
 
 	connect(gameId: number): void {

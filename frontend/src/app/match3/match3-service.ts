@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Client, IMessage, StompSubscription } from '@stomp/stompjs';
 import { Observable, Subject } from 'rxjs';
 import SockJS from 'sockjs-client';
-import { GameState, Player, GameBoard, Crystal, CrystalState } from './game-state';
+import { GameState, Player, Crystal, CrystalState } from './game-state';
 
 @Injectable({
 	providedIn: 'root'
@@ -157,7 +157,15 @@ export class Match3Service {
 			{ sourceRow: 3, sourceColumn: 3, targetRow: 3, targetColumn: 4 },
 			{ sourceRow: 5, sourceColumn: 1, targetRow: 6, targetColumn: 1 }
 		];
-		return { allowedMoves: allowedMoves, board: { board: mockBoard }, currentPlayer: Player.ME, animationSteps: [] };
+		return {
+			currentPlayer: Player.ME,
+			boardState: {
+				board: mockBoard,
+				allowedMoves: allowedMoves,
+				animationSteps: [],
+				canPlayerMove: true
+			}
+		};
 	}
 }
 

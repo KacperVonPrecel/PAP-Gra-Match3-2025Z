@@ -1,0 +1,18 @@
+<div id="board-background">
+	@if (state() && assetsLoaded) {
+		@for (row of state()!.board; track $index; let row_idx = $index) {
+			<div class="row">
+				@for (crystal of row; track $index; let column_idx = $index) {
+					<div
+						class="cell"
+						(pointerdown)="onPointerDown($event, row_idx, column_idx)"
+						(pointermove)="onPointerMove($event)"
+						(pointerup)="onPointerUp()"
+					>
+						<img [src]="getCrystalImage(crystal)" />
+					</div>
+				}
+			</div>
+		}
+	}
+</div>
