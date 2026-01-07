@@ -1,5 +1,6 @@
 package pap.project.match3;
 
+import org.springframework.lang.NonNull;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -18,32 +19,32 @@ public class Match3Controller
 
     @MessageMapping("/board/{gameId}/state")
     @SendTo("/topic/board/{gameId}/state")
-    public Match3Block[][] updateBoard(@DestinationVariable Integer gameId)
+    public Match3Block[][] updateBoard(@DestinationVariable int gameId)
     {
         return service.getBoard(gameId).getBlocks();
     }
 
     @MessageMapping("/board/{gameId}/fillBoard")
-    public void fillBoard(@DestinationVariable Integer gameId)
+    public void fillBoard(@DestinationVariable int gameId)
     {
         service.fillBoard(gameId);
     }
 
     @MessageMapping("/board/{gameId}/dropFloatingBlocks")
-    public void dropFloatingBlocks(@DestinationVariable Integer gameId)
+    public void dropFloatingBlocks(@DestinationVariable int gameId)
     {
         service.dropFloatingBlocks(gameId);
     }
 
     @MessageMapping("/board/{gameId}/swap")
-    public boolean swapBlocks(@DestinationVariable Integer gameId, Match3Board.MoveRequest moveRequest)
+    public boolean swapBlocks(@DestinationVariable int gameId, @NonNull Match3Board.MoveRequest moveRequest)
     {
         // TODO: Add bound-checks, if the request fits the board
         return service.swapBlocks(gameId, moveRequest);
     }
 
     @MessageMapping("/board/{gameId}/destroyMatchedBlocks")
-    public void destroyMatchedBlocks(@DestinationVariable Integer gameId)
+    public void destroyMatchedBlocks(@DestinationVariable int gameId)
     {
         service.destroyMatchedBlocks(gameId);
     }

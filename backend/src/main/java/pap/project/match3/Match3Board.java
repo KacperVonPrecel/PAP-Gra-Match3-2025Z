@@ -1,19 +1,21 @@
 package pap.project.match3;
 
+import org.springframework.lang.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class Match3Board
 {
-    private final Match3Block[][] board;
-    private final MatchableShape[] matchableShapes;
+    private final @NonNull Match3Block[][] board;
+    private final @NonNull MatchableShape[] matchableShapes;
 
-    private final Random random = new Random();
+    private final @NonNull Random random = new Random();
 
     public record MoveRequest(int sourceRow, int sourceColumn, int targetRow, int targetColumn) { };
 
-    public Match3Board(Match3Block[][] board, MatchableShape[] matchableShapes)
+    public Match3Board(@NonNull Match3Block[][] board, @NonNull MatchableShape[] matchableShapes)
     {
         this.board = board;
         this.matchableShapes = matchableShapes;
@@ -21,7 +23,7 @@ public class Match3Board
         fillBoard();
     }
 
-    public Match3Block[][] getBlocks()
+    public @NonNull Match3Block[][] getBlocks()
     {
         return board;
     }
@@ -32,7 +34,7 @@ public class Match3Board
         {
             for (Match3Block block : row)
             {
-                if (block.getBlockType() == Match3Block.BlockType.Empty)
+                if (block.getBlockType() == Match3Block.BlockType.EMPTY)
                     block.setBlockType(randomBlockType());
             }
         }
@@ -45,13 +47,13 @@ public class Match3Board
         {
             for (int j = board[i].length - 1; j >= 0; j--)
             {
-                if (board[i][j].getBlockType() != Match3Block.BlockType.Empty)
+                if (board[i][j].getBlockType() != Match3Block.BlockType.EMPTY)
                     continue;
 
                 int above = 1;
                 while (!isOutOfBounds(i - above, j))
                 {
-                    if (board[i - above][j].getBlockType() != Match3Block.BlockType.Empty)
+                    if (board[i - above][j].getBlockType() != Match3Block.BlockType.EMPTY)
                     {
                         MoveRequest moveRequest = new MoveRequest(i, j, i - above, j);
                         forceSwapBlocks(moveRequest);
@@ -65,7 +67,7 @@ public class Match3Board
         }
     }
 
-    public boolean swapBlocks(MoveRequest moveRequest)
+    public boolean swapBlocks(@NonNull MoveRequest moveRequest)
     {
         // TODO: Add check if swap causes matches
         if (!areBlocksSwappable(moveRequest))
@@ -86,7 +88,7 @@ public class Match3Board
         }
     }
 
-    private void forceSwapBlocks(MoveRequest moveRequest)
+    private void forceSwapBlocks(@NonNull MoveRequest moveRequest)
     {
         Match3Block temp = board[moveRequest.sourceRow()][moveRequest.sourceColumn()];
 
@@ -94,7 +96,7 @@ public class Match3Board
         board[moveRequest.targetRow()][moveRequest.targetColumn()] = temp;
     }
 
-    private List<Match3Block> findMatchedBlocks()
+    private @NonNull List<Match3Block> findMatchedBlocks()
     {
         // TODO: Look into 2D Rabin-Karp because this is awful
         List<Match3Block> matches = new ArrayList<>();
@@ -127,25 +129,25 @@ public class Match3Board
         return matches;
     }
 
-    private void destroyBlock(Match3Block block)
+    private void destroyBlock(@NonNull Match3Block block)
     {
-        block.setBlockType(Match3Block.BlockType.Empty);
+        block.setBlockType(Match3Block.BlockType.EMPTY);
     }
 
     private Match3Block.BlockType randomBlockType()
     {
-        int randomBlockTypeValue = random.nextInt(Match3Block.BlockType.Empty.ordinal() + 1, Match3Block.BlockType.values().length); // Start from 1 so it ignores BlockType.None
+        int randomBlockTypeValue = random.nextInt(Match3Block.BlockType.EMPTY.ordinal() + 1, Match3Block.BlockType.values().length); // Start from 1 so it ignores BlockType.None
         return Match3Block.BlockType.values()[randomBlockTypeValue];
     }
 
-    private boolean blockMatchesShape(int row, int column, MatchableShape shape)
+    private boolean blockMatchesShape(int row, int column, @NonNull MatchableShape shape)
     {
         if (isOutOfBounds(row, column))
             return false;
 
         Match3Block.BlockType thisBlockType = board[row][column].getBlockType();
 
-        if  (thisBlockType == Match3Block.BlockType.Disabled || thisBlockType == Match3Block.BlockType.Empty)
+        if  (thisBlockType == Match3Block.BlockType.DISABLED || thisBlockType == Match3Block.BlockType.EMPTY)
             return false;
 
         for (MatchableShape.RelativeCoordinates coordinates : shape.getRelativeCoordinates())
@@ -162,10 +164,10 @@ public class Match3Board
 
     private boolean isOutOfBounds(int row, int column)
     {
-        return row < 0 || row >= board.length || column < 0 || column >= board[0].length || board[row][column].getBlockType() == Match3Block.BlockType.Disabled;
+        return row < 0 || row >= board.length || column < 0 || column >= board[0].length || board[row][column].getBlockType() == Match3Block.BlockType.DISABLED;
     }
 
-    private boolean areBlocksSwappable(MoveRequest moveRequest)
+    private boolean areBlocksSwappable(@NonNull MoveRequest moveRequest)
     {
         if (isOutOfBounds(moveRequest.sourceRow(), moveRequest.sourceColumn()) || isOutOfBounds(moveRequest.targetRow(), moveRequest.targetColumn()))
             return false;

@@ -2,6 +2,8 @@ package pap.project.match3;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -17,7 +19,7 @@ public class Match3Service {
     {
         int gameId = generateId();
 
-        Match3Block[][] blocks = new Match3Block[5][5];
+        final Match3Block[][] blocks = new Match3Block[5][5];
         for (int i = 0; i < 5; i++)
         {
             for (int j = 0; j < 5; j++)
@@ -27,22 +29,22 @@ public class Match3Service {
         }
 
         // TODO: Move this somewhere else
-        MatchableShape.RelativeCoordinates[] threeInLineHorizontal = {
+        final MatchableShape.RelativeCoordinates[] threeInLineHorizontal = {
             new MatchableShape.RelativeCoordinates(1, 0),
             new MatchableShape.RelativeCoordinates(2, 0),
         };
 
-        MatchableShape.RelativeCoordinates[] threeInLineVertical = {
+        final MatchableShape.RelativeCoordinates[] threeInLineVertical = {
                 new MatchableShape.RelativeCoordinates(0, 1),
                 new MatchableShape.RelativeCoordinates(0, 2),
         };
 
-        MatchableShape[] matchableShapes = new MatchableShape[] {
+        final MatchableShape[] matchableShapes = new MatchableShape[] {
             new MatchableShape(threeInLineHorizontal),
             new MatchableShape(threeInLineVertical),
         };
 
-        Match3Board board = new Match3Board(blocks, matchableShapes);
+        final Match3Board board = new Match3Board(blocks, matchableShapes);
 
         games.put(gameId, board);
 
@@ -59,7 +61,7 @@ public class Match3Service {
         return 0; // TODO: id generation
     }
 
-    public Match3Board getBoard(int gameId)
+    public @Nullable Match3Board getBoard(int gameId)
     {
         return games.get(gameId);
     }
@@ -74,7 +76,7 @@ public class Match3Service {
         games.get(gameId).dropFloatingBlocks();
     }
 
-    public boolean swapBlocks(int gameId, Match3Board.MoveRequest moveRequest)
+    public boolean swapBlocks(int gameId, @NonNull Match3Board.MoveRequest moveRequest)
     {
         if (games.containsKey(gameId))
             return games.get(gameId).swapBlocks(moveRequest);
