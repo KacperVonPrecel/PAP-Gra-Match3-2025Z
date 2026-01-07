@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import pap.project.match3.model.MoveRequest;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -76,7 +77,7 @@ public class Match3Service {
         games.get(gameId).dropFloatingBlocks();
     }
 
-    public boolean swapBlocks(int gameId, @NonNull Match3Board.MoveRequest moveRequest)
+    public boolean swapBlocks(int gameId, @NonNull MoveRequest moveRequest)
     {
         if (games.containsKey(gameId))
             return games.get(gameId).swapBlocks(moveRequest);

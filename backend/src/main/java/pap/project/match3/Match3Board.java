@@ -1,6 +1,7 @@
 package pap.project.match3;
 
 import org.springframework.lang.NonNull;
+import pap.project.match3.model.MoveRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +13,6 @@ public class Match3Board
     private final @NonNull MatchableShape[] matchableShapes;
 
     private final @NonNull Random random = new Random();
-
-    public record MoveRequest(int sourceRow, int sourceColumn, int targetRow, int targetColumn) { };
 
     public Match3Board(@NonNull Match3Block[][] board, @NonNull MatchableShape[] matchableShapes)
     {
@@ -87,10 +86,10 @@ public class Match3Board
 
     private void forceSwapBlocks(@NonNull MoveRequest moveRequest)
     {
-        Match3Block temp = board[moveRequest.sourceRow()][moveRequest.sourceColumn()];
+        Match3Block temp = board[moveRequest.source().row()][moveRequest.source().column()];
 
-        board[moveRequest.sourceRow()][moveRequest.sourceColumn()] = board[moveRequest.targetRow()][moveRequest.targetColumn()];
-        board[moveRequest.targetRow()][moveRequest.targetColumn()] = temp;
+        board[moveRequest.source().row()][moveRequest.source().column()] = board[moveRequest.target().row()][moveRequest.target().column()];
+        board[moveRequest.target().row()][moveRequest.target().column()] = temp;
     }
 
     private @NonNull List<Match3Block> findMatchedBlocks()
@@ -166,11 +165,11 @@ public class Match3Board
 
     private boolean areBlocksSwappable(@NonNull MoveRequest moveRequest)
     {
-        if (isOutOfBounds(moveRequest.sourceRow(), moveRequest.sourceColumn()) || isOutOfBounds(moveRequest.targetRow(), moveRequest.targetColumn()))
+        if (isOutOfBounds(moveRequest.source().row(), moveRequest.source().column()) || isOutOfBounds(moveRequest.target().row(), moveRequest.target().column()))
             return false;
 
-        int rowDistance = Math.abs(moveRequest.targetRow() - moveRequest.sourceRow());
-        int columnDistance = Math.abs(moveRequest.targetColumn() - moveRequest.sourceColumn());
+        int rowDistance = Math.abs(moveRequest.target().row() - moveRequest.source().row());
+        int columnDistance = Math.abs(moveRequest.target().column() - moveRequest.source().column());
 
         return (rowDistance == 1 && columnDistance == 0) || (rowDistance == 0 && columnDistance == 1);
     }

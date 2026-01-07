@@ -5,6 +5,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+import pap.project.match3.model.MoveRequest;
 
 @Controller
 public class Match3Controller
@@ -37,7 +38,7 @@ public class Match3Controller
     }
 
     @MessageMapping("/board/{gameId}/swap")
-    public boolean swapBlocks(@DestinationVariable int gameId, @NonNull Match3Board.MoveRequest moveRequest)
+    public boolean swapBlocks(@DestinationVariable int gameId, @NonNull MoveRequest moveRequest)
     {
         // TODO: Add bound-checks, if the request fits the board
         return service.swapBlocks(gameId, moveRequest);

@@ -8,15 +8,16 @@ public class Match3Block
     private @NonNull BlockType blockType = BlockType.EMPTY;
 
     // TODO: Block type for disabled block (different board shapes support)
-    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     public enum BlockType
     {
         DISABLED,
         EMPTY,
-        RED,
-        GREEN,
-        BLUE,
-        YELLOW,
+        AMETHYST,
+        CITRINE,
+        DIAMOND,
+        EMERALD,
+        HEMATITE,
+        RUBY
     }
 
     public Match3Block() { }
