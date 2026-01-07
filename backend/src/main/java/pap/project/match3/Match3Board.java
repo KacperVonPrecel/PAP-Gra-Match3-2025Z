@@ -42,27 +42,24 @@ public class Match3Board
 
     public void dropFloatingBlocks()
     {
-        // TODO: There may also be a better algorithm for this
-        for (int i = board.length - 1; i >= 0; i--)
+        for (int col = 0; col < board[0].length; col++)
         {
-            for (int j = board[i].length - 1; j >= 0; j--)
+            // Move blocks to bottom per column
+            int swap_row = board.length - 1;
+
+            for (int row = board.length - 1; row >= 0; row--)
             {
-                if (board[i][j].getBlockType() != Match3Block.BlockType.EMPTY)
-                    continue;
-
-                int above = 1;
-                while (!isOutOfBounds(i - above, j))
+                if (isBlockOccupied(row, col))
                 {
-                    if (board[i - above][j].getBlockType() != Match3Block.BlockType.EMPTY)
-                    {
-                        MoveRequest moveRequest = new MoveRequest(i, j, i - above, j);
-                        forceSwapBlocks(moveRequest);
-
-                        break;
-                    }
-
-                    above++;
+                    board[swap_row][col].setBlockType(board[row][col].getBlockType());
+                    swap_row--;
                 }
+            }
+
+            // Fill the rest with empty
+            for (int row = swap_row; row >= 0; row--)
+            {
+                board[row][col].setBlockType(Match3Block.BlockType.EMPTY);
             }
         }
     }
@@ -176,5 +173,10 @@ public class Match3Board
         int columnDistance = Math.abs(moveRequest.targetColumn() - moveRequest.sourceColumn());
 
         return (rowDistance == 1 && columnDistance == 0) || (rowDistance == 0 && columnDistance == 1);
+    }
+
+    private boolean isBlockOccupied(int row, int column)
+    {
+        return board[row][column].getBlockType() != Match3Block.BlockType.EMPTY && board[row][column].getBlockType() != Match3Block.BlockType.DISABLED;
     }
 }
