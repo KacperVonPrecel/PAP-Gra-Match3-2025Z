@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-import { BoardState, Crystal } from '../../game-state';
+import { BoardState, Crystal, Position } from '../../game-state';
 import { CrystalType, getCrystalFileName } from '../../match3-service';
 import { MoveRequest } from '../../match3-service';
 
@@ -88,24 +88,29 @@ export class GameBoard {
 		this.dragStart = null;
 	}
 
+	private positionsEqual(a: Position, b: Position): boolean {
+		return a.row === b.row && a.column === b.column;
+	}
+
+	private movesEqal(a: MoveRequest, b: MoveRequest): boolean {
+		return this.positionsEqual(a.source, b.source) && this.positionsEqual(a.target, b.target);
+	}
+
+	private getReverseMove(a: MoveRequest): MoveRequest {
+		return { source: a.target, target: a.source };
+	}
+
 	isMoveValid(move: MoveRequest): boolean {
 		const allowed = this.state()?.allowedMoves;
 		if (!allowed) return false;
-		return allowed.some(
-			(m) =>
-				m.sourceRow === move.sourceRow &&
-				m.sourceColumn === move.sourceColumn &&
-				m.targetRow === move.targetRow &&
-				m.targetColumn === move.targetColumn
-		);
+		const reversedMove = this.getReverseMove(move);
+		return allowed.some((m) => this.movesEqal(m, move)) || allowed.some((m) => this.movesEqal(m, reversedMove));
 	}
 
 	handleSwapAttempt(target: { row: number; column: number }): boolean {
 		const moveRequest: MoveRequest = {
-			sourceRow: this.dragStart!.row,
-			sourceColumn: this.dragStart!.column,
-			targetRow: target.row,
-			targetColumn: target.column
+			source: { row: this.dragStart!.row, column: this.dragStart!.column },
+			target: { row: target.row, column: target.column }
 		};
 		return this.isMoveValid(moveRequest);
 		//swap animation

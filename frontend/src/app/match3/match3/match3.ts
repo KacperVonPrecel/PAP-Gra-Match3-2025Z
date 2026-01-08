@@ -70,16 +70,7 @@ export class Match3 {
 	}
 
 	makeMove(sourceRow: number, sourceColumn: number, targetRow: number, targetColumn: number): void {
-		if (this.gameId == undefined) return;
-
-		const moveRequest: MoveRequest = {
-			sourceRow: sourceRow,
-			sourceColumn: sourceColumn,
-			targetRow: targetRow,
-			targetColumn: targetColumn
-		};
-
-		this.socket.swapBlocks(this.gameId, moveRequest);
+		//this.socket.swapBlocks(this.gameId, moveRequest);
 	}
 
 	destroyMatchedBlocks(): void {

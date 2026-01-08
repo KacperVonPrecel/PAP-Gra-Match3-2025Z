@@ -6,15 +6,6 @@ export interface GameState {
 
 export interface Crystal {
 	crystalType: CrystalType;
-	state: CrystalState;
-}
-
-export enum CrystalState {
-	IDLE = 'idle',
-	CREATED = 'created',
-	FALLING = 'falling',
-	DESTRYED = 'destryed',
-	SWAPPED = 'swapped'
 }
 
 export enum Player {
@@ -29,20 +20,16 @@ export interface PlayerMove {
 
 export interface AnimationStep {
 	board: Crystal[][];
-	swapped?: MoveRequest;
-	destroyed?: Position[];
-	falling?: FallingBlock[];
-	newBlocks?: NewBlock[];
+	swapped: MoveRequest;
+	destroyed: Position[]; //empty array will be passed to these fields if there is nothing destroyed
+	falling: MoveRequest[];
+	newBlocks: NewBlock[];
+	resetBoard: boolean;
 }
 
 export interface Position {
 	row: number;
 	column: number;
-}
-
-export interface FallingBlock {
-	from: Position;
-	to: Position;
 }
 
 export interface NewBlock {
@@ -55,6 +42,5 @@ export interface BoardState {
 	allowedMoves: MoveRequest[];
 	canPlayerMove: boolean;
 	animationSteps: AnimationStep[];
-	animationIndex?: number;
 	lastMove?: PlayerMove;
 }

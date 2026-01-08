@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Client, IMessage, StompSubscription } from '@stomp/stompjs';
 import { Observable, Subject } from 'rxjs';
 import SockJS from 'sockjs-client';
-import { GameState, Player, Crystal, CrystalState } from './game-state';
+import { GameState, Player, Crystal, Position } from './game-state';
 
 @Injectable({
 	providedIn: 'root'
@@ -73,89 +73,90 @@ export class Match3Service {
 	getMockInitialState(): GameState {
 		const mockBoard: Crystal[][] = [
 			[
-				{ crystalType: CrystalType.AMETHYST, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.CITRINE, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.DIAMOND, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.EMERALD, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.RUBY, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.HEMATITE, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.AMETHYST, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.CITRINE, state: CrystalState.IDLE }
+				{ crystalType: CrystalType.AMETHYST },
+				{ crystalType: CrystalType.CITRINE },
+				{ crystalType: CrystalType.DIAMOND },
+				{ crystalType: CrystalType.EMERALD },
+				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.HEMATITE },
+				{ crystalType: CrystalType.AMETHYST },
+				{ crystalType: CrystalType.CITRINE }
 			],
 			[
-				{ crystalType: CrystalType.RUBY, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.DIAMOND, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.CITRINE, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.AMETHYST, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.EMERALD, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.RUBY, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.HEMATITE, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.DIAMOND, state: CrystalState.IDLE }
+				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.DIAMOND },
+				{ crystalType: CrystalType.CITRINE },
+				{ crystalType: CrystalType.AMETHYST },
+				{ crystalType: CrystalType.EMERALD },
+				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.HEMATITE },
+				{ crystalType: CrystalType.DIAMOND }
 			],
 			[
-				{ crystalType: CrystalType.EMERALD, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.RUBY, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.AMETHYST, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.CITRINE, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.DIAMOND, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.EMERALD, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.CITRINE, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.HEMATITE, state: CrystalState.IDLE }
+				{ crystalType: CrystalType.EMERALD },
+				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.AMETHYST },
+				{ crystalType: CrystalType.CITRINE },
+				{ crystalType: CrystalType.DIAMOND },
+				{ crystalType: CrystalType.EMERALD },
+				{ crystalType: CrystalType.CITRINE },
+				{ crystalType: CrystalType.HEMATITE }
 			],
 			[
-				{ crystalType: CrystalType.HEMATITE, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.EMERALD, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.RUBY, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.DIAMOND, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.AMETHYST, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.CITRINE, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.RUBY, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.AMETHYST, state: CrystalState.IDLE }
+				{ crystalType: CrystalType.HEMATITE },
+				{ crystalType: CrystalType.EMERALD },
+				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.DIAMOND },
+				{ crystalType: CrystalType.AMETHYST },
+				{ crystalType: CrystalType.CITRINE },
+				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.AMETHYST }
 			],
 			[
-				{ crystalType: CrystalType.CITRINE, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.AMETHYST, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.EMERALD, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.RUBY, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.HEMATITE, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.DIAMOND, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.EMERALD, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.CITRINE, state: CrystalState.IDLE }
+				{ crystalType: CrystalType.CITRINE },
+				{ crystalType: CrystalType.AMETHYST },
+				{ crystalType: CrystalType.EMERALD },
+				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.HEMATITE },
+				{ crystalType: CrystalType.DIAMOND },
+				{ crystalType: CrystalType.EMERALD },
+				{ crystalType: CrystalType.CITRINE }
 			],
 			[
-				{ crystalType: CrystalType.DIAMOND, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.HEMATITE, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.CITRINE, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.EMERALD, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.RUBY, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.AMETHYST, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.DIAMOND, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.RUBY, state: CrystalState.IDLE }
+				{ crystalType: CrystalType.DIAMOND },
+				{ crystalType: CrystalType.HEMATITE },
+				{ crystalType: CrystalType.CITRINE },
+				{ crystalType: CrystalType.EMERALD },
+				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.AMETHYST },
+				{ crystalType: CrystalType.DIAMOND },
+				{ crystalType: CrystalType.RUBY }
 			],
 			[
-				{ crystalType: CrystalType.AMETHYST, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.CITRINE, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.RUBY, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.HEMATITE, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.EMERALD, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.CITRINE, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.AMETHYST, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.DIAMOND, state: CrystalState.IDLE }
+				{ crystalType: CrystalType.AMETHYST },
+				{ crystalType: CrystalType.CITRINE },
+				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.HEMATITE },
+				{ crystalType: CrystalType.EMERALD },
+				{ crystalType: CrystalType.CITRINE },
+				{ crystalType: CrystalType.AMETHYST },
+				{ crystalType: CrystalType.DIAMOND }
 			],
 			[
-				{ crystalType: CrystalType.RUBY, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.EMERALD, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.DIAMOND, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.CITRINE, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.AMETHYST, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.HEMATITE, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.RUBY, state: CrystalState.IDLE },
-				{ crystalType: CrystalType.EMERALD, state: CrystalState.IDLE }
+				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.EMERALD },
+				{ crystalType: CrystalType.DIAMOND },
+				{ crystalType: CrystalType.CITRINE },
+				{ crystalType: CrystalType.AMETHYST },
+				{ crystalType: CrystalType.HEMATITE },
+				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.EMERALD }
 			]
 		];
+
 		const allowedMoves: MoveRequest[] = [
-			{ sourceRow: 3, sourceColumn: 3, targetRow: 3, targetColumn: 4 },
-			{ sourceRow: 5, sourceColumn: 1, targetRow: 6, targetColumn: 1 }
+			{ source: { row: 3, column: 3 }, target: { row: 3, column: 4 } },
+			{ source: { row: 5, column: 1 }, target: { row: 6, column: 1 } }
 		];
 		return {
 			currentPlayer: Player.ME,
@@ -178,10 +179,8 @@ export interface Board {
 }
 
 export interface MoveRequest {
-	sourceRow: number;
-	sourceColumn: number;
-	targetRow: number;
-	targetColumn: number;
+	source: Position;
+	target: Position;
 }
 export enum CrystalType {
 	AMETHYST = 'AMETHYST',
@@ -189,7 +188,9 @@ export enum CrystalType {
 	DIAMOND = 'DIAMOND',
 	EMERALD = 'EMERALD',
 	HEMATITE = 'HEMATITE',
-	RUBY = 'RUBY'
+	RUBY = 'RUBY',
+	BLOCKED = 'BLOCKED',
+	EMPTY = 'EMPTY'
 }
 
 export function getCrystalFileName(CrystalType: CrystalType): string {
@@ -202,5 +203,7 @@ const crystalFileMap: { [key in CrystalType]: string } = {
 	[CrystalType.DIAMOND]: 'diamond.svg',
 	[CrystalType.EMERALD]: 'emerald.svg',
 	[CrystalType.HEMATITE]: 'hematite.svg',
-	[CrystalType.RUBY]: 'ruby.svg'
+	[CrystalType.RUBY]: 'ruby.svg',
+	[CrystalType.BLOCKED]: 'ruby.svg',
+	[CrystalType.EMPTY]: 'ruby.svg'
 };
