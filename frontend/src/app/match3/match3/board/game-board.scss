@@ -13,10 +13,38 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
+		z-index: 0; //for correct order when swapping
+		position: relative; //for z index to be taken into account when positioning
+		transition: transform 3s ease-in-out;
 	}
 	.cell img {
 		width: 100%;
 		height: 100%;
 		object-fit: contain;
 	}
+}
+
+.swap-right {
+	transform: translateX(48px);
+	transition: transform 3s ease;
+}
+.swap-left {
+	transform: translateX(-48px);
+	transition: transform 3s ease;
+}
+.swap-up {
+	transform: translateY(-48px);
+	transition: transform 150ms ease;
+}
+.swap-down {
+	transform: translateY(48px);
+	transition: transform 150ms ease;
+}
+
+.cell.swap-source {
+	//.cell so we DEFFINITELY apply to cell, not sth else
+	z-index: 2;
+}
+.cell.swap-target {
+	z-index: 1;
 }

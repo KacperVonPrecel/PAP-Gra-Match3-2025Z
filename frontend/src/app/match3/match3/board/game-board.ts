@@ -2,21 +2,25 @@ import { Component, input } from '@angular/core';
 import { BoardState, Crystal, Position } from '../../game-state';
 import { CrystalType, getCrystalFileName } from '../../match3-service';
 import { MoveRequest } from '../../match3-service';
+import { NgClass } from '@angular/common';
 
 @Component({
 	selector: 'app-board',
-	imports: [],
+	imports: [NgClass],
 	templateUrl: './game-board.html',
 	styleUrl: './game-board.scss'
 })
 export class GameBoard {
 	state = input.required<BoardState | null>();
 	private crystalImages = new Map<CrystalType, string>();
-	private imagesLoadedCount: number = 0;
-	private dragStart: { row: number; column: number } | null = null;
+	private imagesLoadedCount: number = 0; //value to ensure all images of crystals are loaded before displaying the board
+	private dragStart: Position | null = null;
 	private startX = 0;
 	private startY = 0;
 	private dragThreshold = 20; //how many pixels need to be moved before its dragged
+	//map to track which animation classes should be assigned in css
+	private swapAnimations = new Map<string, string>(); //key - "row, column", value -> what animation (eg. "swap-up")
+	allowSwapping: boolean = true;
 
 	loadCrystalAssets(): void {
 		//loop over all types in crystal type
@@ -53,7 +57,6 @@ export class GameBoard {
 
 		const dx = event.clientX - this.startX;
 		const dy = event.clientY - this.startY;
-
 		//Didnt surpass threshold in any direction
 		if (Math.abs(dx) < this.dragThreshold && Math.abs(dy) < this.dragThreshold) {
 			return;
@@ -79,8 +82,7 @@ export class GameBoard {
 		if (!target) return;
 
 		this.handleSwapAttempt(target);
-
-		//If any drag direction was detected, it wont be changed
+		//If any drag direction was detected, we cant start dragging again until we click on a crystal again
 		this.dragStart = null;
 	}
 
@@ -112,9 +114,43 @@ export class GameBoard {
 			source: { row: this.dragStart!.row, column: this.dragStart!.column },
 			target: { row: target.row, column: target.column }
 		};
-		return this.isMoveValid(moveRequest);
-		//swap animation
-		//if valid keep position
-		//if not swap back
+		//set classes for swap animation
+		if (this.allowSwapping) {
+			const sourceSwapDirection = this.getSwapDirection(moveRequest);
+			const targetSwapDirection = this.getSwapDirection(this.getReverseMove(moveRequest));
+			this.swapAnimations.set(`${moveRequest.source.row},${moveRequest.source.column}`, `cell swap-source ${sourceSwapDirection}`); //in css we can combine animation classes with just spaces between them
+			this.swapAnimations.set(`${moveRequest.target.row},${moveRequest.target.column}`, `cell swap-target ${targetSwapDirection}`);
+			this.allowSwapping = false;
+		}
+
+		if (this.isMoveValid(moveRequest)) {
+			//if valid keep position, send request to server
+
+			//set so player cant move
+			return true;
+		} else {
+			//play swap back animation
+			return false;
+		}
+	}
+
+	getSwapDirection(move: MoveRequest): string {
+		if (move.source.row > move.target.row) {
+			return 'swap-up';
+		}
+		if (move.target.row > move.source.row) {
+			return 'swap-down';
+		}
+		if (move.source.column > move.target.column) {
+			return 'swap-left';
+		}
+		if (move.target.column > move.source.column) {
+			return 'swap-right';
+		}
+		return '';
+	}
+
+	getSwapClass(row_idx: number, column_idx: number): string {
+		return this.swapAnimations.get(`${row_idx},${column_idx}`) ?? '';
 	}
 }

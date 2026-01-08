@@ -5,6 +5,7 @@
 				@for (crystal of row; track $index; let column_idx = $index) {
 					<div
 						class="cell"
+						[class]="getSwapClass(row_idx, column_idx)"
 						(pointerdown)="onPointerDown($event, row_idx, column_idx)"
 						(pointermove)="onPointerMove($event)"
 						(pointerup)="onPointerUp()"
