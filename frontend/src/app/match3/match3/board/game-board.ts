@@ -21,6 +21,7 @@ export class GameBoard {
 	//map to track which animation classes should be assigned in css
 	private swapAnimations = new Map<string, string>(); //key - "row, column", value -> what animation (eg. "swap-up")
 	allowSwapping: boolean = true;
+	private static readonly SWAP_DURATION = 150;
 
 	loadCrystalAssets(): void {
 		//loop over all types in crystal type
@@ -114,24 +115,39 @@ export class GameBoard {
 			source: { row: this.dragStart!.row, column: this.dragStart!.column },
 			target: { row: target.row, column: target.column }
 		};
-		//set classes for swap animation
+
 		if (this.allowSwapping) {
+			//set classes for swap animation
 			const sourceSwapDirection = this.getSwapDirection(moveRequest);
 			const targetSwapDirection = this.getSwapDirection(this.getReverseMove(moveRequest));
-			this.swapAnimations.set(`${moveRequest.source.row},${moveRequest.source.column}`, `cell swap-source ${sourceSwapDirection}`); //in css we can combine animation classes with just spaces between them
-			this.swapAnimations.set(`${moveRequest.target.row},${moveRequest.target.column}`, `cell swap-target ${targetSwapDirection}`);
+			const sourceKey = `${moveRequest.source.row},${moveRequest.source.column}`;
+			const targetKey = `${moveRequest.target.row},${moveRequest.target.column}`;
+			this.swapAnimations.set(sourceKey, `${sourceSwapDirection}`);
+			this.swapAnimations.set(targetKey, `${targetSwapDirection}`);
 			this.allowSwapping = false;
-		}
 
-		if (this.isMoveValid(moveRequest)) {
-			//if valid keep position, send request to server
+			if (this.isMoveValid(moveRequest)) {
+				//send request
+				//if valid return
 
-			//set so player cant move
-			return true;
-		} else {
-			//play swap back animation
-			return false;
+				return true;
+			} else {
+				setTimeout(() => {
+					//make sure first swap happened
+					this.swapAnimations.set(sourceKey, `go-back`);
+					this.swapAnimations.set(targetKey, `go-back`);
+					setTimeout(() => {
+						//make sure second swap happened
+						this.swapAnimations.delete(sourceKey);
+						this.swapAnimations.delete(targetKey);
+					}, GameBoard.SWAP_DURATION);
+
+					this.allowSwapping = true;
+					return false;
+				}, GameBoard.SWAP_DURATION);
+			}
 		}
+		return false;
 	}
 
 	getSwapDirection(move: MoveRequest): string {
