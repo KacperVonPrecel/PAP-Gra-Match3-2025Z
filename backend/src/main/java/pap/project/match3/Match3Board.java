@@ -1,7 +1,7 @@
 package pap.project.match3;
 
 import org.springframework.lang.NonNull;
-import pap.project.match3.model.MoveRequest;
+import pap.project.match3.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +14,8 @@ public class Match3Board
 
     private final @NonNull Random random = new Random();
 
+    private record Matches(List<Match3Block> blocks, List<Position> positions) {}
+
     public Match3Board(@NonNull Match3Block[][] board, @NonNull MatchableShape[] matchableShapes)
     {
         this.board = board;
@@ -22,25 +24,74 @@ public class Match3Board
         fillBoard();
     }
 
-    public @NonNull Match3Block[][] getBlocks()
+    public @NonNull BoardState playTurn(@NonNull MoveRequest moveRequest)
     {
-        return board;
+        // TODO: WHAT TO DO IF NO MORE MATCHES
+
+        List<AnimationStep> animationSteps = new ArrayList<>();
+
+        MoveRequest swappedBlocks = null;
+        if (swapBlocks(moveRequest))
+            swappedBlocks = moveRequest;
+
+        Matches matches = findMatchedBlocks();
+        while (!matches.blocks().isEmpty())
+        {
+            destroyBlocks(matches.blocks());
+
+            List<MoveRequest> dropped = dropFloatingBlocks();
+
+            List<NewBlock> newBlocks = fillBoard();
+
+            animationSteps.add(new AnimationStep(
+                    board,
+                    swappedBlocks,
+                    matches.positions(),
+                    dropped,
+                    newBlocks
+            ));
+        }
+
+        return new BoardState(
+                board,
+                getAllowedMoves(),
+                animationSteps
+        );
     }
 
-    public void fillBoard()
+    public @NonNull BoardState getState()
     {
-        for (Match3Block[] row : board)
+        return new BoardState(
+                board,
+                getAllowedMoves(),
+                new ArrayList<>()
+        );
+    }
+
+    public @NonNull List<NewBlock> fillBoard()
+    {
+        List<NewBlock> filledPositions = new ArrayList<>();
+
+        for (int i = 0; i < board.length; i++)
         {
-            for (Match3Block block : row)
+            for (int j = 0; j < board[i].length; j++)
             {
-                if (block.getBlockType() == Match3Block.BlockType.EMPTY)
-                    block.setBlockType(randomBlockType());
+                if (board[i][j].getBlockType() == Match3Block.BlockType.EMPTY)
+                {
+                    Match3Block.BlockType randomType = randomBlockType();
+                    board[i][j].setBlockType(randomType);
+                    filledPositions.add(new NewBlock(new Position(i, j), new Match3Block(randomType)));
+                }
             }
         }
+
+        return filledPositions;
     }
 
-    public void dropFloatingBlocks()
+    public @NonNull List<MoveRequest> dropFloatingBlocks()
     {
+        List<MoveRequest> droppedMoves = new ArrayList<>();
+
         for (int col = 0; col < board[0].length; col++)
         {
             // Move blocks to bottom per column
@@ -51,6 +102,12 @@ public class Match3Board
                 if (isBlockOccupied(row, col))
                 {
                     board[swap_row][col].setBlockType(board[row][col].getBlockType());
+
+                    droppedMoves.add(new MoveRequest(
+                            new Position(row, col),
+                            new Position(swap_row, col)
+                    ));
+
                     swap_row--;
                 }
             }
@@ -61,11 +118,12 @@ public class Match3Board
                 board[row][col].setBlockType(Match3Block.BlockType.EMPTY);
             }
         }
+
+        return droppedMoves;
     }
 
     public boolean swapBlocks(@NonNull MoveRequest moveRequest)
     {
-        // TODO: Add check if swap causes matches
         if (!areBlocksSwappable(moveRequest))
             return false;
 
@@ -74,14 +132,53 @@ public class Match3Board
         return true;
     }
 
-    public void destroyMatchedBlocks()
+    public void destroyBlocks(@NonNull List<Match3Block> toDestroy)
     {
-        List<Match3Block> matches = findMatchedBlocks();
-
-        for (Match3Block match : matches)
+        for (Match3Block match : toDestroy)
         {
             destroyBlock(match);
         }
+    }
+
+    public @NonNull List<MoveRequest> getAllowedMoves()
+    {
+        List<MoveRequest> allowedMoves = new ArrayList<>();
+
+        for (int i = 0; i < board.length; i++)
+        {
+            for (int j = 0; j < board[i].length; j++)
+            {
+                List<MoveRequest> movesToCheck = new ArrayList<>();
+
+                if (i > 0)
+                    movesToCheck.add(new MoveRequest(new Position(i, j), new Position(i - 1, j)));
+                if (i < board.length - 1)
+                    movesToCheck.add(new MoveRequest(new Position(i, j), new Position(i + 1, j)));
+                if (j > 0)
+                    movesToCheck.add(new MoveRequest(new Position(i, j), new Position(i, j - 1)));
+                if (j < board.length - 1)
+                    movesToCheck.add(new MoveRequest(new Position(i, j), new Position(i, j + 1)));
+
+                for (MoveRequest move : movesToCheck)
+                {
+                    if (isMoveAllowed(move))
+                        allowedMoves.add(move);
+                }
+            }
+        }
+
+        return allowedMoves;
+    }
+
+    private boolean isMoveAllowed(@NonNull MoveRequest move)
+    {
+        MoveRequest reverse = new MoveRequest(move.target(), move.source());
+
+        forceSwapBlocks(move);
+        boolean willMatch = !findMatchedBlocks().blocks().isEmpty();
+        forceSwapBlocks(reverse);
+
+        return willMatch;
     }
 
     private void forceSwapBlocks(@NonNull MoveRequest moveRequest)
@@ -92,10 +189,11 @@ public class Match3Board
         board[moveRequest.target().row()][moveRequest.target().column()] = temp;
     }
 
-    private @NonNull List<Match3Block> findMatchedBlocks()
+    private @NonNull Matches findMatchedBlocks()
     {
         // TODO: Look into 2D Rabin-Karp because this is awful
         List<Match3Block> matches = new ArrayList<>();
+        List<Position> matchPositions = new ArrayList<>();
 
         for (int i = 0; i < board.length; i++)
         {
@@ -107,7 +205,10 @@ public class Match3Board
                         continue;
 
                     if (!matches.contains(board[i][j]))
+                    {
                         matches.add(board[i][j]);
+                        matchPositions.add(new Position(i, j));
+                    }
 
                     for (MatchableShape.RelativeCoordinates relativeCoordinates : shape.getRelativeCoordinates())
                     {
@@ -117,12 +218,13 @@ public class Match3Board
                             continue;
 
                         matches.add(block);
+                        matchPositions.add(new Position(i + relativeCoordinates.x(), j + relativeCoordinates.y()));
                     }
                 }
             }
         }
 
-        return matches;
+        return new Matches(matches, matchPositions);
     }
 
     private void destroyBlock(@NonNull Match3Block block)
@@ -171,7 +273,10 @@ public class Match3Board
         int rowDistance = Math.abs(moveRequest.target().row() - moveRequest.source().row());
         int columnDistance = Math.abs(moveRequest.target().column() - moveRequest.source().column());
 
-        return (rowDistance == 1 && columnDistance == 0) || (rowDistance == 0 && columnDistance == 1);
+        if ((rowDistance == 1 && columnDistance == 0) || (rowDistance == 0 && columnDistance == 1))
+            return !getAllowedMoves().isEmpty();
+
+        return false;
     }
 
     private boolean isBlockOccupied(int row, int column)
