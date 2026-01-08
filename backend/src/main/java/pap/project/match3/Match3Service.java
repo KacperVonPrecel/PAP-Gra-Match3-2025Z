@@ -5,6 +5,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import pap.project.match3.model.BoardState;
+import pap.project.match3.model.GameState;
 import pap.project.match3.model.MoveRequest;
 
 import java.util.Map;
@@ -62,32 +64,27 @@ public class Match3Service {
         return 0; // TODO: id generation
     }
 
-    public @Nullable Match3Board getBoard(int gameId)
+    public @Nullable GameState playTurn(int gameId, @NonNull MoveRequest moveRequest)
     {
-        return games.get(gameId);
+        if  (games.containsKey(gameId))
+        {
+            BoardState boardState = games.get(gameId).playTurn(moveRequest);
+
+            return new GameState(boardState);
+        }
+
+        return null;
     }
 
-    public void fillBoard(int gameId)
-    {
-        games.get(gameId).fillBoard();
-    }
-
-    public void dropFloatingBlocks(int gameId)
-    {
-        games.get(gameId).dropFloatingBlocks();
-    }
-
-    public boolean swapBlocks(int gameId, @NonNull MoveRequest moveRequest)
+    public @Nullable GameState getState(int gameId)
     {
         if (games.containsKey(gameId))
-            return games.get(gameId).swapBlocks(moveRequest);
+        {
+            BoardState boardState = games.get(gameId).getState();
 
-        return false;
-    }
+            return new GameState(boardState);
+        }
 
-    public void destroyMatchedBlocks(int gameId)
-    {
-        if (games.containsKey(gameId))
-            games.get(gameId).destroyMatchedBlocks();
+        return null;
     }
 }
