@@ -1,5 +1,5 @@
 :host {
-	--cell-size: 48px;
+	--cell-size: min(3.1rem, 10vw);
 	--swap-duration: 150ms;
 }
 #board-background {
