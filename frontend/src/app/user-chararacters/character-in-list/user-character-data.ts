@@ -7,6 +7,7 @@ export interface UserCharacterData {
 
 export interface UserCharacterUnlockedData {
 	readonly level: number;
+	//XXX handle level max character
 	readonly requiredCopiesForNextLevel: number;
 	readonly currentCopiesCount: number;
 }

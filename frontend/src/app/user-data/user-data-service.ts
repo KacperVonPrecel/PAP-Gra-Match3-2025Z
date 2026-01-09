@@ -1,8 +1,9 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, Signal } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from '@angular/router';
 import { BehaviorSubject, catchError, delay, EMPTY, map, Observable, of, retry, shareReplay, Subscription, take, tap } from 'rxjs';
 import { UserDataLoadingPage } from './user-data-loading-page/user-data-loading-page';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
 	providedIn: 'root'
@@ -10,6 +11,7 @@ import { UserDataLoadingPage } from './user-data-loading-page/user-data-loading-
 export class UserDataService {
 	private readonly _userData = new BehaviorSubject<UserData | undefined>(undefined);
 	private _lodingUserDataSubscription: Subscription | undefined;
+	private readonly _userDataSignal = toSignal(this._userData);
 
 	constructor(
 		private readonly http: HttpClient,
@@ -47,6 +49,10 @@ export class UserDataService {
 		const userData = this._userData.value;
 		if (userData === undefined) throw new Error('User data not loaded yet.');
 		return userData;
+	}
+
+	get userDataSignal(): Signal<UserData | undefined> {
+		return this._userDataSignal;
 	}
 
 	/**
@@ -136,6 +142,28 @@ export class UserDataService {
 			})
 		);
 	}
+
+	upgrade(characterType: CharacterType): Observable<void> {
+		const request: UpgradeRequest = { characterType: characterType };
+
+		return this.http.post('api/user/upgrade_character', request, { responseType: 'json' }).pipe(
+			map((result) => {
+				return result as UpgradeResult;
+			}),
+			catchError((error: HttpErrorResponse) => {
+				// XXXW handle error 0 - NO_INTERNET. Show user error
+				return EMPTY;
+			}),
+			tap((result) => {
+				const userData = this.userData;
+				const newCharactersList = userData.characters.filter((c) => c.characterType !== characterType);
+				newCharactersList.push(result.characterData);
+
+				this._userData.next({ currency: userData.currency, characters: newCharactersList });
+			}),
+			map(() => {})
+		);
+	}
 }
 
 export const RETURN_URL_QUERY_PARAM = 'returnUrl';
@@ -199,4 +227,12 @@ export interface DrawResultEntry {
 }
 export interface DrawResult {
 	readonly results: DrawResultEntry[];
+}
+
+export interface UpgradeRequest {
+	readonly characterType: CharacterType;
+}
+
+export interface UpgradeResult {
+	readonly characterData: CharacterData;
 }

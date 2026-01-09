@@ -9,15 +9,15 @@
 
 	<div class="text-container">
 		<span class="title"> Damage </span>
-		<span class="content"> 100 </span>
+		<span class="content"> {{ data().damage }} </span>
 	</div>
 	<div class="text-container">
 		<span class="title"> Health </span>
-		<span class="content"> 100 </span>
+		<span class="content"> {{ data().health }} </span>
 	</div>
 
 	<div class="divider"></div>
-	<button matButton="filled">
+	<button matButton="filled" [disabled]="" (click)="upgrade()">
 		<mat-icon>upgrade</mat-icon>
 		Upgrade
 	</button>
