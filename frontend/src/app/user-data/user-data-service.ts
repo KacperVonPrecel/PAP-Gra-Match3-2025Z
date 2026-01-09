@@ -99,6 +99,15 @@ export class UserDataService {
 		this._userData.next(undefined);
 	}
 
+	logout() {
+		return this.http.post('api/logout', {}, { responseType: 'json' }).pipe(
+			tap({
+				next: () => this.handleLogout(),
+				error: () => this.handleLogout() //XXX it should check error code and depending on error handle logout or not
+			})
+		);
+	}
+
 	/**
 	 * @param cost cannot be negative. It need to be lower than {@link userData} {@link UserData#currency}, otherwise error will be thrown.
 	 * @returns observable which need be subscribed to perform request. It shouldn't be unsubscribed because server possibly can perform change in user state

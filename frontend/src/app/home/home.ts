@@ -1,10 +1,9 @@
 import { Component, DestroyRef, OnInit } from '@angular/core';
-import { RouterOutlet, RouterLinkWithHref, RouterLinkActive } from '@angular/router';
+import { RouterOutlet, RouterLinkWithHref, RouterLinkActive, Router } from '@angular/router';
 import { MatAnchor, MatButtonModule } from '@angular/material/button';
 import { FireflyBackground } from '../background/firefly-background/firefly-background';
 import { MatIcon } from '@angular/material/icon';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { SettingsDialog } from './home-page/dialogs/settings/settings-dialog';
 import { MatDialog } from '@angular/material/dialog';
 import { RankingDialog } from './home-page/dialogs/ranking/ranking-dialog';
 import { UserData, UserDataService } from '../user-data/user-data-service';
@@ -24,10 +23,11 @@ export class Home implements OnInit {
 		return this._smallScreen;
 	}
 	constructor(
-		private breakpointObserver: BreakpointObserver,
-		private dialog: MatDialog,
-		private userDataService: UserDataService,
-		private destroyRef: DestroyRef
+		private readonly breakpointObserver: BreakpointObserver,
+		private readonly dialog: MatDialog,
+		private readonly userDataService: UserDataService,
+		private readonly destroyRef: DestroyRef,
+		private readonly router: Router
 	) {}
 
 	ngOnInit(): void {
@@ -48,8 +48,11 @@ export class Home implements OnInit {
 		return this._rank;
 	}
 
-	openSettings() {
-		this.dialog.open(SettingsDialog);
+	protected logout() {
+		this.userDataService.logout().subscribe({
+			next: () => this.router.navigate(['/']),
+			error: () => this.router.navigate(['/']) //XXX it should check error code and depending on error navigate or not
+		});
 	}
 
 	openRanking() {

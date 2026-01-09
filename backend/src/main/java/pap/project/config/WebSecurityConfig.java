@@ -51,7 +51,7 @@ public class WebSecurityConfig
                 .cors(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).maximumSessions(1))
-                .logout(LogoutConfigurer::permitAll);
+                .logout(conf -> conf.permitAll().logoutUrl("/api/logout"));
 
         return http.build();
     }
