@@ -99,10 +99,6 @@ export class UserDataService {
 		this._userData.next(undefined);
 	}
 
-	// XXX add method's for updating user drawCharacters, upgradeCharacter and maybe more.
-	// Also handling game and should be here. Like updating currency after win/loss.
-	// This methods should update the _userData BehaviorSubject accordingly.
-
 	/**
 	 * @param cost cannot be negative. It need to be lower than {@link userData} {@link UserData#currency}, otherwise error will be thrown.
 	 * @returns observable which need be subscribed to perform request. It shouldn't be unsubscribed because server possibly can perform change in user state
@@ -130,6 +126,7 @@ export class UserDataService {
 				if (currentCurrency < 0) throw Error('Currency cannot be negative');
 				// XXXW change also characters data append characters count or create new character if in prev data it was absent.
 				this._userData.next({
+					id: oldUserData.id,
 					characters: oldUserData.characters,
 					currency: currentCurrency
 				});
@@ -159,7 +156,7 @@ export class UserDataService {
 				const newCharactersList = userData.characters.filter((c) => c.characterType !== characterType);
 				newCharactersList.push(result.characterData);
 
-				this._userData.next({ currency: userData.currency, characters: newCharactersList });
+				this._userData.next({ id: userData.id, currency: userData.currency, characters: newCharactersList });
 			}),
 			map(() => {})
 		);
@@ -176,6 +173,7 @@ export const userDataGuard: CanActivateFn = (route: ActivatedRouteSnapshot, stat
 };
 
 export interface UserData {
+	readonly id: number; //XXX it's should be bigint
 	readonly characters: CharacterData[];
 	readonly currency: number;
 }

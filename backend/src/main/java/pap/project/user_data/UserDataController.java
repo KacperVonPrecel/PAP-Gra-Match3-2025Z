@@ -32,7 +32,7 @@ public class UserDataController
         final long userId = user.getUserId();
         final UserData userData = userDataService.getUserData(userId);
         final List<CharacterData> charactersData = userCharactersService.createCharactersData(userData.userCharacters());
-        return new UserDataResponse(charactersData, userData.currency());
+        return new UserDataResponse(userId, charactersData, userData.currency());
     }
 
     @GetMapping("get_team")

@@ -11,6 +11,7 @@ import java.util.List;
  * @param currency that player currently have. Cannot be negative.
  */
 public record UserDataResponse(
+        long id,
         @NonNull List<CharacterData> characters,
         int currency
         ) {
