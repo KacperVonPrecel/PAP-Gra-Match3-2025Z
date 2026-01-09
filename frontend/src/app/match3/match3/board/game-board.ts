@@ -177,6 +177,16 @@ export class GameBoard {
 			return;
 		}
 
+		const numOfRows = this.state()!.board.length;
+		const numOfColumns = this.state()!.board[0].length;
+		//ensuring we dont play animations for swapping outside the board
+		if (this.dragStart!.row < 0 || target.row < 0 || this.dragStart!.row >= numOfRows || target.row >= numOfRows) {
+			return;
+		}
+		if (this.dragStart!.column < 0 || target.column < 0 || this.dragStart!.column >= numOfColumns || target.column >= numOfColumns) {
+			return;
+		}
+
 		if (this.allowSwapping) {
 			this.lastMove = moveRequest;
 			this.animateSwap(moveRequest);
