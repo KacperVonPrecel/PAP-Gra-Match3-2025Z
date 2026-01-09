@@ -1,6 +1,8 @@
 <div id="board-background">
 	@if (state() && assetsLoaded) {
-		@for (row of state()!.board; track $index; let row_idx = $index) {
+		@let boardToRender = animationsPlaying ? oldBoard : state()!.board;
+
+		@for (row of boardToRender; track $index; let row_idx = $index) {
 			<div class="row">
 				@for (crystal of row; track $index; let column_idx = $index) {
 					<div class="cell-background" [class.transparent]="crystal.crystalType === CrystalType.DISABLED">

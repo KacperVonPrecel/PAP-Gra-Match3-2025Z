@@ -25,6 +25,8 @@ export class GameBoard {
 	swapAttempt = output<MoveRequest>();
 	moveValid = input<boolean | null>(); //null because there can be no move happening
 	private lastMove: MoveRequest | null = null;
+	private _oldBoard: Crystal[][] | null = null; //old board saved for animations
+	private _animationsPlaying: boolean = false;
 
 	constructor() {
 		effect(() => {
@@ -38,9 +40,27 @@ export class GameBoard {
 				this.allowSwapping = true;
 			}
 			if (_moveValid === true) {
+				this._animationsPlaying = true;
+				console.log(this.oldBoard);
+				//1. switch to displaying from old board instead of board in html -> will this undo the swap animation?
+				//2.run animation loop
+				//3.when finished display the new board
+
 				//we will need to store the old board and run animation loop
 			}
 		});
+	}
+
+	get animationsPlaying(): boolean {
+		return this._animationsPlaying;
+	}
+
+	get oldBoard(): Crystal[][] {
+		if (this._oldBoard) {
+			return this._oldBoard;
+		}
+		//XXXW probably handle that better even tho it wont likely happen
+		return [];
 	}
 
 	loadCrystalAssets(): void {
@@ -192,6 +212,9 @@ export class GameBoard {
 			this.animateSwap(moveRequest);
 			this.allowSwapping = false;
 			if (this.isMoveValid(moveRequest)) {
+				//snapshotting the board before the move request is sent
+				//deep copy of board -> otherwise its a reference and will change when the new game state is assigned
+				this._oldBoard = this.state()!.board.map((row) => row.map((cell) => ({ ...cell }))); //... is object spread operator -> for copying objects
 				this.emitSwapAttempt(moveRequest);
 			} else {
 				this.animateSwapBack(moveRequest);
@@ -223,6 +246,7 @@ export class GameBoard {
 	getSwapClass(row_idx: number, column_idx: number): string {
 		return this.swapAnimations.get(`${row_idx},${column_idx}`) ?? '';
 	}
+
 	startAnimationSequence() {
 		let animationStepIndex = 0;
 		//based on the old board

@@ -165,7 +165,7 @@ export class Match3Service {
 		return of(mockState).pipe();
 	}
 
-	getMockInitialState(): GameState {
+	getCurrentGameState(): GameState {
 		const mockBoard: Crystal[][] = [
 			[
 				{ crystalType: CrystalType.AMETHYST },

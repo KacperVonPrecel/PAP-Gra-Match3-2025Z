@@ -18,7 +18,7 @@ export class Match3 {
 
 	ngOnInit(): void {
 		//here getting starting game state
-		this.gameState = this.socket.getMockInitialState();
+		this.gameState = this.socket.getCurrentGameState();
 	}
 
 	get boardState(): BoardState | null {
@@ -52,8 +52,6 @@ export class Match3 {
 				return;
 			}
 			this.moveValid.set(true);
-			//XXXW this makes the new board display immediately. we need to display animations based on the old board
-			//animations are in the new state so we need it to access - we need to store the old board somehow. -> backend? or front???
 			this.gameState = newState;
 		});
 	}
