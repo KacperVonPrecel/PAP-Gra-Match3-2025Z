@@ -1,12 +1,11 @@
-import { Component, input } from '@angular/core';
+import { Component, effect, input, output } from '@angular/core';
 import { BoardState, Crystal, Position } from '../../game-state';
 import { CrystalType, getCrystalFileName } from '../../match3-service';
 import { MoveRequest } from '../../match3-service';
-import { NgClass } from '@angular/common';
 
 @Component({
 	selector: 'app-board',
-	imports: [NgClass],
+	imports: [],
 	templateUrl: './game-board.html',
 	styleUrl: './game-board.scss'
 })
@@ -20,8 +19,28 @@ export class GameBoard {
 	private dragThreshold = 20; //how many pixels need to be moved before its dragged
 	//map to track which animation classes should be assigned in css
 	private swapAnimations = new Map<string, string>(); //key - "row, column", value -> what animation (eg. "swap-up")
-	allowSwapping: boolean = true;
+	private allowSwapping: boolean = true;
 	private static readonly SWAP_DURATION = 150;
+	swapAttempt = output<MoveRequest>();
+	moveValid = input<boolean | null>(); //null because there can be no move happening
+	private lastMove: MoveRequest | null = null;
+
+	constructor() {
+		effect(() => {
+			const _moveValid = this.moveValid();
+			if (_moveValid === null) return;
+			if (this.lastMove === null) return;
+			if (_moveValid === false) {
+				//if sth went wrong, swap back
+				this.animateSwapBack(this.lastMove);
+				this.lastMove = null;
+				this.allowSwapping = true;
+			}
+			if (_moveValid === true) {
+				//we will need to store the old board and run animation loop
+			}
+		});
+	}
 
 	loadCrystalAssets(): void {
 		//loop over all types in crystal type
@@ -110,44 +129,54 @@ export class GameBoard {
 		return allowed.some((m) => this.movesEqal(m, move)) || allowed.some((m) => this.movesEqal(m, reversedMove));
 	}
 
-	handleSwapAttempt(target: { row: number; column: number }): boolean {
+	animateSwap(move: MoveRequest) {
+		const sourceSwapDirection = this.getSwapDirection(move);
+		const targetSwapDirection = this.getSwapDirection(this.getReverseMove(move));
+		const sourceKey = `${move.source.row},${move.source.column}`;
+		const targetKey = `${move.target.row},${move.target.column}`;
+		this.swapAnimations.set(sourceKey, `${sourceSwapDirection}`);
+		this.swapAnimations.set(targetKey, `${targetSwapDirection}`);
+	}
+
+	animateSwapBack(move: MoveRequest) {
+		const sourceKey = `${move.source.row},${move.source.column}`;
+		const targetKey = `${move.target.row},${move.target.column}`;
+		setTimeout(() => {
+			//make sure first swap happened
+			this.swapAnimations.set(sourceKey, `go-back`);
+			this.swapAnimations.set(targetKey, `go-back`);
+			setTimeout(() => {
+				//make sure second swap happened
+				this.swapAnimations.delete(sourceKey);
+				this.swapAnimations.delete(targetKey);
+			}, GameBoard.SWAP_DURATION);
+
+			this.allowSwapping = true;
+			return false;
+		}, GameBoard.SWAP_DURATION);
+	}
+
+	handleSwapAttempt(target: { row: number; column: number }): void {
 		const moveRequest: MoveRequest = {
 			source: { row: this.dragStart!.row, column: this.dragStart!.column },
 			target: { row: target.row, column: target.column }
 		};
 
 		if (this.allowSwapping) {
-			//set classes for swap animation
-			const sourceSwapDirection = this.getSwapDirection(moveRequest);
-			const targetSwapDirection = this.getSwapDirection(this.getReverseMove(moveRequest));
-			const sourceKey = `${moveRequest.source.row},${moveRequest.source.column}`;
-			const targetKey = `${moveRequest.target.row},${moveRequest.target.column}`;
-			this.swapAnimations.set(sourceKey, `${sourceSwapDirection}`);
-			this.swapAnimations.set(targetKey, `${targetSwapDirection}`);
+			this.lastMove = moveRequest;
+			this.animateSwap(moveRequest);
 			this.allowSwapping = false;
-
 			if (this.isMoveValid(moveRequest)) {
-				//send request
-				//if valid return
-
-				return true;
+				this.emitSwapAttempt(moveRequest);
 			} else {
-				setTimeout(() => {
-					//make sure first swap happened
-					this.swapAnimations.set(sourceKey, `go-back`);
-					this.swapAnimations.set(targetKey, `go-back`);
-					setTimeout(() => {
-						//make sure second swap happened
-						this.swapAnimations.delete(sourceKey);
-						this.swapAnimations.delete(targetKey);
-					}, GameBoard.SWAP_DURATION);
-
-					this.allowSwapping = true;
-					return false;
-				}, GameBoard.SWAP_DURATION);
+				this.animateSwapBack(moveRequest);
+				this.allowSwapping = true;
 			}
 		}
-		return false;
+	}
+
+	emitSwapAttempt(move: MoveRequest) {
+		this.swapAttempt.emit(move);
 	}
 
 	getSwapDirection(move: MoveRequest): string {

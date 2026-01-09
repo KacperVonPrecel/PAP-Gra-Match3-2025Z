@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { Board, Match3Service, MoveRequest } from '../match3-service';
 import { BoardState, GameState } from '../game-state';
 import { GameBoard } from './board/game-board';
@@ -12,11 +12,12 @@ import { GameBoard } from './board/game-board';
 export class Match3 {
 	private gameId?: number;
 	private gameState?: GameState; //nullable because if we dont connect, no state
-	public board: String = '';
+	public moveValid = signal<boolean | null>(null);
 
 	constructor(private socket: Match3Service) {}
 
 	ngOnInit(): void {
+		//here getting starting game state
 		this.gameState = this.socket.getMockInitialState();
 	}
 
@@ -32,9 +33,9 @@ export class Match3 {
 		this.gameId = gameId;
 		this.socket.subscribeToGame(this.gameId);
 		this.socket.board$.subscribe((board) => {
-			this.updateBoard(board);
+			//this.updateBoard(board);
 		});
-		this.fetchBoard();
+		//this.fetchBoard();
 	}
 
 	disconnect(): void {
@@ -44,36 +45,16 @@ export class Match3 {
 		}
 	}
 
-	fetchBoard(): void {
-		if (this.gameId != undefined) this.socket?.updateBoard(this.gameId);
-	}
-
-	updateBoard(board: Board): void {
-		const boardBlocks = board.board;
-
-		let output = '';
-		for (let i = 0; i < boardBlocks.length; i++) {
-			for (let j = 0; j < boardBlocks[i].length; j++) {
-				output += boardBlocks[i][j].blockType.toString();
+	makeMove(move: MoveRequest): void {
+		this.socket.sendMoveRequest(move).subscribe((newState) => {
+			if (newState === null) {
+				this.moveValid.set(false);
+				return;
 			}
-			output += '\n';
-		}
-		this.board = output;
-	}
-
-	fillBoard(): void {
-		if (this.gameId != undefined) this.socket.fillBoard(this.gameId);
-	}
-
-	dropFloatingBlocks(): void {
-		if (this.gameId != undefined) this.socket.dropFloatingBlocks(this.gameId);
-	}
-
-	makeMove(sourceRow: number, sourceColumn: number, targetRow: number, targetColumn: number): void {
-		//this.socket.swapBlocks(this.gameId, moveRequest);
-	}
-
-	destroyMatchedBlocks(): void {
-		if (this.gameId != undefined) this.socket.destroyMatchedBlocks(this.gameId);
+			this.moveValid.set(true);
+			//XXXW this makes the new board display immediately. we need to display animations based on the old board
+			//animations are in the new state so we need it to access - we need to store the old board somehow. -> backend? or front???
+			this.gameState = newState;
+		});
 	}
 }

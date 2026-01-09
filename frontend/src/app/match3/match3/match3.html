@@ -2,7 +2,7 @@
 	<div id="characters-container"></div>
 	<div id="game-container">
 		@if (boardState) {
-			<app-board [state]="boardState">></app-board>
+			<app-board [state]="boardState" [moveValid]="moveValid()" (swapAttempt)="makeMove($event)"></app-board>
 		}
 	</div>
 </div>

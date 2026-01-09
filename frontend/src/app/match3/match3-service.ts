@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Client, IMessage, StompSubscription } from '@stomp/stompjs';
-import { Observable, Subject } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import SockJS from 'sockjs-client';
 import { GameState, Player, Crystal, Position } from './game-state';
 
@@ -68,6 +68,101 @@ export class Match3Service {
 
 	destroyMatchedBlocks(gameId: number): void {
 		this.client.publish({ destination: `/app/board/${gameId}/destroyMatchedBlocks`, body: `{}` });
+	}
+
+	sendMoveRequest(move: MoveRequest): Observable<GameState | null> {
+		const mockBoard: Crystal[][] = [
+			[
+				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.DIAMOND },
+				{ crystalType: CrystalType.EMERALD },
+				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.HEMATITE },
+				{ crystalType: CrystalType.AMETHYST },
+				{ crystalType: CrystalType.CITRINE }
+			],
+			[
+				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.DIAMOND },
+				{ crystalType: CrystalType.CITRINE },
+				{ crystalType: CrystalType.AMETHYST },
+				{ crystalType: CrystalType.EMERALD },
+				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.HEMATITE },
+				{ crystalType: CrystalType.DIAMOND }
+			],
+			[
+				{ crystalType: CrystalType.EMERALD },
+				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.AMETHYST },
+				{ crystalType: CrystalType.CITRINE },
+				{ crystalType: CrystalType.DIAMOND },
+				{ crystalType: CrystalType.EMERALD },
+				{ crystalType: CrystalType.CITRINE },
+				{ crystalType: CrystalType.HEMATITE }
+			],
+			[
+				{ crystalType: CrystalType.HEMATITE },
+				{ crystalType: CrystalType.EMERALD },
+				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.DIAMOND },
+				{ crystalType: CrystalType.AMETHYST },
+				{ crystalType: CrystalType.CITRINE },
+				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.AMETHYST }
+			],
+			[
+				{ crystalType: CrystalType.CITRINE },
+				{ crystalType: CrystalType.AMETHYST },
+				{ crystalType: CrystalType.EMERALD },
+				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.HEMATITE },
+				{ crystalType: CrystalType.DIAMOND },
+				{ crystalType: CrystalType.EMERALD },
+				{ crystalType: CrystalType.CITRINE }
+			],
+			[
+				{ crystalType: CrystalType.DIAMOND },
+				{ crystalType: CrystalType.HEMATITE },
+				{ crystalType: CrystalType.CITRINE },
+				{ crystalType: CrystalType.EMERALD },
+				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.AMETHYST },
+				{ crystalType: CrystalType.DIAMOND },
+				{ crystalType: CrystalType.RUBY }
+			],
+			[
+				{ crystalType: CrystalType.AMETHYST },
+				{ crystalType: CrystalType.CITRINE },
+				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.HEMATITE },
+				{ crystalType: CrystalType.EMERALD },
+				{ crystalType: CrystalType.CITRINE },
+				{ crystalType: CrystalType.AMETHYST },
+				{ crystalType: CrystalType.DIAMOND }
+			],
+			[
+				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.EMERALD },
+				{ crystalType: CrystalType.DIAMOND },
+				{ crystalType: CrystalType.CITRINE },
+				{ crystalType: CrystalType.AMETHYST },
+				{ crystalType: CrystalType.HEMATITE },
+				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.EMERALD }
+			]
+		];
+		const mockState: GameState = {
+			currentPlayer: Player.ME,
+			boardState: {
+				board: mockBoard,
+				allowedMoves: [],
+				canPlayerMove: true,
+				animationSteps: []
+			}
+		};
+		return of(mockState).pipe();
 	}
 
 	getMockInitialState(): GameState {
@@ -155,7 +250,7 @@ export class Match3Service {
 		];
 
 		const allowedMoves: MoveRequest[] = [
-			{ source: { row: 3, column: 3 }, target: { row: 3, column: 4 } },
+			{ source: { row: 0, column: 0 }, target: { row: 0, column: 1 } },
 			{ source: { row: 5, column: 1 }, target: { row: 6, column: 1 } }
 		];
 		return {
