@@ -4,5 +4,5 @@ import pap.project.match3.Match3Block;
 
 public record NewBlock(
         Position position,
-        Match3Block crystal
+        Match3Block block
 ) { }

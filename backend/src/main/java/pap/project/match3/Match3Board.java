@@ -22,6 +22,8 @@ public class Match3Board
         this.matchableShapes = matchableShapes;
 
         fillBoard();
+
+        // TODO: DESTROY MATCHED UNTIL NONE REMAIN
     }
 
     public @NonNull BoardState playTurn(@NonNull MoveRequest moveRequest)
@@ -50,6 +52,9 @@ public class Match3Board
                     dropped,
                     newBlocks
             ));
+
+            swappedBlocks = null; // So only the first step has swappedBlocks
+            matches = findMatchedBlocks();
         }
 
         return new BoardState(
