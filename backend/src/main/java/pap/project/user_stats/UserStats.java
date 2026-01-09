@@ -3,9 +3,14 @@ package pap.project.user_stats;
 import jakarta.persistence.*;
 import pap.project.users.User;
 
+import java.util.List;
+
 @Entity
 @Table (
-        name = "user_stats"
+        name = "user_stats",
+        indexes = {
+                @Index(name = "idx_user_stats_elo_points", columnList = "elo_points, total_wins")
+        }
 )
 public class UserStats {
     private static final int STARTING_CURRENCY = 1000;
@@ -18,6 +23,7 @@ public class UserStats {
     private long id;
 
     @OneToOne(fetch = FetchType.LAZY)
+    @MapsId
     @JoinColumn (name = "user_id", insertable = false, updatable = false)
     private User user;
 
@@ -30,7 +36,10 @@ public class UserStats {
     @Column(name = "currency", nullable = false)
     private int currency = STARTING_CURRENCY;
 
-//    XXX @OneToMany dodać na postać pewnie FK i tutaj mieć listę postaci, bo ułatwi zapis
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_active_team", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "active_team_ids", nullable = false)
+    private List<Long> activeTeamIds;
 
     protected UserStats() {}
 
@@ -62,4 +71,10 @@ public class UserStats {
     {
         return currency;
     }
+
+    public List<Long> getActiveTeamIds()
+    {
+        return activeTeamIds;
+    }
+
 }

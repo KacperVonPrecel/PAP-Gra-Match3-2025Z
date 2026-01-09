@@ -5,9 +5,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import pap.project.user_data.model.UserData;
-import pap.project.user_data.model.controller.DrawCharacterRequest;
-import pap.project.user_data.model.controller.DrawCharacterResponse;
-import pap.project.user_data.model.controller.UserDataResponse;
+import pap.project.user_data.model.controller.*;
 import pap.project.users.UserAuthDetails;
 import pap.project.users.characters.UserCharactersService;
 import pap.project.users.characters.model.controller.CharacterData;
@@ -37,6 +35,15 @@ public class UserDataController
         return new UserDataResponse(charactersData, userData.currency());
     }
 
+    @GetMapping("get_team")
+    public @NonNull GetActiveTeamResponse getTeam(@NonNull Authentication authentication)
+    {
+        final UserAuthDetails user = (UserAuthDetails) authentication.getPrincipal();
+        final long userId = user.getUserId();
+        final UserData userData = userDataService.getUserData(userId);
+        return new GetActiveTeamResponse(userData.activeTeamIds());
+    }
+
     @PostMapping("draw_characters")
     public @NonNull DrawCharacterResponse drawCharacters(@NonNull Authentication authentication,
                                                          @NonNull @Valid @RequestBody DrawCharacterRequest request)
@@ -46,4 +53,26 @@ public class UserDataController
 
         return userDataService.drawCharacters(request, userId);
     }
+
+    @PostMapping("upgrade_character")
+    public @NonNull UpgradeCharacterResponse upgradeCharacter(@NonNull Authentication authentication,
+                                                              @NonNull @Valid @RequestBody UpgradeCharacterRequest request)
+    {
+        final UserAuthDetails user = (UserAuthDetails) authentication.getPrincipal();
+        final long userId = user.getUserId();
+        final UserData userData = userDataService.getUserData(userId);
+        final List<CharacterData> charactersData = userCharactersService.createCharactersData(userData.userCharacters());
+
+        return userDataService.upgradeCharacter(request, userId, charactersData);
+    }
+
+    @PostMapping("set_team")
+    public @NonNull SetActiveTeamResponse setActiveTeam(@NonNull Authentication authentication,
+                                                        @NonNull @Valid @RequestBody SetActiveTeamRequest request)
+    {
+        final UserAuthDetails user = (UserAuthDetails) authentication.getPrincipal();
+        final long userId = user.getUserId();
+        return userDataService.setActiveTeam(request, userId);
+    }
+
 }
