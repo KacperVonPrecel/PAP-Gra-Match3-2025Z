@@ -175,7 +175,7 @@ export class Match3Service {
 				{ crystalType: CrystalType.RUBY },
 				{ crystalType: CrystalType.HEMATITE },
 				{ crystalType: CrystalType.EMPTY },
-				{ crystalType: CrystalType.BLOCKED }
+				{ crystalType: CrystalType.DISABLED }
 			],
 			[
 				{ crystalType: CrystalType.RUBY },
@@ -284,7 +284,7 @@ export enum CrystalType {
 	EMERALD = 'EMERALD',
 	HEMATITE = 'HEMATITE',
 	RUBY = 'RUBY',
-	BLOCKED = 'BLOCKED',
+	DISABLED = 'DISABLED',
 	EMPTY = 'EMPTY'
 }
 
@@ -299,6 +299,6 @@ const crystalFileMap: { [key in CrystalType]: string } = {
 	[CrystalType.EMERALD]: 'emerald.svg',
 	[CrystalType.HEMATITE]: 'hematite.svg',
 	[CrystalType.RUBY]: 'ruby.svg',
-	[CrystalType.BLOCKED]: 'ruby.svg',
+	[CrystalType.DISABLED]: 'ruby.svg',
 	[CrystalType.EMPTY]: 'ruby.svg'
 };

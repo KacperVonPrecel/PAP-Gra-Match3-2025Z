@@ -170,9 +170,9 @@ export class GameBoard {
 
 		if (
 			targetType == CrystalType.EMPTY ||
-			targetType == CrystalType.BLOCKED ||
+			targetType == CrystalType.DISABLED ||
 			sourceType == CrystalType.EMPTY ||
-			sourceType == CrystalType.BLOCKED
+			sourceType == CrystalType.DISABLED
 		) {
 			return;
 		}
