@@ -1,3 +1,7 @@
+:host {
+	--cell-size: 48px;
+	--swap-duration: 150ms;
+}
 #board-background {
 	//background: rgb(240, 226, 163, 0.6);
 	border-radius: 10px;
@@ -13,8 +17,8 @@
 		}
 	}
 	.cell {
-		width: 48px;
-		height: 48px;
+		width: var(--cell-size);
+		height: var(--cell-size);
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -28,23 +32,23 @@
 }
 
 .swap-right {
-	transform: translateX(48px);
-	transition: transform 150ms ease;
+	transform: translateX(var(--cell-size));
+	transition: transform var(--swap-duration) ease;
 }
 .swap-left {
-	transform: translateX(-48px);
-	transition: transform 150ms ease;
+	transform: translateX(calc(var(--cell-size) * -1));
+	transition: transform var(--swap-duration) ease;
 }
 .swap-up {
-	transform: translateY(-48px);
-	transition: transform 150ms ease;
+	transform: translateY(calc(var(--cell-size) * -1));
+	transition: transform var(--swap-duration) ease;
 }
 .swap-down {
-	transform: translateY(48px);
-	transition: transform 150ms ease;
+	transform: translateY(var(--cell-size));
+	transition: transform var(--swap-duration) ease;
 }
 
 .go-back {
 	transform: translateY(0px);
-	transition: transform 150ms ease;
+	transition: transform var(--swap-duration) ease;
 }

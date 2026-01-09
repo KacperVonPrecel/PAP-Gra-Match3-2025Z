@@ -21,12 +21,13 @@ export class GameBoard {
 	//map to track which animation classes should be assigned in css
 	private swapAnimations = new Map<string, string>(); //key - "row, column", value -> what animation (eg. "swap-up")
 	private allowSwapping: boolean = true;
-	private static readonly SWAP_DURATION = 150;
 	swapAttempt = output<MoveRequest>();
 	moveValid = input<boolean | null>(); //null because there can be no move happening
 	private lastMove: MoveRequest | null = null;
 	private _oldBoard: Crystal[][] | null = null; //old board saved for animations
 	private _animationsPlaying: boolean = false;
+
+	private static readonly SWAP_DURATION = 150;
 
 	constructor() {
 		effect(() => {
@@ -36,18 +37,16 @@ export class GameBoard {
 			if (_moveValid === false) {
 				//if sth went wrong, swap back
 				this.animateSwapBack(this.lastMove);
-				this.lastMove = null;
 				this.allowSwapping = true;
 			}
 			if (_moveValid === true) {
 				this._animationsPlaying = true;
-				console.log(this.oldBoard);
-				//1. switch to displaying from old board instead of board in html -> will this undo the swap animation?
-				//2.run animation loop
-				//3.when finished display the new board
-
-				//we will need to store the old board and run animation loop
+				this.animationSequence();
+				this._animationsPlaying = false;
+				this.allowSwapping = true;
 			}
+			this.lastMove = null;
+			return;
 		});
 	}
 
@@ -247,9 +246,8 @@ export class GameBoard {
 		return this.swapAnimations.get(`${row_idx},${column_idx}`) ?? '';
 	}
 
-	startAnimationSequence() {
+	animationSequence() {
 		let animationStepIndex = 0;
-		//based on the old board
 		//play swap if im not the player who swapped
 		//destroyed animation
 		//falling animation
