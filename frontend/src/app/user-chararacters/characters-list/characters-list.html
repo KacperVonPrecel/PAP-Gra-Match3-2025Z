@@ -1,0 +1,11 @@
+<div id="content">
+	<div id="characters-list">
+		@for (character of characters; track $index) {
+			<app-character-in-list
+				[character]="character"
+				[selected]="character.characterType === selectedCharacterType"
+				(clicked)="handleSelectingCharacter(character)"
+			></app-character-in-list>
+		}
+	</div>
+</div>

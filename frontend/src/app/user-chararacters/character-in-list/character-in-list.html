@@ -1,0 +1,29 @@
+<div class="contener" [class.locked]="!character().unlockedData" [class.selected]="selected()" (click)="handleClick()">
+	<img class="character-img" alt="Character" [src]="filePath()" />
+	<span class="divider"> </span>
+	<span class="level">
+		@if (!character().unlockedData) {
+			Locked
+		} @else {
+			Level {{ character().unlockedData!.level }}
+		}
+	</span>
+	<div class="next-level-progress">
+		<div
+			class="progress-fill"
+			[style.width.%]="
+				character().unlockedData
+					? (character().unlockedData!.currentCopiesCount / character().unlockedData!.requiredCopiesForNextLevel) * 100
+					: 0
+			"
+		>
+			@if (!character().unlockedData) {
+				<span class="progress-text">0/1</span>
+			} @else {
+				<span class="progress-text">
+					{{ character().unlockedData!.currentCopiesCount }}/{{ character().unlockedData!.requiredCopiesForNextLevel }}
+				</span>
+			}
+		</div>
+	</div>
+</div>

@@ -10,8 +10,15 @@ import { Draw } from './home/draw/draw';
 import { DrawResultControllerPage } from './draw-result/draw-result-page/draw-result-controller-page';
 import { HistoryComponent } from './history/history-component/history-component';
 import { Match3 } from './match3/match3/match3';
+import { CharactersList } from './user-chararacters/characters-list/characters-list';
+import { Characters } from './user-chararacters/characters/characters';
 
 export const routes: Routes = [
+	{
+		path: '',
+		pathMatch: 'full',
+		redirectTo: 'auth/login'
+	},
 	{
 		path: 'auth/register',
 		component: Register,
@@ -48,6 +55,11 @@ export const routes: Routes = [
 						path: 'history',
 						component: HistoryComponent,
 						title: 'History'
+					},
+					{
+						path: 'characters',
+						component: Characters,
+						title: 'Characters'
 					}
 				]
 			},
@@ -59,9 +71,9 @@ export const routes: Routes = [
 			}
 		]
 	},
-    {
-        path: 'match3',
-        component: Match3,
-        title: 'Match3'
-    }
+	{
+		path: 'match3',
+		component: Match3,
+		title: 'Match3'
+	}
 ];
