@@ -1,6 +1,7 @@
 :host {
 	--cell-size: min(3.1rem, 10vw);
 	--swap-duration: 150ms;
+	--destroy-duration: 250ms;
 }
 #board-background {
 	//background: rgb(240, 226, 163, 0.6);
@@ -68,5 +69,5 @@
 	}
 }
 .destroying {
-	animation: pop-and-shrink 250ms ease forwards;
+	animation: pop-and-shrink var(--destroy-duration) ease forwards;
 }

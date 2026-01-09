@@ -8,7 +8,7 @@
 					<div class="cell-background" [class.transparent]="crystal.crystalType === CrystalType.DISABLED">
 						<div
 							class="cell"
-							[class]="getSwapClass(row_idx, column_idx)"
+							[class]="animationState.getAnimationClasses(row_idx, column_idx)"
 							(pointerdown)="onPointerDown($event, row_idx, column_idx)"
 							(pointermove)="onPointerMove($event)"
 							(pointerup)="onPointerUp()"

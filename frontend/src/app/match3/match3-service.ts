@@ -74,7 +74,7 @@ export class Match3Service {
 		const mockBoard: Crystal[][] = [
 			[
 				{ crystalType: CrystalType.RUBY },
-				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.DIAMOND },
 				{ crystalType: CrystalType.DIAMOND },
 				{ crystalType: CrystalType.EMERALD },
 				{ crystalType: CrystalType.RUBY },
@@ -159,7 +159,19 @@ export class Match3Service {
 				board: mockBoard,
 				allowedMoves: [],
 				canPlayerMove: true,
-				animationSteps: []
+				animationSteps: [
+					{
+						destroyed: [
+							{ row: 4, column: 0 },
+							{ row: 4, column: 1 },
+							{ row: 4, column: 2 }
+						],
+						swapped: null,
+						falling: [],
+						newBlocks: [],
+						resetBoard: false
+					}
+				]
 			}
 		};
 		return of(mockState).pipe();
@@ -208,10 +220,10 @@ export class Match3Service {
 				{ crystalType: CrystalType.AMETHYST }
 			],
 			[
-				{ crystalType: CrystalType.CITRINE },
+				{ crystalType: CrystalType.AMETHYST },
 				{ crystalType: CrystalType.AMETHYST },
 				{ crystalType: CrystalType.EMERALD },
-				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.AMETHYST },
 				{ crystalType: CrystalType.HEMATITE },
 				{ crystalType: CrystalType.DIAMOND },
 				{ crystalType: CrystalType.EMERALD },
@@ -251,7 +263,8 @@ export class Match3Service {
 
 		const allowedMoves: MoveRequest[] = [
 			{ source: { row: 0, column: 0 }, target: { row: 0, column: 1 } },
-			{ source: { row: 5, column: 1 }, target: { row: 6, column: 1 } }
+			{ source: { row: 5, column: 1 }, target: { row: 6, column: 1 } },
+			{ source: { row: 4, column: 2 }, target: { row: 4, column: 3 } }
 		];
 		return {
 			currentPlayer: Player.ME,

@@ -2,6 +2,7 @@ import { Component, effect, input, output } from '@angular/core';
 import { BoardState, Crystal, Position } from '../../game-state';
 import { CrystalType, getCrystalFileName } from '../../match3-service';
 import { MoveRequest } from '../../match3-service';
+import { AnimationState } from './animation-state';
 
 @Component({
 	selector: 'app-board',
@@ -11,23 +12,36 @@ import { MoveRequest } from '../../match3-service';
 })
 export class GameBoard {
 	CrystalType = CrystalType; // to expose the enum to the template
+	/*current board state - includes information about animation played from the previous state, to get to the current one*/
 	state = input.required<BoardState | null>();
-	private crystalImages = new Map<CrystalType, string>();
-	private imagesLoadedCount: number = 0; //value to ensure all images of crystals are loaded before displaying the board
+	/*did the server give a valid response to the player's attempted move*/
+	moveValid = input<boolean | null>(); //null because there can be no move happening
+	/*output to parent with the player's move request*/
+	swapAttempt = output<MoveRequest>();
+	/*player's last move request - only stored before server gives the response, stored for the purpose of animating the swap back*/
+	private lastMove: MoveRequest | null = null;
+	/*value determining if the player can swap blocks based on what's happening on the board (eg. after swap, animations) - independant of whose turn it is*/
+	private allowSwapping: boolean = true;
 	private dragStart: Position | null = null;
 	private startX = 0;
 	private startY = 0;
-	private dragThreshold = 20; //how many pixels need to be moved before its dragged
-	//map to track which animation classes should be assigned in css
-	private swapAnimations = new Map<string, string>(); //key - "row, column", value -> what animation (eg. "swap-up")
-	private allowSwapping: boolean = true;
-	swapAttempt = output<MoveRequest>();
-	moveValid = input<boolean | null>(); //null because there can be no move happening
-	private lastMove: MoveRequest | null = null;
-	private _oldBoard: Crystal[][] | null = null; //old board saved for animations
+	/*threshold of how many pixels need to be moved before the block is considered as dragged*/
+	private dragThreshold = 20;
+	/*object managing maps of animation classes for animations that are currently happening*/
+	animationState: AnimationState = new AnimationState();
+	/*board before a move was executes - stored for the purpose of animating*/
+	private _oldBoard: Crystal[][] | null = null;
 	private _animationsPlaying: boolean = false;
 
+	private crystalImages = new Map<CrystalType, string>();
+	/*value to ensure all images of crystals are loaded before displaying the board - should be equal to the number of types in CrystalType*/
+	private imagesLoadedCount: number = 0;
+
 	private static readonly SWAP_DURATION = 150;
+	private static readonly DESTROY_DURATION = 250;
+	private static readonly NEW_DURATION = 150;
+	private static readonly FALLING_DURATION = 150;
+	private static readonly BOARD_RESET_DURATION = 150;
 
 	constructor() {
 		effect(() => {
@@ -152,10 +166,8 @@ export class GameBoard {
 	animateSwap(move: MoveRequest): void {
 		const sourceSwapDirection = this.getSwapDirection(move);
 		const targetSwapDirection = this.getSwapDirection(this.getReverseMove(move));
-		const sourceKey = `${move.source.row},${move.source.column}`;
-		const targetKey = `${move.target.row},${move.target.column}`;
-		this.swapAnimations.set(sourceKey, `${sourceSwapDirection}`);
-		this.swapAnimations.set(targetKey, `${targetSwapDirection}`);
+		this.animationState.addSwap(move.source.row, move.source.column, `${sourceSwapDirection}`);
+		this.animationState.addSwap(move.target.row, move.target.column, `${targetSwapDirection}`);
 	}
 
 	animateSwapBack(move: MoveRequest): void {
@@ -163,12 +175,12 @@ export class GameBoard {
 		const targetKey = `${move.target.row},${move.target.column}`;
 		setTimeout(() => {
 			//make sure first swap happened
-			this.swapAnimations.set(sourceKey, `go-back`);
-			this.swapAnimations.set(targetKey, `go-back`);
+			this.animationState.addSwap(move.source.row, move.source.column, `go-back`);
+			this.animationState.addSwap(move.target.row, move.target.column, `go-back`);
 			setTimeout(() => {
 				//make sure second swap happened
-				this.swapAnimations.delete(sourceKey);
-				this.swapAnimations.delete(targetKey);
+				this.animationState.deleteSwap(move.source.row, move.source.column);
+				this.animationState.deleteSwap(move.target.row, move.target.column);
 			}, GameBoard.SWAP_DURATION);
 
 			this.allowSwapping = true;
@@ -241,18 +253,20 @@ export class GameBoard {
 		return '';
 	}
 
-	getSwapClass(row_idx: number, column_idx: number): string {
-		return this.swapAnimations.get(`${row_idx},${column_idx}`) ?? '';
-	}
-
 	animationSequence(): void {
 		if (this.state()) {
 			const animationSteps = this.state()!.animationSteps;
 			for (const step of animationSteps) {
 				//play swap if im not the player who swapped
 				for (const destroyedBlock of step.destroyed) {
-					//assign destroyed class
+					this.animationState.addDestroyed(destroyedBlock.row, destroyedBlock.column, `destroying`);
+					//CLEAR ALL CLASSES BEFORE DISPLAYING NEW BOARD
+					//wait for destropyed animation before applying others
 				}
+				setTimeout(() => {
+					for (const falling of step.falling) {
+					}
+				}, GameBoard.DESTROY_DURATION);
 			}
 		}
 		//play swap if im not the player who swapped
