@@ -164,9 +164,6 @@ public class UserDataService
             if (cost > userDataSession.getUserData().currency())
                 throw new RuntimeException("XXX");
 
-            userDataSession.setUserData(userDataSession.getUserData().changeUserDataAfterDrawing(cost));
-            userStatsRepository.updateUserStatsAfterDrawing(userDataSession.getUserData().currency(), userId);
-
             List<DrawResultEntry> drawResults = Stream.generate(() -> {
                 Rarity drawRarity = drawRarity(request.drawType());
                 return drawCharacterByRarity(drawRarity);
@@ -204,7 +201,12 @@ public class UserDataService
                 }
                 charactersToSave.add(character);
             }
+            userDataSession.setUserData(userDataSession.getUserData().changeUserDataAfterDrawing(cost));
+
+            userStatsRepository.updateUserStatsAfterDrawing(userDataSession.getUserData().currency(), userId);
             userCharactersRepository.saveAll(charactersToSave);
+
+
 
             return new DrawCharacterResponse(drawResults);
         } finally {
@@ -212,28 +214,21 @@ public class UserDataService
         }
     }
 
-    @Transactional
     public UpgradeCharacterResponse upgradeCharacter(@NonNull UpgradeCharacterRequest request, long userId, List<CharacterData> charactersData)
     {
         final UserSessionData userDataSession = userSessionData.computeIfAbsent(userId, _ -> new UserSessionData());
         userDataSession.lock();
         try
         {
-            UserCharacter userCharacterToUpgrade = userCharactersRepository.findById(request.characterId());
+            final UserCharacter userCharacterToUpgrade = userDataSession.getUserData().userCharacters().stream().filter((character) -> character.getCharacterType() == request.characterType()).findFirst().orElseThrow();
 
-            if (userCharacterToUpgrade.getUserId() != userId)
-            {
-                throw new RuntimeException("This is not your character");
-            }
             final CharacterData upgradeCharacterData = charactersData.stream()
                     .filter(c -> c.characterType() == userCharacterToUpgrade.getCharacterType())
                     .findFirst()
-                    .orElseThrow(() -> new RuntimeException("No such character type exist"));
+                    .orElseThrow();
 
             if (userCharacterToUpgrade.getCopiesCount() < upgradeCharacterData.requiredCopiesForNextLevel().orElseThrow())
-            {
-                throw new RuntimeException("You don't have enough copies for this character");
-            }
+                throw new IllegalArgumentException("You don't have enough copies for this character");
 
             userCharacterToUpgrade.setCopiesCount(userCharacterToUpgrade.getCopiesCount() - upgradeCharacterData.requiredCopiesForNextLevel().orElseThrow());
             userCharacterToUpgrade.setLevel(userCharacterToUpgrade.getLevel() + 1);
@@ -241,8 +236,7 @@ public class UserDataService
 
             userDataSession.setUserData(userDataSession.getUserData().changeUserDataAfterUpgrading(userCharacterToUpgrade));
 
-            return new UpgradeCharacterResponse();
-
+            return new UpgradeCharacterResponse(upgradeCharacterData);
         } finally {
             userDataSession.unlock();
         }

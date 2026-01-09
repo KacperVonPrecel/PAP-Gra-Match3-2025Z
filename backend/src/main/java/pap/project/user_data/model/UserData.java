@@ -26,6 +26,7 @@ public record UserData(
 
     public @NonNull UserData changeUserDataAfterDrawing(int cost)
     {
+        //XXX update characters list
         return new UserData(userCharacters,
                 activeTeamIds,
                 currency - cost,
