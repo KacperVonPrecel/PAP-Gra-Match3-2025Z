@@ -162,6 +162,20 @@ export class GameBoard {
 			source: { row: this.dragStart!.row, column: this.dragStart!.column },
 			target: { row: target.row, column: target.column }
 		};
+		const targetCrystal = this.state()!.board[target.row][target.column];
+		const targetType = targetCrystal.crystalType;
+
+		const sourceCrystal = this.state()!.board[this.dragStart!.row][this.dragStart!.column];
+		const sourceType = sourceCrystal.crystalType;
+
+		if (
+			targetType == CrystalType.EMPTY ||
+			targetType == CrystalType.BLOCKED ||
+			sourceType == CrystalType.EMPTY ||
+			sourceType == CrystalType.BLOCKED
+		) {
+			return;
+		}
 
 		if (this.allowSwapping) {
 			this.lastMove = moveRequest;

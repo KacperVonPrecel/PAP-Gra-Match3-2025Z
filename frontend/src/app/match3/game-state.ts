@@ -20,7 +20,7 @@ export interface PlayerMove {
 
 export interface AnimationStep {
 	board: Crystal[][];
-	swapped: MoveRequest;
+	swapped: MoveRequest | null; //null when no swap in step
 	destroyed: Position[]; //empty array will be passed to these fields if there is nothing destroyed
 	falling: MoveRequest[];
 	newBlocks: NewBlock[];
