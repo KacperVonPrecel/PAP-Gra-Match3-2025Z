@@ -52,3 +52,21 @@
 	transform: translateY(0px);
 	transition: transform var(--swap-duration) ease;
 }
+
+@keyframes pop-and-shrink {
+	0% {
+		transform: scale(1);
+		opacity: 1;
+	}
+	20% {
+		transform: scale(1.15);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(0);
+		opacity: 0;
+	}
+}
+.destroying {
+	animation: pop-and-shrink 250ms ease forwards;
+}

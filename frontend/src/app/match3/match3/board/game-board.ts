@@ -78,7 +78,7 @@ export class GameBoard {
 	ngOnInit() {
 		this.loadCrystalAssets();
 	}
-	getCrystalImage(crystal: Crystal) {
+	getCrystalImage(crystal: Crystal): string | undefined {
 		return this.crystalImages.get(crystal.crystalType);
 	}
 
@@ -86,13 +86,13 @@ export class GameBoard {
 		return this.imagesLoadedCount == Object.values(CrystalType).length;
 	}
 
-	onPointerDown(event: PointerEvent, row_idx: number, column_idx: number) {
+	onPointerDown(event: PointerEvent, row_idx: number, column_idx: number): void {
 		this.dragStart = { row: row_idx, column: column_idx };
 		this.startX = event.clientX;
 		this.startY = event.clientY;
 	}
 
-	onPointerMove(event: PointerEvent) {
+	onPointerMove(event: PointerEvent): void {
 		if (!this.dragStart) return;
 
 		const dx = event.clientX - this.startX;
@@ -126,7 +126,7 @@ export class GameBoard {
 		this.dragStart = null;
 	}
 
-	onPointerUp() {
+	onPointerUp(): void {
 		this.dragStart = null;
 	}
 
@@ -149,7 +149,7 @@ export class GameBoard {
 		return allowed.some((m) => this.movesEqal(m, move)) || allowed.some((m) => this.movesEqal(m, reversedMove));
 	}
 
-	animateSwap(move: MoveRequest) {
+	animateSwap(move: MoveRequest): void {
 		const sourceSwapDirection = this.getSwapDirection(move);
 		const targetSwapDirection = this.getSwapDirection(this.getReverseMove(move));
 		const sourceKey = `${move.source.row},${move.source.column}`;
@@ -158,7 +158,7 @@ export class GameBoard {
 		this.swapAnimations.set(targetKey, `${targetSwapDirection}`);
 	}
 
-	animateSwapBack(move: MoveRequest) {
+	animateSwapBack(move: MoveRequest): void {
 		const sourceKey = `${move.source.row},${move.source.column}`;
 		const targetKey = `${move.target.row},${move.target.column}`;
 		setTimeout(() => {
@@ -172,7 +172,6 @@ export class GameBoard {
 			}, GameBoard.SWAP_DURATION);
 
 			this.allowSwapping = true;
-			return false;
 		}, GameBoard.SWAP_DURATION);
 	}
 
@@ -222,7 +221,7 @@ export class GameBoard {
 		}
 	}
 
-	emitSwapAttempt(move: MoveRequest) {
+	emitSwapAttempt(move: MoveRequest): void {
 		this.swapAttempt.emit(move);
 	}
 
@@ -246,12 +245,21 @@ export class GameBoard {
 		return this.swapAnimations.get(`${row_idx},${column_idx}`) ?? '';
 	}
 
-	animationSequence() {
-		let animationStepIndex = 0;
+	animationSequence(): void {
+		if (this.state()) {
+			const animationSteps = this.state()!.animationSteps;
+			for (const step of animationSteps) {
+				//play swap if im not the player who swapped
+				for (const destroyedBlock of step.destroyed) {
+					//assign destroyed class
+				}
+			}
+		}
 		//play swap if im not the player who swapped
 		//destroyed animation
 		//falling animation
 		//new blocks animation
 		//new board animation if needed
+		return;
 	}
 }
