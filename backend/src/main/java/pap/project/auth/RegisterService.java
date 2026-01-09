@@ -53,7 +53,7 @@ public class RegisterService
         final User userToSave = new User(registerRequest.username(), registerRequest.email(), encodedPassword);
         try
         {
-            userRepository.save(userToSave);
+            userRepository.saveAndFlush(userToSave);
             final UserStats userStatsToSave = new UserStats(userToSave.getId().orElseThrow());
             userStatsRepository.save(userStatsToSave);
             LOG.info("%s user saved to database".formatted(logPrefix));

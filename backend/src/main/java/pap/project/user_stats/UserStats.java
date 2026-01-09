@@ -3,6 +3,8 @@ package pap.project.user_stats;
 import jakarta.persistence.*;
 import pap.project.users.User;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -22,10 +24,10 @@ public class UserStats {
     @Column (name = "user_id")
     private long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
-    @JoinColumn (name = "user_id", insertable = false, updatable = false)
-    private User user;
+//    @OneToOne(fetch = FetchType.LAZY)
+//    @MapsId
+//    @JoinColumn (name = "user_id", insertable = false, updatable = false)
+//    private User user;
 
     @Column(name = "elo_points", nullable = false)
     private int eloPoints = STARTING_ELO_POINTS;
@@ -39,7 +41,7 @@ public class UserStats {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_active_team", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "active_team_ids", nullable = false)
-    private List<Long> activeTeamIds;
+    private List<Long> activeTeamIds = new ArrayList<>();
 
     protected UserStats() {}
 
@@ -74,6 +76,7 @@ public class UserStats {
 
     public List<Long> getActiveTeamIds()
     {
+//        return Collections.emptyList();
         return activeTeamIds;
     }
 

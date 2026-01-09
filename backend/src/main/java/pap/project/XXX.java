@@ -43,14 +43,14 @@ public class XXX
             r.registerUser("xx", z);
         }
 
-        for (int i = 1; i < 200; i++) {
-            final int x = new Random().nextInt(1, 50);
-            if (new Random().nextBoolean())
-                u.processGameEnd(x, 50, System.currentTimeMillis());
-            else
-                u.processGameEnd(50, x, System.currentTimeMillis());
-
-        }
+//        for (int i = 1; i < 200; i++) {
+//            final int x = new Random().nextInt(1, 50);
+//            if (new Random().nextBoolean())
+//                u.processGameEnd(x, 50, System.currentTimeMillis());
+//            else
+//                u.processGameEnd(50, x, System.currentTimeMillis());
+//
+//        }
 
     }
 }

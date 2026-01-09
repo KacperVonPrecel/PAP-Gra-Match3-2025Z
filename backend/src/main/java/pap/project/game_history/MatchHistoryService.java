@@ -9,9 +9,6 @@ import pap.project.game_history.model.MatchFromHistoryData;
 import pap.project.user_stats.UserStatsRepository;
 import pap.project.users.User;
 import pap.project.users.UserRepository;
-import pap.project.users.characters.UserCharacter;
-import pap.project.users.characters.UserCharactersRepository;
-import pap.project.users.characters.model.CharacterType;
 
 import java.util.List;
 
@@ -79,8 +76,8 @@ public class MatchHistoryService
                     match.getFinishTime(),
                     (isPlayerWinner) ? match.getWinnerEloChange() : match.getLoserEloChange(),
                     (isPlayerWinner) ? match.getLoserEloChange() : match.getWinnerEloChange(),
-                    userStatsRepository.findUserStatsByUserId(playerId).orElseThrow().getEloPoints(),
-                    userStatsRepository.findUserStatsByUserId(opponentId).orElseThrow().getEloPoints(),
+                    userStatsRepository.findUserStatsById(playerId).orElseThrow().getEloPoints(),
+                    userStatsRepository.findUserStatsById(opponentId).orElseThrow().getEloPoints(),
                     (isPlayerWinner) ? winnerCharList : loserCharList,
                     (isPlayerWinner) ? loserCharList : winnerCharList,
                     isPlayerWinner
