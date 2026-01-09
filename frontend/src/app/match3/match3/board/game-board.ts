@@ -10,6 +10,7 @@ import { MoveRequest } from '../../match3-service';
 	styleUrl: './game-board.scss'
 })
 export class GameBoard {
+	CrystalType = CrystalType; // to expose the enum to the template
 	state = input.required<BoardState | null>();
 	private crystalImages = new Map<CrystalType, string>();
 	private imagesLoadedCount: number = 0; //value to ensure all images of crystals are loaded before displaying the board
@@ -197,5 +198,14 @@ export class GameBoard {
 
 	getSwapClass(row_idx: number, column_idx: number): string {
 		return this.swapAnimations.get(`${row_idx},${column_idx}`) ?? '';
+	}
+	startAnimationSequence() {
+		let animationStepIndex = 0;
+		//based on the old board
+		//play swap if im not the player who swapped
+		//destroyed animation
+		//falling animation
+		//new blocks animation
+		//new board animation if needed
 	}
 }

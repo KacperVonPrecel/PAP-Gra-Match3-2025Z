@@ -10,7 +10,9 @@
 						(pointermove)="onPointerMove($event)"
 						(pointerup)="onPointerUp()"
 					>
-						<img [src]="getCrystalImage(crystal)" />
+						@if (crystal.crystalType != CrystalType.EMPTY && crystal.crystalType != CrystalType.BLOCKED) {
+							<img [src]="getCrystalImage(crystal)" />
+						}
 					</div>
 				}
 			</div>

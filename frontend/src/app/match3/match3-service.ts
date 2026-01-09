@@ -174,8 +174,8 @@ export class Match3Service {
 				{ crystalType: CrystalType.EMERALD },
 				{ crystalType: CrystalType.RUBY },
 				{ crystalType: CrystalType.HEMATITE },
-				{ crystalType: CrystalType.AMETHYST },
-				{ crystalType: CrystalType.CITRINE }
+				{ crystalType: CrystalType.EMPTY },
+				{ crystalType: CrystalType.BLOCKED }
 			],
 			[
 				{ crystalType: CrystalType.RUBY },
