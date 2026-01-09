@@ -52,6 +52,11 @@ export const routes: Routes = [
 						title: 'Draw'
 					},
 					{
+						path: 'user-history/:id',
+						component: HistoryComponent,
+						title: 'History'
+					},
+					{
 						path: 'history',
 						component: HistoryComponent,
 						title: 'History'

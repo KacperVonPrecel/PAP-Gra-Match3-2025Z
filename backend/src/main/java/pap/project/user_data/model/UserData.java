@@ -6,8 +6,9 @@ import pap.project.users.characters.UserCharacter;
 import java.util.List;
 
 public record UserData(
-        List<UserCharacter> userCharacters,
-        List<Long> activeTeamIds,
+        @NonNull String username,
+        @NonNull List<UserCharacter> userCharacters,
+        @NonNull List<Long> activeTeamIds,
         int currency,
         int eloPoints,
         int matchPlayed,
@@ -16,7 +17,7 @@ public record UserData(
 
     public @NonNull UserData changeUserDataAfterGame(int eloChange, int currencyChange, boolean won)
     {
-        return new UserData(userCharacters,
+        return new UserData(username, userCharacters,
                 activeTeamIds,
                 currency + currencyChange,
                 eloPoints + eloChange,
@@ -27,7 +28,7 @@ public record UserData(
     public @NonNull UserData changeUserDataAfterDrawing(int cost)
     {
         //XXX update characters list
-        return new UserData(userCharacters,
+        return new UserData(username, userCharacters,
                 activeTeamIds,
                 currency - cost,
                 eloPoints,
@@ -42,6 +43,7 @@ public record UserData(
                 .toList();
 
         return new UserData(
+                username,
                 newUserCharacters,
                 activeTeamIds,
                 currency,
@@ -53,6 +55,7 @@ public record UserData(
     public @NonNull UserData changeUserDataActiveTeam(@NonNull List<Long> newActiveTeamIds)
     {
         return new UserData(
+                username,
                 userCharacters,
                 newActiveTeamIds,
                 currency,

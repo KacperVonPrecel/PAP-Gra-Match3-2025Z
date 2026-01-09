@@ -1,7 +1,22 @@
-<div id="content">
+<div id="main-contener">
+	<div id="user-stats">
+		<div id="username-elo-container">
+			<div id="username" class="user-info">{{ userStats?.username ?? '?' }}</div>
+			<div id="elo-points" class="user-info">{{ userStats?.elo ?? '?' }} elo</div>
+		</div>
+		<div id="wins" class="user-info">{{ userStats?.wins ?? '?' }} wins</div>
+		<div id="loses" class="user-info">{{ userStats?.loses ?? '?' }} loses</div>
+	</div>
+
 	<ul id="history-list" appScrollable (scrollState)="onScrollState($event)">
+		@if (historyElements.length === 0) {
+			<li id="empty-history">We don't have any games in history</li>
+		}
+
 		@for (item of historyElements; track $index) {
-			<app-history-element [historyMatchData]="item" [now]="now"></app-history-element>
+			<li>
+				<app-history-element [historyMatchData]="item" [now]="now"></app-history-element>
+			</li>
 		}
 	</ul>
 </div>

@@ -1,6 +1,7 @@
 package pap.project.user_data;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -72,6 +73,18 @@ public class UserDataController
         final UserAuthDetails user = (UserAuthDetails) authentication.getPrincipal();
         final long userId = user.getUserId();
         return userDataService.setActiveTeam(request, userId);
+    }
+
+    @GetMapping("user_stats")
+    public @NonNull UserStatsResponse userStats(
+            @NonNull Authentication authentication,
+            @RequestParam(required = false) @Positive Long userId
+    )
+    {
+        if (userId == null)
+            userId = ((UserAuthDetails) authentication.getPrincipal()).getUserId();
+        final UserData userData = userDataService.getUserData(userId);
+        return new UserStatsResponse(userData.username(), userData.eloPoints(), userData.matchWon(), userData.matchPlayed() - userData.matchWon());
     }
 
 }

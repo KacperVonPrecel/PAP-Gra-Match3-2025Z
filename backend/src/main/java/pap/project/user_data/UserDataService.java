@@ -8,11 +8,13 @@ import pap.project.game_history.MatchCharacters;
 import pap.project.game_history.MatchCharactersRepository;
 import pap.project.game_history.MatchRepository;
 import pap.project.game_history.model.HistoryCharacterData;
+import pap.project.user_data.model.controller.UserStatsResponse;
 import pap.project.user_data.model.UserData;
 import pap.project.user_data.model.UserSessionData;
 import pap.project.user_data.model.controller.*;
 import pap.project.user_stats.UserStats;
 import pap.project.user_stats.UserStatsRepository;
+import pap.project.users.UserRepository;
 import pap.project.users.characters.UserCharacter;
 import pap.project.users.characters.UserCharactersRepository;
 import pap.project.users.characters.UserCharactersService;
@@ -39,6 +41,7 @@ public class UserDataService
     private final @NonNull UserStatsRepository userStatsRepository;
     private final @NonNull MatchCharactersRepository matchCharactersRepository;
     private final @NonNull UserCharactersService userCharactersService;
+    private final @NonNull UserRepository userRepository;
     // XXX it should be cleaned with some interval from userSessionData.
     private final @NonNull ConcurrentHashMap<Long, UserSessionData> userSessionData = new ConcurrentHashMap<>();
 
@@ -47,13 +50,15 @@ public class UserDataService
             @NonNull MatchRepository matchRepository,
             @NonNull UserStatsRepository userStatsRepository,
             @NonNull MatchCharactersRepository matchCharactersRepository,
-            @NonNull UserCharactersService userCharactersService)
+            @NonNull UserCharactersService userCharactersService,
+            @NonNull UserRepository userRepository)
     {
         this.userCharactersRepository = userCharactersRepository;
         this.matchRepository = matchRepository;
         this.userStatsRepository = userStatsRepository;
         this.matchCharactersRepository = matchCharactersRepository;
         this.userCharactersService = userCharactersService;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -227,23 +232,20 @@ public class UserDataService
             if (userDataSession.getUserData() == null)
                 loadUserSessionData(userDataSession, userId);
 
-            final UserCharacter userCharacterToUpgrade = userDataSession.getUserData().userCharacters().stream().filter((character) -> character.getCharacterType() == request.characterType()).findFirst().orElseThrow();
+            final UserCharacter userCharacter = userDataSession.getUserData().userCharacters().stream().filter((character) -> character.getCharacterType() == request.characterType()).findFirst().orElseThrow();
 
-            final CharacterData characterDataToUpgrade = userCharactersService.createCharacterData(userCharacterToUpgrade);
+            final CharacterData characterDataToUpgrade = userCharactersService.createCharacterData(userCharacter);
 
-            if (userCharacterToUpgrade.getCopiesCount() < characterDataToUpgrade.requiredCopiesForNextLevel().orElseThrow())
+            if (userCharacter.getCopiesCount() < characterDataToUpgrade.requiredCopiesForNextLevel().orElseThrow())
                 throw new IllegalArgumentException("You don't have enough copies for this character");
 
-            userCharacterToUpgrade.setCopiesCount(userCharacterToUpgrade.getCopiesCount() - characterDataToUpgrade.requiredCopiesForNextLevel().orElseThrow());
-            userCharacterToUpgrade.setLevel(userCharacterToUpgrade.getLevel() + 1);
-            userCharactersRepository.save(userCharacterToUpgrade);
+            userCharacter.setCopiesCount(userCharacter.getCopiesCount() - characterDataToUpgrade.requiredCopiesForNextLevel().orElseThrow());
+            userCharacter.setLevel(userCharacter.getLevel() + 1);
+            userCharactersRepository.save(userCharacter);
 
-            userDataSession.setUserData(userDataSession.getUserData().changeUserDataAfterUpgrading(userCharacterToUpgrade));
+            userDataSession.setUserData(userDataSession.getUserData().changeUserDataAfterUpgrading(userCharacter));
 
-//            final CharacterData upgradedCharacter = userCharactersService.createCharacterData();
-
-
-            return new UpgradeCharacterResponse(userCharactersService.createCharacterData(userCharacterToUpgrade));
+            return new UpgradeCharacterResponse(userCharactersService.createCharacterData(userCharacter));
         } finally {
             userDataSession.unlock();
         }
@@ -284,7 +286,8 @@ public class UserDataService
     {
         final List<UserCharacter> userCharacters = userCharactersRepository.findAllByUserId(userId);
         final UserStats userData = userStatsRepository.findUserStatsById(userId).orElseThrow();
-        final UserData loadedUserData = new UserData(userCharacters, userData.getActiveTeamIds(), userData.getCurrency(), userData.getEloPoints(), userData.getMatchPlayed(), userData.getMatchWon());
+        final String username = userRepository.findById(userId).orElseThrow().getUsername();
+        final UserData loadedUserData = new UserData(username, userCharacters, userData.getActiveTeamIds(), userData.getCurrency(), userData.getEloPoints(), userData.getMatchPlayed(), userData.getMatchWon());
         userSessionData.setUserData(loadedUserData);
     }
 
