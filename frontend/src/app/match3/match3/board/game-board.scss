@@ -1,11 +1,16 @@
 #board-background {
-	background: rgb(240, 226, 163, 0.6);
+	//background: rgb(240, 226, 163, 0.6);
 	border-radius: 10px;
-	border-width: 2px;
-	border-style: solid;
 	border-color: rgb(240, 226, 163, 0.6);
+	overflow: hidden;
 	.row {
 		display: flex;
+	}
+	.cell-background {
+		background: rgb(240, 226, 163, 0.7);
+		&.transparent {
+			background: transparent;
+		}
 	}
 	.cell {
 		width: 48px;
