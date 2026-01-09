@@ -11,7 +11,10 @@ export class UserDataService {
 	private readonly _userData = new BehaviorSubject<UserData | undefined>(undefined);
 	private _lodingUserDataSubscription: Subscription | undefined;
 
-	constructor(private readonly http: HttpClient) {}
+	constructor(
+		private readonly http: HttpClient,
+		private readonly router: Router
+	) {}
 
 	get observableUserDataLoaded(): Observable<boolean> {
 		return this._userData.asObservable().pipe(map((data) => data !== undefined));
@@ -126,6 +129,8 @@ export class UserDataService {
 				});
 			}),
 			catchError((error: Error) => {
+				//Do we need the URL tree here?? like in user data guard
+				this.router.navigate(['main/loading']);
 				//XXXW move back user to loading page.
 				return EMPTY;
 			})

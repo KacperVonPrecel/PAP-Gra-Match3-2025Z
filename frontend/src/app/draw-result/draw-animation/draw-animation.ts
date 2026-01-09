@@ -48,12 +48,12 @@ export class DrawAnimation implements OnChanges, AfterViewInit, OnDestroy {
 	/**
 	 * After changing value animation will start from beggining.
 	 */
-	@Input({ required: true }) resultEntry!: DrawResultEntry;
+	resultEntry = input.required<DrawResultEntry>();
 	/**
 	 * After changing value animation will start from beggining.
 	 */
 	// XXXW should receive DrawType from parent, and resolved color depending on type.
-	@Input({ required: true }) circleColor!: string;
+	circleColor = input.required<string>();
 	@Output() finished = new EventEmitter<void>();
 
 	private canvasWidth!: number;
@@ -97,7 +97,7 @@ export class DrawAnimation implements OnChanges, AfterViewInit, OnDestroy {
 
 	startAnimation() {
 		// Preload character asset, to not unecesarly wait after ending of spriral animation.
-		this.svgImage.src = getCharacterFileName(this.resultEntry.characterType);
+		this.svgImage.src = getCharacterFileName(this.resultEntry().characterType);
 
 		// Reset last animation start timestamp
 		this.animationSpiralStartTimestamp = undefined;
@@ -130,7 +130,7 @@ export class DrawAnimation implements OnChanges, AfterViewInit, OnDestroy {
 			this.drawingContext.arc(x, y, DrawAnimation.CIRCLE_RADIUS, 0, Math.PI * 2);
 			const gradient = this.drawingContext.createRadialGradient(x, y, 0, x, y, DrawAnimation.CIRCLE_RADIUS * 2);
 
-			gradient.addColorStop(0, this.circleColor);
+			gradient.addColorStop(0, this.circleColor());
 			gradient.addColorStop(1, 'transparent');
 			this.drawingContext.fillStyle = gradient;
 			this.drawingContext.arc(x, y, DrawAnimation.CIRCLE_RADIUS * 3, 0, Math.PI * 2);
@@ -226,7 +226,7 @@ export class DrawAnimation implements OnChanges, AfterViewInit, OnDestroy {
 		this.drawingContext.textAlign = 'center';
 		this.drawingContext.textBaseline = 'top';
 		const textY = imgCenterY + imgScaledHeight + 10;
-		this.drawingContext.fillText('x ' + this.resultEntry.amount.toString(), canvasCenterX, textY);
+		this.drawingContext.fillText('x ' + this.resultEntry().amount.toString(), canvasCenterX, textY);
 
 		requestAnimationFrame((t) => this.animateCharacter(t));
 	}
