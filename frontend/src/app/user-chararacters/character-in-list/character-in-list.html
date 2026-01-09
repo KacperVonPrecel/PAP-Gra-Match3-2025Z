@@ -1,4 +1,10 @@
-<div class="contener" [class.locked]="!character().unlockedData" [class.selected]="selected()" (click)="handleClick()">
+<div
+	class="contener"
+	[class.locked]="!character().unlockedData"
+	[class.upgraded]="upgradeAnim()"
+	[class.selected]="selected()"
+	(click)="handleClick()"
+>
 	<img class="character-img" alt="Character" [src]="filePath()" />
 	<span class="divider"> </span>
 	<span class="level">

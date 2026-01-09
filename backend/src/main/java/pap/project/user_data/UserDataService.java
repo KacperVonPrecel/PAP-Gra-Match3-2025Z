@@ -15,6 +15,7 @@ import pap.project.user_stats.UserStats;
 import pap.project.user_stats.UserStatsRepository;
 import pap.project.users.characters.UserCharacter;
 import pap.project.users.characters.UserCharactersRepository;
+import pap.project.users.characters.UserCharactersService;
 import pap.project.users.characters.model.CharacterType;
 import pap.project.users.characters.model.Rarity;
 import pap.project.users.characters.model.controller.CharacterData;
@@ -37,6 +38,7 @@ public class UserDataService
     private final @NonNull MatchRepository matchRepository;
     private final @NonNull UserStatsRepository userStatsRepository;
     private final @NonNull MatchCharactersRepository matchCharactersRepository;
+    private final @NonNull UserCharactersService userCharactersService;
     // XXX it should be cleaned with some interval from userSessionData.
     private final @NonNull ConcurrentHashMap<Long, UserSessionData> userSessionData = new ConcurrentHashMap<>();
 
@@ -44,12 +46,14 @@ public class UserDataService
             @NonNull UserCharactersRepository userCharactersRepository,
             @NonNull MatchRepository matchRepository,
             @NonNull UserStatsRepository userStatsRepository,
-            @NonNull MatchCharactersRepository matchCharactersRepository)
+            @NonNull MatchCharactersRepository matchCharactersRepository,
+            @NonNull UserCharactersService userCharactersService)
     {
         this.userCharactersRepository = userCharactersRepository;
         this.matchRepository = matchRepository;
         this.userStatsRepository = userStatsRepository;
         this.matchCharactersRepository = matchCharactersRepository;
+        this.userCharactersService = userCharactersService;
     }
 
     /**
@@ -214,29 +218,32 @@ public class UserDataService
         }
     }
 
-    public UpgradeCharacterResponse upgradeCharacter(@NonNull UpgradeCharacterRequest request, long userId, List<CharacterData> charactersData)
+    public UpgradeCharacterResponse upgradeCharacter(@NonNull UpgradeCharacterRequest request, long userId)
     {
         final UserSessionData userDataSession = userSessionData.computeIfAbsent(userId, _ -> new UserSessionData());
         userDataSession.lock();
         try
         {
+            if (userDataSession.getUserData() == null)
+                loadUserSessionData(userDataSession, userId);
+
             final UserCharacter userCharacterToUpgrade = userDataSession.getUserData().userCharacters().stream().filter((character) -> character.getCharacterType() == request.characterType()).findFirst().orElseThrow();
 
-            final CharacterData upgradeCharacterData = charactersData.stream()
-                    .filter(c -> c.characterType() == userCharacterToUpgrade.getCharacterType())
-                    .findFirst()
-                    .orElseThrow();
+            final CharacterData characterDataToUpgrade = userCharactersService.createCharacterData(userCharacterToUpgrade);
 
-            if (userCharacterToUpgrade.getCopiesCount() < upgradeCharacterData.requiredCopiesForNextLevel().orElseThrow())
+            if (userCharacterToUpgrade.getCopiesCount() < characterDataToUpgrade.requiredCopiesForNextLevel().orElseThrow())
                 throw new IllegalArgumentException("You don't have enough copies for this character");
 
-            userCharacterToUpgrade.setCopiesCount(userCharacterToUpgrade.getCopiesCount() - upgradeCharacterData.requiredCopiesForNextLevel().orElseThrow());
+            userCharacterToUpgrade.setCopiesCount(userCharacterToUpgrade.getCopiesCount() - characterDataToUpgrade.requiredCopiesForNextLevel().orElseThrow());
             userCharacterToUpgrade.setLevel(userCharacterToUpgrade.getLevel() + 1);
             userCharactersRepository.save(userCharacterToUpgrade);
 
             userDataSession.setUserData(userDataSession.getUserData().changeUserDataAfterUpgrading(userCharacterToUpgrade));
 
-            return new UpgradeCharacterResponse(upgradeCharacterData);
+//            final CharacterData upgradedCharacter = userCharactersService.createCharacterData();
+
+
+            return new UpgradeCharacterResponse(userCharactersService.createCharacterData(userCharacterToUpgrade));
         } finally {
             userDataSession.unlock();
         }

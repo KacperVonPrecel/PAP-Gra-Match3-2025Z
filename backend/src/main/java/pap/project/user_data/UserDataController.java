@@ -60,10 +60,9 @@ public class UserDataController
     {
         final UserAuthDetails user = (UserAuthDetails) authentication.getPrincipal();
         final long userId = user.getUserId();
-        final UserData userData = userDataService.getUserData(userId);
-        final List<CharacterData> charactersData = userCharactersService.createCharactersData(userData.userCharacters());
 
-        return userDataService.upgradeCharacter(request, userId, charactersData);
+
+        return userDataService.upgradeCharacter(request, userId);
     }
 
     @PostMapping("set_team")

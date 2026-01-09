@@ -47,7 +47,6 @@ export class CharactersList {
 	protected handleSelectingCharacter(character: UserCharacterData) {
 		if (this.selectedCharacterType === character.characterType) this.selectedCharacterType = null;
 		else this.selectedCharacterType = character.characterType;
-		console.log('Selected character:', this.selectedCharacterType);
 		this.selectedCharacter.emit(this.selectedCharacterType);
 	}
 }

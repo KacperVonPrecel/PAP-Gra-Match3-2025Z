@@ -55,7 +55,7 @@ public class UserCharactersService
         return characters.stream().map(this::createCharacterData).toList();
     }
 
-    private @NonNull CharacterData createCharacterData(@NonNull UserCharacter character)
+    public @NonNull CharacterData createCharacterData(@NonNull UserCharacter character)
     {
         final CharacterType type = character.getCharacterType();
         final int level = character.getLevel();
