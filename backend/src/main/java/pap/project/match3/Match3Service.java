@@ -31,23 +31,7 @@ public class Match3Service {
             }
         }
 
-        // TODO: Move this somewhere else
-        final MatchableShape.RelativeCoordinates[] threeInLineHorizontal = {
-            new MatchableShape.RelativeCoordinates(1, 0),
-            new MatchableShape.RelativeCoordinates(2, 0),
-        };
-
-        final MatchableShape.RelativeCoordinates[] threeInLineVertical = {
-                new MatchableShape.RelativeCoordinates(0, 1),
-                new MatchableShape.RelativeCoordinates(0, 2),
-        };
-
-        final MatchableShape[] matchableShapes = new MatchableShape[] {
-            new MatchableShape(threeInLineHorizontal),
-            new MatchableShape(threeInLineVertical),
-        };
-
-        final Match3Board board = new Match3Board(blocks, matchableShapes);
+        final Match3Board board = new Match3Board(blocks, MatchableShapeLibrary.ALL_SHAPES);
 
         games.put(gameId, board);
 
