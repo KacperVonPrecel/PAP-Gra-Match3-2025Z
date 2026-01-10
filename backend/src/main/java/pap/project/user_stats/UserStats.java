@@ -1,6 +1,7 @@
 package pap.project.user_stats;
 
 import jakarta.persistence.*;
+import org.springframework.lang.NonNull;
 import pap.project.users.User;
 
 import java.util.ArrayList;
@@ -24,10 +25,10 @@ public class UserStats {
     @Column (name = "user_id")
     private long id;
 
-//    @OneToOne(fetch = FetchType.LAZY)
-//    @MapsId
-//    @JoinColumn (name = "user_id", insertable = false, updatable = false)
-//    private User user;
+    @OneToOne(fetch = FetchType.LAZY)
+    @MapsId
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private User user;
 
     @Column(name = "elo_points", nullable = false)
     private int eloPoints = STARTING_ELO_POINTS;
@@ -45,8 +46,8 @@ public class UserStats {
 
     protected UserStats() {}
 
-    public UserStats(long userId) {
-        this.id = userId;
+    public UserStats(@NonNull User user) {
+        this.user = user;
     }
 
     public long getId()
@@ -76,7 +77,6 @@ public class UserStats {
 
     public List<Long> getActiveTeamIds()
     {
-//        return Collections.emptyList();
         return activeTeamIds;
     }
 

@@ -26,17 +26,17 @@ public class RankingController
         this.userDataService = userDataService;
     }
 
-//    @GetMapping("global")
-//    public LoadGlobalRankingResponse loadGlobalRankingData(
-//            @NonNull Authentication authentication,
-//            @RequestParam(defaultValue = "0") int pageNumber,
-//            @RequestParam(defaultValue = "10") int pageSize)
-//    {
-//        final UserAuthDetails user = (UserAuthDetails) authentication.getPrincipal();
-//        final long userId = user.getUserId();
-//        final UserData userData = userDataService.getUserData(userId);
-//        final LoadGlobalRankingData loadedEntries = rankingService.loadGlobalRankingEntries(pageNumber, pageSize);
-//        final int userPositionInRanking = rankingService.getUserPositionInRanking(userId);
-//        return new LoadGlobalRankingResponse(loadedEntries, userPositionInRanking, userData.eloPoints());
-//    }
+    @GetMapping("global")
+    public LoadGlobalRankingResponse loadGlobalRankingData(
+            @NonNull Authentication authentication,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize)
+    {
+        final UserAuthDetails user = (UserAuthDetails) authentication.getPrincipal();
+        final long userId = user.getUserId();
+        final UserData userData = userDataService.getUserData(userId);
+        final LoadGlobalRankingData loadedEntries = rankingService.loadGlobalRankingEntries(pageNumber, pageSize);
+        final int userPositionInRanking = rankingService.getUserPositionInRanking(userId);
+        return new LoadGlobalRankingResponse(loadedEntries, userPositionInRanking, userData.eloPoints());
+    }
 }

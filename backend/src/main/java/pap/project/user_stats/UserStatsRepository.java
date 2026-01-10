@@ -32,7 +32,7 @@ public interface UserStatsRepository extends JpaRepository<UserStats, Long>
     @Query("SELECT COUNT(u) + 1 FROM UserStats u WHERE u.eloPoints > (SELECT s.eloPoints FROM UserStats s WHERE s.id = ?1)")
     int calculateRankPositionById(long userId);
 
-//    @Query("SELECT new pap.project.user_stats.model.RankingEntry(u.user.username, u.eloPoints) FROM UserStats u ORDER BY u.eloPoints DESC")
-//    @NonNull
-//    Page<RankingEntry> getGlobalRanking(@NonNull Pageable pageable);
+    @Query("SELECT new pap.project.user_stats.model.RankingEntry(u.user.username, u.eloPoints) FROM UserStats u ORDER BY u.eloPoints DESC")
+    @NonNull
+    Page<RankingEntry> getGlobalRanking(@NonNull Pageable pageable);
 }
