@@ -185,7 +185,8 @@ export class UserDataService {
 			characters: characters,
 			currency: currentCurrency,
 			rankingPosition: oldUserData.rankingPosition,
-			lockedCharacterData: lockedCharactersData
+			lockedCharacterData: lockedCharactersData,
+			activeTeam: oldUserData.activeTeam
 		});
 	}
 
@@ -210,7 +211,8 @@ export class UserDataService {
 					currency: userData.currency,
 					characters: newCharactersList,
 					rankingPosition: userData.rankingPosition,
-					lockedCharacterData: userData.lockedCharacterData
+					lockedCharacterData: userData.lockedCharacterData,
+					activeTeam: userData.activeTeam
 				});
 			}),
 			map(() => {})
@@ -219,13 +221,20 @@ export class UserDataService {
 
 	setActiveTeam(characterTypes: CharacterType[]): Observable<void> {
 		const request: SetActiveTeamRequest = { newTeam: characterTypes };
-		return this.http.post('api/user/set_team', request, { responseType: 'json' }).pipe(
-			map(() => {
-        //XXX
-				return;
-			}),
+		return this.http.post<void>('api/user/set_team', request, { responseType: 'json' }).pipe(
 			catchError((error: HttpErrorResponse) => {
 				return EMPTY;
+			}),
+			tap(() => {
+				const userData = this.userData;
+				this._userData.next({
+					id: userData.id,
+					currency: userData.currency,
+					characters: userData.characters,
+					rankingPosition: userData.rankingPosition,
+					lockedCharacterData: userData.lockedCharacterData,
+					activeTeam: characterTypes
+				});
 			})
 		);
 	}
@@ -246,6 +255,7 @@ export interface UserData {
 	readonly currency: number;
 	readonly rankingPosition: number;
 	readonly lockedCharacterData: CharacterData[];
+	readonly activeTeam: CharacterType[] | null;
 }
 
 export interface CharacterData {
