@@ -21,6 +21,8 @@ export class GameBoard {
 	swapAttempt = output<MoveRequest>();
 	/*player's last move request - only stored before server gives the response, stored for the purpose of animating the swap back*/
 	private lastMove: MoveRequest | null = null;
+	/*boolean determining if its the player's turn */
+	myTurn = input<boolean>();
 	/*value determining if the player can swap blocks based on what's happening on the board (eg. after swap, animations) - independant of whose turn it is*/
 	private allowSwapping: boolean = true;
 	private dragStart: Position | null = null;
@@ -33,7 +35,8 @@ export class GameBoard {
 	/*board before a move was executes - stored for the purpose of animating*/
 	private _oldBoard: Crystal[][] | null = null;
 	private _animationsPlaying: boolean = false;
-
+	/*value determining whether the swap for the move in animation step was already animated*/
+	private swapWasAnimated: boolean = false;
 	private crystalImages = new Map<CrystalType, string>();
 	/*value to ensure all images of crystals are loaded before displaying the board - should be equal to the number of types in CrystalType*/
 	private imagesLoadedCount: number = 0;
@@ -51,7 +54,23 @@ export class GameBoard {
 
 	constructor() {
 		effect(async () => {
+			const state = this.state();
+			if (!state) return;
+			if (!this._oldBoard) {
+				//if there is no old board - that means its the first call after creation or refresh-> there will be no animations
+				this._oldBoard = this.state()!.board.map((row) => row.map((cell) => ({ ...cell })));
+			}
+			this._animationsPlaying = true;
+			console.log(this.oldBoard);
+			await this.animationSequence();
+			this.animationState.clearAllClasses();
+			//snapshotting the board (as old board for the next animation) before the move request is sent
+			this._oldBoard = this.state()!.board.map((row) => row.map((cell) => ({ ...cell }))); //... is object spread operator -> for copying objects
+			this._animationsPlaying = false;
+		});
+		async () => {
 			const _moveValid = this.moveValid();
+
 			if (_moveValid === null) return;
 			if (this.lastMove === null) return;
 			if (_moveValid === false) {
@@ -60,17 +79,12 @@ export class GameBoard {
 				this.allowSwapping = true;
 			}
 			if (_moveValid === true) {
-				this._animationsPlaying = true;
-				console.log(this.oldBoard);
-				await this.animationSequence();
-				this.animationState.clearAllClasses();
-
-				this._animationsPlaying = false;
+				this.swapWasAnimated = true;
 				this.allowSwapping = true;
 			}
 			this.lastMove = null;
 			return;
-		});
+		};
 	}
 
 	get animationsPlaying(): boolean {
@@ -110,9 +124,11 @@ export class GameBoard {
 	}
 
 	onPointerDown(event: PointerEvent, row_idx: number, column_idx: number): void {
-		this.dragStart = { row: row_idx, column: column_idx };
-		this.startX = event.clientX;
-		this.startY = event.clientY;
+		if (this.myTurn()) {
+			this.dragStart = { row: row_idx, column: column_idx };
+			this.startX = event.clientX;
+			this.startY = event.clientY;
+		}
 	}
 
 	onPointerMove(event: PointerEvent): void {
@@ -197,11 +213,14 @@ export class GameBoard {
 	}
 
 	handleSwapAttempt(target: { row: number; column: number }): void {
-		/*plays swap animation, sens move request if the move is valid and plays swap back animation if needed*/
+		/*plays swap animation, sends move request if the move is valid and plays swap back animation if needed*/
 		const moveRequest: MoveRequest = {
 			source: { row: this.dragStart!.row, column: this.dragStart!.column },
 			target: { row: target.row, column: target.column }
 		};
+		if (!this.myTurn) {
+			return;
+		}
 		const targetCrystal = this.state()!.board[target.row][target.column];
 		const targetType = targetCrystal.crystalType;
 
@@ -232,9 +251,6 @@ export class GameBoard {
 			this.animateSwap(moveRequest);
 			this.allowSwapping = false;
 			if (this.isMoveValid(moveRequest)) {
-				//snapshotting the board before the move request is sent
-				//deep copy of board -> otherwise its a reference and will change when the new game state is assigned
-				this._oldBoard = this.state()!.board.map((row) => row.map((cell) => ({ ...cell }))); //... is object spread operator -> for copying objects
 				this.emitSwapAttempt(moveRequest);
 			} else {
 				this.animateSwapBack(moveRequest);

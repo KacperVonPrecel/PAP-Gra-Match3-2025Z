@@ -13,12 +13,23 @@ export class Match3 {
 	private gameId?: number;
 	private gameState?: GameState; //nullable because if we dont connect, no state
 	public moveValid = signal<boolean | null>(null);
+	playerId = 0;
 
 	constructor(private socket: Match3Service) {}
 
 	ngOnInit(): void {
 		//here getting starting game state
 		this.gameState = this.socket.getCurrentGameState();
+	}
+
+	get isItMyTurn(): boolean {
+		if (!this.gameState) {
+			return false;
+		}
+		if (this.gameState!.currentTurnId == this.playerId) {
+			return true;
+		}
+		return false;
 	}
 
 	get boardState(): BoardState | null {

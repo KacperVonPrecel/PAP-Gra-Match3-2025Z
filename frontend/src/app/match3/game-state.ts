@@ -2,6 +2,7 @@ import { CrystalType, MoveRequest } from './match3-service';
 export interface GameState {
 	currentPlayer: Player;
 	boardState: BoardState;
+	currentTurnId: number;
 }
 
 export interface Crystal {
@@ -39,7 +40,6 @@ export interface NewBlock {
 export interface BoardState {
 	board: Crystal[][];
 	allowedMoves: MoveRequest[];
-	canPlayerMove: boolean;
 	animationSteps: AnimationStep[];
 	lastMove?: PlayerMove;
 }

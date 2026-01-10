@@ -154,11 +154,11 @@ export class Match3Service {
 			]
 		];
 		const mockState: GameState = {
+			currentTurnId: 0,
 			currentPlayer: Player.ME,
 			boardState: {
 				board: mockBoard,
 				allowedMoves: [],
-				canPlayerMove: true,
 				animationSteps: [
 					{
 						destroyed: [
@@ -271,12 +271,12 @@ export class Match3Service {
 			{ source: { row: 4, column: 2 }, target: { row: 4, column: 3 } }
 		];
 		return {
+			currentTurnId: 0,
 			currentPlayer: Player.ME,
 			boardState: {
 				board: mockBoard,
 				allowedMoves: allowedMoves,
-				animationSteps: [],
-				canPlayerMove: true
+				animationSteps: []
 			}
 		};
 	}
