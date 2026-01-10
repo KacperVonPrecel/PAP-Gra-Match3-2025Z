@@ -4,7 +4,5 @@ import org.springframework.lang.NonNull;
 
 import java.util.List;
 
-public record SetActiveTeamResponse(
-        @NonNull List<Long> newTeamIds
-        ) {
+public record SetActiveTeamResponse() {
 }

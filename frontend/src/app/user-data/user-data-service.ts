@@ -216,6 +216,19 @@ export class UserDataService {
 			map(() => {})
 		);
 	}
+
+	setActiveTeam(characterTypes: CharacterType[]): Observable<void> {
+		const request: SetActiveTeamRequest = { newTeam: characterTypes };
+		return this.http.post('api/user/set_team', request, { responseType: 'json' }).pipe(
+			map(() => {
+        //XXX
+				return;
+			}),
+			catchError((error: HttpErrorResponse) => {
+				return EMPTY;
+			})
+		);
+	}
 }
 
 export const RETURN_URL_QUERY_PARAM = 'returnUrl';
@@ -290,4 +303,8 @@ export interface UpgradeRequest {
 
 export interface UpgradeResult {
 	readonly characterData: CharacterData;
+}
+
+export interface SetActiveTeamRequest {
+	readonly newTeam: CharacterType[];
 }

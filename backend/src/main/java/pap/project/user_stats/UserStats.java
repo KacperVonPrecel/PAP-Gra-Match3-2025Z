@@ -1,11 +1,14 @@
 package pap.project.user_stats;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import pap.project.users.User;
+import pap.project.users.characters.model.CharacterType;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -39,10 +42,9 @@ public class UserStats {
     @Column(name = "currency", nullable = false)
     private int currency = STARTING_CURRENCY;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_active_team", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "active_team_ids", nullable = false)
-    private List<Long> activeTeamIds = new ArrayList<>();
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "json")
+    private List<CharacterType> activeTeam = new ArrayList<>();
 
     protected UserStats() {}
 
@@ -75,9 +77,9 @@ public class UserStats {
         return currency;
     }
 
-    public List<Long> getActiveTeamIds()
+    public @Nullable List<CharacterType> getActiveTeam()
     {
-        return activeTeamIds;
+        return activeTeam.size() != 3 ? null : activeTeam;
     }
 
 }

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import pap.project.user_stats.model.RankingEntry;
+import pap.project.users.characters.model.CharacterType;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,8 +27,8 @@ public interface UserStatsRepository extends JpaRepository<UserStats, Long>
     void updateUserStatsAfterDrawing(int currency, long id);
 
     @Modifying (clearAutomatically = true, flushAutomatically = true)
-    @Query("UPDATE UserStats u SET u.activeTeamIds = ?1 WHERE u.id = ?2")
-    void updateUserStatsActiveTeam(List<Long> activeTeamIds, long id);
+    @Query("UPDATE UserStats u SET u.activeTeam = ?1 WHERE u.id = ?2")
+    void updateUserStatsActiveTeam(@NonNull List<CharacterType> activeTeamIds, long id);
 
     @Query("SELECT COUNT(u) + 1 FROM UserStats u WHERE u.eloPoints > (SELECT s.eloPoints FROM UserStats s WHERE s.id = ?1)")
     int calculateRankPositionById(long userId);

@@ -8,7 +8,6 @@ import pap.project.game_history.MatchCharacters;
 import pap.project.game_history.MatchCharactersRepository;
 import pap.project.game_history.MatchRepository;
 import pap.project.game_history.model.HistoryCharacterData;
-import pap.project.user_data.model.controller.UserStatsResponse;
 import pap.project.user_data.model.UserData;
 import pap.project.user_data.model.UserSessionData;
 import pap.project.user_data.model.controller.*;
@@ -254,7 +253,7 @@ public class UserDataService
     @Transactional
     public SetActiveTeamResponse setActiveTeam(@NonNull SetActiveTeamRequest request, long userId)
     {
-        if (new HashSet<>(request.newTeamIds()).size() < request.newTeamIds().size())
+        if (new HashSet<>(request.newTeam()).size() < request.newTeam().size())
         {
             throw new IllegalArgumentException("Team cannot contain any duplicate characters");
         }
@@ -263,16 +262,13 @@ public class UserDataService
         userDataSession.lock();
         try
         {
-            List<UserCharacter> selectedCharacters = userCharactersRepository.findByUserIdAndIdIn(userId, request.newTeamIds());
-            if (selectedCharacters.size() != request.newTeamIds().size()) {
-                throw new SecurityException("You don't have some of the selected characters");
-            }
-
-            userStatsRepository.updateUserStatsActiveTeam(request.newTeamIds(), userId);
-            userDataSession.setUserData(userDataSession.getUserData().changeUserDataActiveTeam(request.newTeamIds()));
-
-            return new SetActiveTeamResponse(userDataSession.getUserData().activeTeamIds());
-
+            if (userDataSession.getUserData() == null)
+                loadUserSessionData(userDataSession, userId);
+            if (userDataSession.getUserData().userCharacters().stream().filter(character -> request.newTeam().contains(character.getCharacterType())).count() != 3)
+                throw new IllegalArgumentException("User doesn't have some of the selected characters");
+            userStatsRepository.updateUserStatsActiveTeam(request.newTeam(), userId);
+            userDataSession.setUserData(userDataSession.getUserData().changeUserDataActiveTeam(request.newTeam()));
+            return new SetActiveTeamResponse();
         } finally {
             userDataSession.unlock();
         }
@@ -287,7 +283,7 @@ public class UserDataService
         final List<UserCharacter> userCharacters = userCharactersRepository.findAllByUserId(userId);
         final UserStats userData = userStatsRepository.findUserStatsById(userId).orElseThrow();
         final String username = userRepository.findById(userId).orElseThrow().getUsername();
-        final UserData loadedUserData = new UserData(username, userCharacters, userData.getActiveTeamIds(), userData.getCurrency(), userData.getEloPoints(), userData.getMatchPlayed(), userData.getMatchWon());
+        final UserData loadedUserData = new UserData(username, userCharacters, userData.getActiveTeam(), userData.getCurrency(), userData.getEloPoints(), userData.getMatchPlayed(), userData.getMatchWon());
         userSessionData.setUserData(loadedUserData);
     }
 

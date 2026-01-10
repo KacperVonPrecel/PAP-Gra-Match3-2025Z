@@ -1,6 +1,8 @@
 package pap.project.user_data.model.controller;
 
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import pap.project.users.characters.model.CharacterType;
 import pap.project.users.characters.model.controller.CharacterData;
 
 import java.util.List;
@@ -17,6 +19,7 @@ public record UserDataResponse(
         @NonNull List<CharacterData> characters,
         int currency,
         long rankingPosition,
-        @NonNull List<CharacterData> lockedCharacterData
+        @NonNull List<CharacterData> lockedCharacterData,
+        @Nullable List<CharacterType> activeTeam
         ) {
 }

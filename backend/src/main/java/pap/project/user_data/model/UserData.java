@@ -1,7 +1,9 @@
 package pap.project.user_data.model;
 
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import pap.project.users.characters.UserCharacter;
+import pap.project.users.characters.model.CharacterType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +11,7 @@ import java.util.List;
 public record UserData(
         @NonNull String username,
         @NonNull List<UserCharacter> userCharacters,
-        @NonNull List<Long> activeTeamIds,
+        @Nullable List<CharacterType> activeTeam,
         int currency,
         int eloPoints,
         int matchPlayed,
@@ -19,7 +21,7 @@ public record UserData(
     public @NonNull UserData changeUserDataAfterGame(int eloChange, int currencyChange, boolean won)
     {
         return new UserData(username, userCharacters,
-                activeTeamIds,
+                activeTeam,
                 currency + currencyChange,
                 eloPoints + eloChange,
                 matchPlayed + 1,
@@ -32,7 +34,7 @@ public record UserData(
         final var newUserCharacters = new ArrayList<>(userCharacters.stream().filter(data -> !changeCharacters.contains(data.getCharacterType())).toList());
         newUserCharacters.addAll(changeUserCharacters);
         return new UserData(username, newUserCharacters,
-                activeTeamIds,
+                activeTeam,
                 currency - cost,
                 eloPoints,
                 matchPlayed,
@@ -48,19 +50,19 @@ public record UserData(
         return new UserData(
                 username,
                 newUserCharacters,
-                activeTeamIds,
+                activeTeam,
                 currency,
                 eloPoints,
                 matchPlayed,
                 matchWon);
     }
 
-    public @NonNull UserData changeUserDataActiveTeam(@NonNull List<Long> newActiveTeamIds)
+    public @NonNull UserData changeUserDataActiveTeam(@NonNull List<CharacterType> newActiveTeam)
     {
         return new UserData(
                 username,
                 userCharacters,
-                newActiveTeamIds,
+                newActiveTeam,
                 currency,
                 eloPoints,
                 matchPlayed,

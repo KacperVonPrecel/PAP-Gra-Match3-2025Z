@@ -43,16 +43,7 @@ public class UserDataController
         final List<CharacterData> lockedCharacters = Arrays.stream(CharacterType.values()).filter(type -> !unlockedCharacters.contains(type))
                 .map(userCharactersService::createEmptyCharacterData).toList();
         final long userRankingPosition = rankingService.getUserPositionInRanking(userId);
-        return new UserDataResponse(userId, charactersData, userData.currency(), userRankingPosition, lockedCharacters);
-    }
-
-    @GetMapping("get_team")
-    public @NonNull GetActiveTeamResponse getTeam(@NonNull Authentication authentication)
-    {
-        final UserAuthDetails user = (UserAuthDetails) authentication.getPrincipal();
-        final long userId = user.getUserId();
-        final UserData userData = userDataService.getUserData(userId);
-        return new GetActiveTeamResponse(userData.activeTeamIds());
+        return new UserDataResponse(userId, charactersData, userData.currency(), userRankingPosition, lockedCharacters, userData.activeTeam());
     }
 
     @PostMapping("draw_characters")
