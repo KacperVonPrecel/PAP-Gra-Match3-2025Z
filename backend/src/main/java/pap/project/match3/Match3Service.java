@@ -55,7 +55,7 @@ public class Match3Service {
             BoardState boardState = games.get(gameId).playTurn(moveRequest);
 
             if (boardState != null)
-                return new GameState(boardState);
+                return new GameState(boardState, 0);
             else
                 return null;
         }
@@ -69,7 +69,7 @@ public class Match3Service {
         {
             BoardState boardState = games.get(gameId).getState();
 
-            return new GameState(boardState);
+            return new GameState(boardState, 0);
         }
 
         return null;
