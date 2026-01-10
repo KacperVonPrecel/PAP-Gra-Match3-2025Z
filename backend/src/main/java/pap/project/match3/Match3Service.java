@@ -54,7 +54,10 @@ public class Match3Service {
         {
             BoardState boardState = games.get(gameId).playTurn(moveRequest);
 
-            return new GameState(boardState);
+            if (boardState != null)
+                return new GameState(boardState);
+            else
+                return null;
         }
 
         return null;

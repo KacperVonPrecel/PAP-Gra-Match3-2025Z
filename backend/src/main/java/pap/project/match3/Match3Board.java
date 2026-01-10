@@ -1,6 +1,7 @@
 package pap.project.match3;
 
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import pap.project.match3.model.*;
 
 import java.util.ArrayList;
@@ -26,29 +27,21 @@ public class Match3Board
         this.board = board;
         this.matchableShapes = matchableShapes;
 
-        fillBoard();
-
         // If forceBoard = true, do not make sure there are no matches and at least one allowed move
-        if (forceBoard)
-            return;
-
-        while (!findMatchedBlocks().blocks.isEmpty() || getAllowedMoves().isEmpty())
-        {
-            clearBoard();
-            fillBoard();
-        }
+        if (!forceBoard)
+            generateValidBoard();
     }
 
-    public @NonNull BoardState playTurn(@NonNull MoveRequest moveRequest)
+    public @Nullable BoardState playTurn(@NonNull MoveRequest moveRequest)
     {
-        // TODO: WHAT TO DO IF NO MORE MATCHES
-
         List<AnimationStep> animationSteps = new ArrayList<>();
 
-        MoveRequest swappedBlocks = null;
-        if (swapBlocks(moveRequest))
-            swappedBlocks = moveRequest;
+        if (!swapBlocks(moveRequest))
+            return null;
 
+        MoveRequest swappedBlocks = moveRequest;
+
+        // Destroy, drop and repeat until no matches are left
         Matches matches = findMatchedBlocks();
         while (!matches.blocks().isEmpty())
         {
@@ -63,11 +56,26 @@ public class Match3Board
                     swappedBlocks,
                     matches.positions(),
                     dropped,
-                    newBlocks
+                    newBlocks,
+                    false
             ));
 
             swappedBlocks = null; // So only the first step has swappedBlocks
             matches = findMatchedBlocks();
+        }
+
+        // Reset the board if there are no more allowed moves
+        if (getAllowedMoves().isEmpty())
+        {
+            generateValidBoard();
+            animationSteps.add(new AnimationStep(
+                    board,
+                    swappedBlocks,
+                    new ArrayList<>(),
+                    new ArrayList<>(),
+                    new ArrayList<>(),
+                    true
+            ));
         }
 
         return new BoardState(
@@ -84,6 +92,18 @@ public class Match3Board
                 getAllowedMoves(),
                 new ArrayList<>()
         );
+    }
+
+    public void generateValidBoard()
+    {
+        fillBoard();
+
+        while (!findMatchedBlocks().blocks.isEmpty() || getAllowedMoves().isEmpty())
+        {
+            clearBoard();
+            fillBoard();
+        }
+
     }
 
     public @NonNull List<NewBlock> fillBoard()
