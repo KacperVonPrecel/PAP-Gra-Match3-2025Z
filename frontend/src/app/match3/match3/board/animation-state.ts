@@ -1,7 +1,10 @@
+import { T } from '@angular/cdk/keycodes';
+import { GameBoard } from './game-board';
+
 export class AnimationState {
 	swap = new Map<string, string>();
 	destroyed = new Map<string, string>();
-	falling = new Map<string, string>();
+	falling = new Map<string, { class: string; distance: number }>();
 	new = new Map<string, string>();
 
 	getAnimationClasses(row: number, col: number): string {
@@ -12,7 +15,7 @@ export class AnimationState {
 		const d = this.destroyed.get(key);
 		if (d) classes.push(d);
 		const f = this.falling.get(key);
-		if (f) classes.push(f);
+		if (f) classes.push(f.class);
 		const sp = this.new.get(key);
 		if (sp) classes.push(sp);
 		return classes.join(' '); //join all classes into one big string so they can be assigned easily
@@ -27,8 +30,14 @@ export class AnimationState {
 	clearFall(): void {
 		this.falling.clear();
 	}
-	clearSpawn(): void {
+	clearNew(): void {
 		this.new.clear();
+	}
+	clearAllClasses(): void {
+		this.clearSwap();
+		this.clearDestroy();
+		this.clearFall();
+		this.clearNew();
 	}
 
 	//deletting single entry
@@ -54,9 +63,14 @@ export class AnimationState {
 		const key = `${row},${column}`;
 		this.swap.set(key, animation_class);
 	}
-	addFalling(row: number, column: number, animation_class: string): void {
+
+	addFalling(row: number, column: number, target_row: number): void {
+		if (target_row <= row) {
+			return;
+		}
+		const distance = target_row - row;
 		const key = `${row},${column}`;
-		this.falling.set(key, animation_class);
+		this.falling.set(key, { class: 'falling', distance });
 	}
 	addDestroyed(row: number, column: number, animation_class: string): void {
 		const key = `${row},${column}`;
@@ -65,5 +79,14 @@ export class AnimationState {
 	addNew(row: number, column: number, animation_class: string): void {
 		const key = `${row},${column}`;
 		this.new.set(key, animation_class);
+	}
+
+	getFallDistanceAndDuration(row: number, col: number): Record<string, string> {
+		const key = `${row},${col}`;
+		const fall = this.falling.get(key);
+		if (!fall) return {};
+		const pxDistance = `calc(var(--cell-size) * ${fall.distance})`;
+		const duration = `${GameBoard.FALLING_ONE_BLOCK_DURATION * fall.distance}ms`;
+		return { '--fall-distance': pxDistance, '--fall-duration': duration };
 	}
 }

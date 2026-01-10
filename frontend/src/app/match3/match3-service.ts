@@ -167,7 +167,7 @@ export class Match3Service {
 							{ row: 4, column: 2 }
 						],
 						swapped: null,
-						falling: [],
+						falling: [{ source: { row: 0, column: 6 }, target: { row: 3, column: 6 } }],
 						newBlocks: [],
 						resetBoard: false
 					}
@@ -186,7 +186,7 @@ export class Match3Service {
 				{ crystalType: CrystalType.EMERALD },
 				{ crystalType: CrystalType.RUBY },
 				{ crystalType: CrystalType.HEMATITE },
-				{ crystalType: CrystalType.EMPTY },
+				{ crystalType: CrystalType.RUBY },
 				{ crystalType: CrystalType.DISABLED }
 			],
 			[
@@ -196,7 +196,7 @@ export class Match3Service {
 				{ crystalType: CrystalType.AMETHYST },
 				{ crystalType: CrystalType.EMERALD },
 				{ crystalType: CrystalType.RUBY },
-				{ crystalType: CrystalType.HEMATITE },
+				{ crystalType: CrystalType.EMPTY },
 				{ crystalType: CrystalType.DIAMOND }
 			],
 			[
@@ -206,7 +206,7 @@ export class Match3Service {
 				{ crystalType: CrystalType.CITRINE },
 				{ crystalType: CrystalType.DIAMOND },
 				{ crystalType: CrystalType.EMERALD },
-				{ crystalType: CrystalType.CITRINE },
+				{ crystalType: CrystalType.EMPTY },
 				{ crystalType: CrystalType.HEMATITE }
 			],
 			[
@@ -216,7 +216,7 @@ export class Match3Service {
 				{ crystalType: CrystalType.DIAMOND },
 				{ crystalType: CrystalType.AMETHYST },
 				{ crystalType: CrystalType.CITRINE },
-				{ crystalType: CrystalType.RUBY },
+				{ crystalType: CrystalType.EMPTY },
 				{ crystalType: CrystalType.AMETHYST }
 			],
 			[

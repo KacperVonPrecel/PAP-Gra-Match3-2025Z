@@ -2,6 +2,7 @@
 	--cell-size: min(3.1rem, 10vw);
 	--swap-duration: 150ms;
 	--destroy-duration: 250ms;
+	--fall-ease: cubic-bezier(0.2, 0.8, 0.4, 1);
 }
 #board-background {
 	//background: rgb(240, 226, 163, 0.6);
@@ -70,4 +71,17 @@
 }
 .destroying {
 	animation: pop-and-shrink var(--destroy-duration) ease forwards;
+}
+
+@keyframes fall {
+	from {
+		transform: translateY(0);
+	}
+	to {
+		transform: translateY(var(--fall-distance));
+	}
+}
+
+.falling {
+	animation: fall var(--fall-duration) var(--fall-ease) forwards;
 }

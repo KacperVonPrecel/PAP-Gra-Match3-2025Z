@@ -3,10 +3,11 @@ import { BoardState, Crystal, Position } from '../../game-state';
 import { CrystalType, getCrystalFileName } from '../../match3-service';
 import { MoveRequest } from '../../match3-service';
 import { AnimationState } from './animation-state';
+import { NgStyle } from '@angular/common';
 
 @Component({
 	selector: 'app-board',
-	imports: [],
+	imports: [NgStyle],
 	templateUrl: './game-board.html',
 	styleUrl: './game-board.scss'
 })
@@ -37,10 +38,11 @@ export class GameBoard {
 	/*value to ensure all images of crystals are loaded before displaying the board - should be equal to the number of types in CrystalType*/
 	private imagesLoadedCount: number = 0;
 
+	/*constants declared here not in animation state, because they are mostly used for waiting for animation to finish in this class*/
 	private static readonly SWAP_DURATION = 150;
 	private static readonly DESTROY_DURATION = 250;
 	private static readonly NEW_DURATION = 150;
-	private static readonly FALLING_DURATION = 150;
+	public static readonly FALLING_ONE_BLOCK_DURATION = 120; //needs to be accessible in animation state
 	private static readonly BOARD_RESET_DURATION = 150;
 
 	constructor() {
@@ -55,7 +57,10 @@ export class GameBoard {
 			}
 			if (_moveValid === true) {
 				this._animationsPlaying = true;
+				console.log(this.oldBoard);
 				await this.animationSequence();
+				this.animationState.clearAllClasses();
+
 				this._animationsPlaying = false;
 				this.allowSwapping = true;
 			}
@@ -275,10 +280,19 @@ export class GameBoard {
 					await this.wait(GameBoard.DESTROY_DURATION);
 				}
 
+				let biggestDistance = 0;
 				for (const falling of step.falling) {
+					let distance = falling.target.row - falling.source.row;
+					if (distance > biggestDistance) {
+						biggestDistance = distance;
+					}
+					this.animationState.addFalling(falling.source.row, falling.source.column, falling.target.row);
 				}
+
+				await this.wait(biggestDistance * GameBoard.FALLING_ONE_BLOCK_DURATION);
 			}
 		}
+
 		//play swap if im not the player who swapped
 		//destroyed animation
 		//falling animation
