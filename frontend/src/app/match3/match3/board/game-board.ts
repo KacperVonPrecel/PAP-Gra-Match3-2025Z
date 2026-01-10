@@ -1,5 +1,5 @@
 import { Component, effect, HostBinding, input, output } from '@angular/core';
-import { BoardState, Crystal, Position } from '../../game-state';
+import { BoardState, Crystal, NewBlock, Position } from '../../game-state';
 import { CrystalType, getCrystalFileName } from '../../match3-service';
 import { MoveRequest } from '../../match3-service';
 import { AnimationState } from './animation-state';
@@ -42,7 +42,7 @@ export class GameBoard {
 	private static readonly SWAP_DURATION = 150;
 	private static readonly DESTROY_DURATION = 250;
 	private static readonly NEW_DURATION = 150;
-	public static readonly FALLING_ONE_BLOCK_DURATION = 120; //needs to be accessible in animation state
+	public static readonly FALLING_ONE_BLOCK_DURATION = 1000; //needs to be accessible in animation state
 	private static readonly BOARD_RESET_DURATION = 150;
 
 	/*assigning values to variables used in css, that are dependant on the constants in the component*/
@@ -297,19 +297,38 @@ export class GameBoard {
 				}
 				await this.wait(biggestDistance * GameBoard.FALLING_ONE_BLOCK_DURATION);
 				//after animation finished remove animation class and modify the display board
-				this.animationState.clearFall();
+				this.animationState.clearFallingAndNew();
 				this.rebuildCollumnsAfterFall(step.falling);
 
-				biggestDistance = 0;
+				//grouping new blocks by column
+				const newByColumn = new Map<number, Array<NewBlock>>(); //map->column, new block
 				for (const newBlock of step.newBlocks) {
-					let distance = newBlock.position.row + 1;
-					if (distance > biggestDistance) {
-						biggestDistance = distance;
+					if (!newByColumn.has(newBlock.position.column)) {
+						newByColumn.set(newBlock.position.column, []);
 					}
-					this.oldBoard[newBlock.position.row][newBlock.position.column] = newBlock.crystal;
-					this.animationState.addNew(newBlock.position.row, newBlock.position.column, newBlock.crystal);
+					newByColumn.get(newBlock.position.column)!.push(newBlock);
 				}
+				//going through new blocks for each column
+				biggestDistance = 0;
+				for (const [col, blocks] of newByColumn.entries()) {
+					const maxRow = Math.max(...blocks.map((block) => block.position.row));
+					for (const block of blocks) {
+						const offset = -(maxRow + 1);
+						const distance = maxRow + 1;
+						if (distance > biggestDistance) {
+							biggestDistance = distance;
+						}
+						this.oldBoard[block.position.row][block.position.column] = block.crystal;
+						this.animationState.addNew(block.position.row, block.position.column, offset);
+					}
+				}
+
 				await this.wait(biggestDistance * GameBoard.FALLING_ONE_BLOCK_DURATION);
+				//after animation finished remove animation class and modify the display board
+				this.animationState.clearFallingAndNew();
+				for (const newBlock of step.newBlocks) {
+					this.oldBoard[newBlock.position.row][newBlock.position.column] = newBlock.crystal;
+				}
 			}
 		}
 

@@ -1,26 +1,28 @@
-<div id="board-background">
-	@if (state() && assetsLoaded) {
-		@let boardToRender = animationsPlaying ? oldBoard : state()!.board;
+<div id="board-container">
+	<div id="board-background">
+		@if (state() && assetsLoaded) {
+			@let boardToRender = animationsPlaying ? oldBoard : state()!.board;
 
-		@for (row of boardToRender; track $index; let row_idx = $index) {
-			<div class="row">
-				@for (crystal of row; track $index; let column_idx = $index) {
-					<div class="cell-background" [class.transparent]="crystal.crystalType === CrystalType.DISABLED">
-						<div
-							class="cell"
-							[class]="animationState.getAnimationClasses(row_idx, column_idx)"
-							[ngStyle]="animationState.getFallParameters(row_idx, column_idx)"
-							(pointerdown)="onPointerDown($event, row_idx, column_idx)"
-							(pointermove)="onPointerMove($event)"
-							(pointerup)="onPointerUp()"
-						>
-							@if (crystal.crystalType != CrystalType.EMPTY && crystal.crystalType != CrystalType.DISABLED) {
-								<img [src]="getCrystalImage(crystal)" />
-							}
+			@for (row of boardToRender; track $index; let row_idx = $index) {
+				<div class="row">
+					@for (crystal of row; track $index; let column_idx = $index) {
+						<div class="cell-background" [class.transparent]="crystal.crystalType === CrystalType.DISABLED">
+							<div
+								class="cell"
+								[class]="animationState.getAnimationClasses(row_idx, column_idx)"
+								[ngStyle]="animationState.getFallParameters(row_idx, column_idx)"
+								(pointerdown)="onPointerDown($event, row_idx, column_idx)"
+								(pointermove)="onPointerMove($event)"
+								(pointerup)="onPointerUp()"
+							>
+								@if (crystal.crystalType != CrystalType.EMPTY && crystal.crystalType != CrystalType.DISABLED) {
+									<img [src]="getCrystalImage(crystal)" />
+								}
+							</div>
 						</div>
-					</div>
-				}
-			</div>
+					}
+				</div>
+			}
 		}
-	}
+	</div>
 </div>

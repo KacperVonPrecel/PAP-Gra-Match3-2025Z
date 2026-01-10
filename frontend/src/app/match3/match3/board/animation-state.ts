@@ -1,11 +1,15 @@
 import { GameBoard } from './game-board';
 import { Crystal } from '../../game-state';
 
+enum FallType {
+	NEW,
+	FALLING
+}
+
 export class AnimationState {
 	swap = new Map<string, string>();
 	destroyed = new Map<string, string>();
-	falling = new Map<string, { class: string; distance: number; startOffset: number }>();
-	new = new Map<string, { class: string; crystal: Crystal; startOffset: number }>();
+	falling = new Map<string, { class: string; distance: number; startOffset: number; fallType: FallType }>();
 
 	getAnimationClasses(row: number, col: number): string {
 		const key = `${row},${col}`;
@@ -16,8 +20,6 @@ export class AnimationState {
 		if (d) classes.push(d);
 		const f = this.falling.get(key);
 		if (f) classes.push(f.class);
-		const sp = this.new.get(key);
-		if (sp) classes.push(sp.class);
 		return classes.join(' '); //join all classes into one big string so they can be assigned easily
 	}
 	//methods for cleaning the entire map
@@ -27,17 +29,13 @@ export class AnimationState {
 	clearDestroy(): void {
 		this.destroyed.clear();
 	}
-	clearFall(): void {
+	clearFallingAndNew(): void {
 		this.falling.clear();
-	}
-	clearNew(): void {
-		this.new.clear();
 	}
 	clearAllClasses(): void {
 		this.clearSwap();
 		this.clearDestroy();
-		this.clearFall();
-		this.clearNew();
+		this.clearFallingAndNew();
 	}
 
 	//deletting single entry
@@ -45,13 +43,9 @@ export class AnimationState {
 		const key = `${row},${column}`;
 		this.swap.delete(key);
 	}
-	deleteFalling(row: number, column: number): void {
+	deleteFallingAndNew(row: number, column: number): void {
 		const key = `${row},${column}`;
 		this.falling.delete(key);
-	}
-	deleteNew(row: number, column: number): void {
-		const key = `${row},${column}`;
-		this.new.delete(key);
 	}
 	deleteDestroyed(row: number, column: number): void {
 		const key = `${row},${column}`;
@@ -70,25 +64,32 @@ export class AnimationState {
 		}
 		const distance = target_row - row;
 		const key = `${row},${column}`;
-		this.falling.set(key, { class: 'falling', distance: distance, startOffset: 0 });
+		this.falling.set(key, { class: 'falling', distance: distance, startOffset: 0, fallType: FallType.FALLING });
 	}
 	addDestroyed(row: number, column: number, animation_class: string): void {
 		const key = `${row},${column}`;
 		this.destroyed.set(key, animation_class);
 	}
-	addNew(row: number, column: number, crystal: Crystal): void {
+	addNew(row: number, column: number, offset: number): void {
 		const key = `${row},${column}`;
-		const startOffset = -(row + 1); //row + 1-> how many rows we need to fall, -1 because offset needs to be negative for falling down
-		this.new.set(key, { class: 'falling', crystal: crystal, startOffset: startOffset });
+		this.falling.set(key, { class: 'falling', distance: 0, startOffset: offset, fallType: FallType.NEW });
 	}
 
 	getFallParameters(row: number, col: number): Record<string, string> {
 		const key = `${row},${col}`;
 		const fall = this.falling.get(key);
 		if (!fall) return {};
-		const pxDistance = `calc(var(--cell-size) * ${fall.distance})`;
-		const duration = `${GameBoard.FALLING_ONE_BLOCK_DURATION * fall.distance}ms`;
-		const startOffset = `calc(var(--cell-size) * ${fall.startOffset})`;
+		let pxDistance = `calc(var(--cell-size) * ${fall.distance})`;
+		let duration = ``;
+		let startOffset = `calc(var(--cell-size) * ${fall.startOffset})`;
+		if (fall.fallType == FallType.FALLING) {
+			pxDistance = `calc(var(--cell-size) * ${fall.distance})`;
+			duration = `${GameBoard.FALLING_ONE_BLOCK_DURATION * fall.distance}ms`;
+			startOffset = `calc(var(--cell-size) * ${fall.startOffset})`;
+		} else {
+			const blocksTraversed = -1 * fall.startOffset + row; //blocks beyond the board + blocks on the board that were traversed
+			duration = `${GameBoard.FALLING_ONE_BLOCK_DURATION * blocksTraversed}ms`;
+		}
 		return { '--fall-distance': pxDistance, '--fall-duration': duration, '--fall-start-offset': startOffset };
 	}
 }

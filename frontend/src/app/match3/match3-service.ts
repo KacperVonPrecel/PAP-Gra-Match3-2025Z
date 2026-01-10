@@ -108,7 +108,7 @@ export class Match3Service {
 				{ crystalType: CrystalType.RUBY },
 				{ crystalType: CrystalType.DIAMOND },
 				{ crystalType: CrystalType.AMETHYST },
-				{ crystalType: CrystalType.CITRINE },
+				{ crystalType: CrystalType.DIAMOND },
 				{ crystalType: CrystalType.RUBY },
 				{ crystalType: CrystalType.AMETHYST }
 			],
@@ -168,7 +168,11 @@ export class Match3Service {
 						],
 						swapped: null,
 						falling: [{ source: { row: 0, column: 6 }, target: { row: 3, column: 6 } }],
-						newBlocks: [],
+						newBlocks: [
+							{ position: { row: 0, column: 6 }, crystal: { crystalType: CrystalType.AMETHYST } },
+							{ position: { row: 1, column: 6 }, crystal: { crystalType: CrystalType.HEMATITE } },
+							{ position: { row: 2, column: 6 }, crystal: { crystalType: CrystalType.CITRINE } }
+						],
 						resetBoard: false
 					}
 				]
