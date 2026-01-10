@@ -14,14 +14,23 @@ public class Match3Board
 
     private final @NonNull Random random = new Random();
 
-    private record Matches(List<Match3Block> blocks, List<Position> positions) {}
+    public record Matches(List<Match3Block> blocks, List<Position> positions) {}
 
     public Match3Board(@NonNull Match3Block[][] board, @NonNull MatchableShape[] matchableShapes)
+    {
+        this(board, matchableShapes, false);
+    }
+
+    public Match3Board(@NonNull Match3Block[][] board, @NonNull MatchableShape[] matchableShapes, boolean forceBoard)
     {
         this.board = board;
         this.matchableShapes = matchableShapes;
 
         fillBoard();
+
+        // If forceBoard = true, do not make sure there are no matches and at least one allowed move
+        if (forceBoard)
+            return;
 
         while (!findMatchedBlocks().blocks.isEmpty() || getAllowedMoves().isEmpty())
         {
@@ -95,6 +104,44 @@ public class Match3Board
         }
 
         return filledPositions;
+    }
+
+    public @NonNull Matches findMatchedBlocks()
+    {
+        // TODO: Look into 2D Rabin-Karp because this is awful
+        List<Match3Block> matches = new ArrayList<>();
+        List<Position> matchPositions = new ArrayList<>();
+
+        for (int i = 0; i < board.length; i++)
+        {
+            for (int j = 0; j < board[i].length; j++)
+            {
+                for (MatchableShape shape : matchableShapes)
+                {
+                    if (!blockMatchesShape(i, j, shape))
+                        continue;
+
+                    if (!matches.contains(board[i][j]))
+                    {
+                        matches.add(board[i][j]);
+                        matchPositions.add(new Position(i, j));
+                    }
+
+                    for (MatchableShape.RelativeCoordinates relativeCoordinates : shape.getRelativeCoordinates())
+                    {
+                        Match3Block block = board[i + relativeCoordinates.x()][j + relativeCoordinates.y()];
+
+                        if (matches.contains(block))
+                            continue;
+
+                        matches.add(block);
+                        matchPositions.add(new Position(i + relativeCoordinates.x(), j + relativeCoordinates.y()));
+                    }
+                }
+            }
+        }
+
+        return new Matches(matches, matchPositions);
     }
 
     public @NonNull List<MoveRequest> dropFloatingBlocks()
@@ -205,44 +252,6 @@ public class Match3Board
 
         board[moveRequest.source().row()][moveRequest.source().column()] = board[moveRequest.target().row()][moveRequest.target().column()];
         board[moveRequest.target().row()][moveRequest.target().column()] = temp;
-    }
-
-    private @NonNull Matches findMatchedBlocks()
-    {
-        // TODO: Look into 2D Rabin-Karp because this is awful
-        List<Match3Block> matches = new ArrayList<>();
-        List<Position> matchPositions = new ArrayList<>();
-
-        for (int i = 0; i < board.length; i++)
-        {
-            for (int j = 0; j < board[i].length; j++)
-            {
-                for (MatchableShape shape : matchableShapes)
-                {
-                    if (!blockMatchesShape(i, j, shape))
-                        continue;
-
-                    if (!matches.contains(board[i][j]))
-                    {
-                        matches.add(board[i][j]);
-                        matchPositions.add(new Position(i, j));
-                    }
-
-                    for (MatchableShape.RelativeCoordinates relativeCoordinates : shape.getRelativeCoordinates())
-                    {
-                        Match3Block block = board[i + relativeCoordinates.x()][j + relativeCoordinates.y()];
-
-                        if (matches.contains(block))
-                            continue;
-
-                        matches.add(block);
-                        matchPositions.add(new Position(i + relativeCoordinates.x(), j + relativeCoordinates.y()));
-                    }
-                }
-            }
-        }
-
-        return new Matches(matches, matchPositions);
     }
 
     private void destroyBlock(@NonNull Match3Block block)
