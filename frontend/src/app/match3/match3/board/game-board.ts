@@ -44,7 +44,7 @@ export class GameBoard {
 	private static readonly BOARD_RESET_DURATION = 150;
 
 	constructor() {
-		effect(() => {
+		effect(async () => {
 			const _moveValid = this.moveValid();
 			if (_moveValid === null) return;
 			if (this.lastMove === null) return;
@@ -55,7 +55,7 @@ export class GameBoard {
 			}
 			if (_moveValid === true) {
 				this._animationsPlaying = true;
-				this.animationSequence();
+				await this.animationSequence();
 				this._animationsPlaying = false;
 				this.allowSwapping = true;
 			}
@@ -188,6 +188,7 @@ export class GameBoard {
 	}
 
 	handleSwapAttempt(target: { row: number; column: number }): void {
+		/*plays swap animation, sens move request if the move is valid and plays swap back animation if needed*/
 		const moveRequest: MoveRequest = {
 			source: { row: this.dragStart!.row, column: this.dragStart!.column },
 			target: { row: target.row, column: target.column }
@@ -253,7 +254,14 @@ export class GameBoard {
 		return '';
 	}
 
-	animationSequence(): void {
+	private wait(ms: number): Promise<void> {
+		/*waiting for ms seconds, for use in async functions*/
+		return new Promise((resolve) => setTimeout(resolve, ms));
+	}
+
+	async animationSequence(): Promise<void> {
+		/*goes through all animations in every animation state, then clears the animations when a new board is to be displayed
+		async to avoid cascading timeouts - we need to wait for one type of animation to finish before starting another*/
 		if (this.state()) {
 			const animationSteps = this.state()!.animationSteps;
 			for (const step of animationSteps) {
@@ -263,10 +271,12 @@ export class GameBoard {
 					//CLEAR ALL CLASSES BEFORE DISPLAYING NEW BOARD
 					//wait for destropyed animation before applying others
 				}
-				setTimeout(() => {
-					for (const falling of step.falling) {
-					}
-				}, GameBoard.DESTROY_DURATION);
+				if (step.destroyed.length > 0) {
+					await this.wait(GameBoard.DESTROY_DURATION);
+				}
+
+				for (const falling of step.falling) {
+				}
 			}
 		}
 		//play swap if im not the player who swapped
