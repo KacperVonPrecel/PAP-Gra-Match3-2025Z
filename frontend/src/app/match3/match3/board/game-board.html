@@ -9,7 +9,7 @@
 						<div
 							class="cell"
 							[class]="animationState.getAnimationClasses(row_idx, column_idx)"
-							[ngStyle]="animationState.getFallDistanceAndDuration(row_idx, column_idx)"
+							[ngStyle]="animationState.getFallParameters(row_idx, column_idx)"
 							(pointerdown)="onPointerDown($event, row_idx, column_idx)"
 							(pointermove)="onPointerMove($event)"
 							(pointerup)="onPointerUp()"

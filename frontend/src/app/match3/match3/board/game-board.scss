@@ -75,7 +75,7 @@
 
 @keyframes fall {
 	from {
-		transform: translateY(0);
+		transform: translateY(var(--fall-start-offset));
 	}
 	to {
 		transform: translateY(var(--fall-distance));

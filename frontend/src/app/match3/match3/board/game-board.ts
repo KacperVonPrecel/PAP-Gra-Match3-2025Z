@@ -1,4 +1,4 @@
-import { Component, effect, input, output } from '@angular/core';
+import { Component, effect, HostBinding, input, output } from '@angular/core';
 import { BoardState, Crystal, Position } from '../../game-state';
 import { CrystalType, getCrystalFileName } from '../../match3-service';
 import { MoveRequest } from '../../match3-service';
@@ -44,6 +44,10 @@ export class GameBoard {
 	private static readonly NEW_DURATION = 150;
 	public static readonly FALLING_ONE_BLOCK_DURATION = 120; //needs to be accessible in animation state
 	private static readonly BOARD_RESET_DURATION = 150;
+
+	/*assigning values to variables used in css, that are dependant on the constants in the component*/
+	@HostBinding('style.--swap-duration') swapDuration = `${GameBoard.SWAP_DURATION}ms`;
+	@HostBinding('style.--destroy-duration') destroyDuration = `${GameBoard.DESTROY_DURATION}ms`;
 
 	constructor() {
 		effect(async () => {
@@ -273,11 +277,14 @@ export class GameBoard {
 				//play swap if im not the player who swapped
 				for (const destroyedBlock of step.destroyed) {
 					this.animationState.addDestroyed(destroyedBlock.row, destroyedBlock.column, `destroying`);
-					//CLEAR ALL CLASSES BEFORE DISPLAYING NEW BOARD
-					//wait for destropyed animation before applying others
 				}
 				if (step.destroyed.length > 0) {
 					await this.wait(GameBoard.DESTROY_DURATION);
+				}
+				//after animation finished remove animation class and modify the display board
+				this.animationState.clearDestroy();
+				for (const destroyedBlock of step.destroyed) {
+					this.oldBoard[destroyedBlock.row][destroyedBlock.column] = { crystalType: CrystalType.EMPTY };
 				}
 
 				let biggestDistance = 0;
@@ -288,7 +295,20 @@ export class GameBoard {
 					}
 					this.animationState.addFalling(falling.source.row, falling.source.column, falling.target.row);
 				}
+				await this.wait(biggestDistance * GameBoard.FALLING_ONE_BLOCK_DURATION);
+				//after animation finished remove animation class and modify the display board
+				this.animationState.clearFall();
+				this.rebuildCollumnsAfterFall(step.falling);
 
+				biggestDistance = 0;
+				for (const newBlock of step.newBlocks) {
+					let distance = newBlock.position.row + 1;
+					if (distance > biggestDistance) {
+						biggestDistance = distance;
+					}
+					this.oldBoard[newBlock.position.row][newBlock.position.column] = newBlock.crystal;
+					this.animationState.addNew(newBlock.position.row, newBlock.position.column, newBlock.crystal);
+				}
 				await this.wait(biggestDistance * GameBoard.FALLING_ONE_BLOCK_DURATION);
 			}
 		}
@@ -298,6 +318,47 @@ export class GameBoard {
 		//falling animation
 		//new blocks animation
 		//new board animation if needed
+		//commit all changes (including swap) to display board and clear classes
 		return;
+	}
+
+	rebuildCollumnsAfterFall(falling: MoveRequest[]) {
+		const fallsByColumn = new Map<number, Array<{ source: number; target: number }>>();
+		//group all falls by column
+		for (const f of falling) {
+			if (!fallsByColumn.has(f.source.column)) {
+				fallsByColumn.set(f.source.column, []);
+			}
+			fallsByColumn.get(f.source.column)!.push({ source: f.source.row, target: f.target.row });
+		}
+		//creating an empty column
+
+		const columnHeight = this.oldBoard.length;
+		for (const [col, falls] of fallsByColumn.entries()) {
+			const newCol: Crystal[] = new Array(columnHeight);
+			//map of target row-> source row for this column
+			const fallMap = new Map<number, number>();
+			//set of source rows for this column
+			const sources = new Set<number>();
+			/*we will be ckecking for each row if it has some crystal falling into it, if its the source of a fall or if its unaffected */
+			for (const fall of falls) {
+				fallMap.set(fall.target, fall.source);
+				sources.add(fall.source);
+			}
+			for (let idx = 0; idx < columnHeight; idx++) {
+				//idx will be the row index
+				if (fallMap.has(idx)) {
+					newCol[idx] = this.oldBoard[fallMap.get(idx)!][col]; //replacing with source crystal
+				} else if (sources.has(idx)) {
+					newCol[idx] = { crystalType: CrystalType.EMPTY };
+				} else {
+					newCol[idx] = this.oldBoard[idx][col];
+				}
+			}
+			//writing the new column to the displayed board
+			for (let row = 0; row < columnHeight; row++) {
+				this.oldBoard[row][col] = newCol[row];
+			}
+		}
 	}
 }

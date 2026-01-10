@@ -1,11 +1,11 @@
-import { T } from '@angular/cdk/keycodes';
 import { GameBoard } from './game-board';
+import { Crystal } from '../../game-state';
 
 export class AnimationState {
 	swap = new Map<string, string>();
 	destroyed = new Map<string, string>();
-	falling = new Map<string, { class: string; distance: number }>();
-	new = new Map<string, string>();
+	falling = new Map<string, { class: string; distance: number; startOffset: number }>();
+	new = new Map<string, { class: string; crystal: Crystal; startOffset: number }>();
 
 	getAnimationClasses(row: number, col: number): string {
 		const key = `${row},${col}`;
@@ -17,7 +17,7 @@ export class AnimationState {
 		const f = this.falling.get(key);
 		if (f) classes.push(f.class);
 		const sp = this.new.get(key);
-		if (sp) classes.push(sp);
+		if (sp) classes.push(sp.class);
 		return classes.join(' '); //join all classes into one big string so they can be assigned easily
 	}
 	//methods for cleaning the entire map
@@ -70,23 +70,25 @@ export class AnimationState {
 		}
 		const distance = target_row - row;
 		const key = `${row},${column}`;
-		this.falling.set(key, { class: 'falling', distance });
+		this.falling.set(key, { class: 'falling', distance: distance, startOffset: 0 });
 	}
 	addDestroyed(row: number, column: number, animation_class: string): void {
 		const key = `${row},${column}`;
 		this.destroyed.set(key, animation_class);
 	}
-	addNew(row: number, column: number, animation_class: string): void {
+	addNew(row: number, column: number, crystal: Crystal): void {
 		const key = `${row},${column}`;
-		this.new.set(key, animation_class);
+		const startOffset = -(row + 1); //row + 1-> how many rows we need to fall, -1 because offset needs to be negative for falling down
+		this.new.set(key, { class: 'falling', crystal: crystal, startOffset: startOffset });
 	}
 
-	getFallDistanceAndDuration(row: number, col: number): Record<string, string> {
+	getFallParameters(row: number, col: number): Record<string, string> {
 		const key = `${row},${col}`;
 		const fall = this.falling.get(key);
 		if (!fall) return {};
 		const pxDistance = `calc(var(--cell-size) * ${fall.distance})`;
 		const duration = `${GameBoard.FALLING_ONE_BLOCK_DURATION * fall.distance}ms`;
-		return { '--fall-distance': pxDistance, '--fall-duration': duration };
+		const startOffset = `calc(var(--cell-size) * ${fall.startOffset})`;
+		return { '--fall-distance': pxDistance, '--fall-duration': duration, '--fall-start-offset': startOffset };
 	}
 }
