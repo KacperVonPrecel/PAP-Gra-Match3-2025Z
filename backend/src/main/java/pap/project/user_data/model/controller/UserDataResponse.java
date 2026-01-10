@@ -13,6 +13,7 @@ import java.util.List;
 public record UserDataResponse(
         long id,
         @NonNull List<CharacterData> characters,
-        int currency
+        int currency,
+        long rankingPosition
         ) {
 }

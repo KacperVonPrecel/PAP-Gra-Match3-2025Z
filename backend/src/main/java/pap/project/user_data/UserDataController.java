@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import pap.project.user_data.model.UserData;
 import pap.project.user_data.model.controller.*;
+import pap.project.user_stats.RankingService;
 import pap.project.users.UserAuthDetails;
 import pap.project.users.characters.UserCharactersService;
 import pap.project.users.characters.model.controller.CharacterData;
@@ -19,11 +20,13 @@ public class UserDataController
 {
     private final @NonNull UserDataService userDataService;
     private final @NonNull UserCharactersService userCharactersService;
+    private final @NonNull RankingService rankingService;
 
-    public UserDataController(@NonNull UserDataService userDataService, @NonNull UserCharactersService userCharactersService)
+    public UserDataController(@NonNull UserDataService userDataService, @NonNull UserCharactersService userCharactersService, @NonNull RankingService rankingService)
     {
         this.userDataService = userDataService;
         this.userCharactersService = userCharactersService;
+        this.rankingService = rankingService;
     }
 
     @GetMapping("data")
@@ -33,7 +36,8 @@ public class UserDataController
         final long userId = user.getUserId();
         final UserData userData = userDataService.getUserData(userId);
         final List<CharacterData> charactersData = userCharactersService.createCharactersData(userData.userCharacters());
-        return new UserDataResponse(userId, charactersData, userData.currency());
+        final long userRankingPosition = rankingService.getUserPositionInRanking(userId);
+        return new UserDataResponse(userId, charactersData, userData.currency(), userRankingPosition);
     }
 
     @GetMapping("get_team")

@@ -137,7 +137,8 @@ export class UserDataService {
 				this._userData.next({
 					id: oldUserData.id,
 					characters: oldUserData.characters,
-					currency: currentCurrency
+					currency: currentCurrency,
+					rankingPosition: oldUserData.rankingPosition
 				});
 			}),
 			catchError((error: Error) => {
@@ -165,7 +166,7 @@ export class UserDataService {
 				const newCharactersList = userData.characters.filter((c) => c.characterType !== characterType);
 				newCharactersList.push(result.characterData);
 
-				this._userData.next({ id: userData.id, currency: userData.currency, characters: newCharactersList });
+				this._userData.next({ id: userData.id, currency: userData.currency, characters: newCharactersList, rankingPosition: userData.rankingPosition });
 			}),
 			map(() => {})
 		);
@@ -185,6 +186,7 @@ export interface UserData {
 	readonly id: number; //XXX it's should be bigint
 	readonly characters: CharacterData[];
 	readonly currency: number;
+	readonly rankingPosition: number;
 }
 
 export interface CharacterData {

@@ -18,11 +18,11 @@ public class RankingService
         this.userStatsRepository = userStatsRepository;
     }
 
-    public LoadGlobalRankingData loadGlobalRankingEntries(int pageNumber, int pageSize)
+    public @NonNull LoadGlobalRankingData loadGlobalRankingEntries(int pageNumber, int pageSize)
     {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        final Pageable pageable = PageRequest.of(pageNumber, pageSize);
         final Page<RankingEntry> loadedRankingEntries = userStatsRepository.getGlobalRanking(pageable);
-        return new LoadGlobalRankingData(loadedRankingEntries, loadedRankingEntries.hasNext());
+        return new LoadGlobalRankingData(loadedRankingEntries.toList(), loadedRankingEntries.hasNext());
     }
 
     public int getUserPositionInRanking(long userId)

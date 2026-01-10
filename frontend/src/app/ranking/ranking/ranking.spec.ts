@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RankingDialog } from './ranking-dialog';
+import { Ranking } from './ranking';
 
-describe('RankingDialog', () => {
-  let component: RankingDialog;
-  let fixture: ComponentFixture<RankingDialog>;
+describe('Ranking', () => {
+  let component: Ranking;
+  let fixture: ComponentFixture<Ranking>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RankingDialog]
+      imports: [Ranking]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(RankingDialog);
+    fixture = TestBed.createComponent(Ranking);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,11 +1,9 @@
-import { Component, DestroyRef, OnInit } from '@angular/core';
+import { Component, computed, DestroyRef, OnInit, Signal } from '@angular/core';
 import { RouterOutlet, RouterLinkWithHref, RouterLinkActive, Router } from '@angular/router';
 import { MatAnchor, MatButtonModule } from '@angular/material/button';
-import { FireflyBackground } from '../background/firefly-background/firefly-background';
 import { MatIcon } from '@angular/material/icon';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatDialog } from '@angular/material/dialog';
-import { RankingDialog } from './home-page/dialogs/ranking/ranking-dialog';
 import { UserData, UserDataService } from '../user-data/user-data-service';
 import { Observable } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
@@ -43,9 +41,8 @@ export class Home implements OnInit {
 		return this.userDataService.userDataObservable;
 	}
 
-	private _rank: string = 'F';
-	get rank(): string {
-		return this._rank;
+	get rank(): Signal<number> {
+		return computed(() => this.userDataService.userDataSignal()?.rankingPosition ?? 0);
 	}
 
 	protected logout() {
@@ -55,7 +52,7 @@ export class Home implements OnInit {
 		});
 	}
 
-	openRanking() {
-		this.dialog.open(RankingDialog);
+	protected openRanking() {
+		this.router.navigate(['/main/home/ranking']);
 	}
 }

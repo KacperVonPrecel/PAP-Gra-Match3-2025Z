@@ -4,7 +4,7 @@
 			<mat-icon style="transform: rotate(180deg)">logout</mat-icon>
 		</button>
 		<div id="data-contener">
-			<span class="label" id="rank" (click)="openRanking()" i18n>{{ rank }} rank</span>
+			<span class="label" id="rank" (click)="openRanking()" i18n>{{ rank() }} rank</span>
 			<span class="label" i18n>{{ (userData | async)!.currency }} money</span>
 		</div>
 	</div>

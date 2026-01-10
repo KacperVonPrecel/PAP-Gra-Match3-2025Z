@@ -12,6 +12,7 @@ import { HistoryComponent } from './history/history-component/history-component'
 import { Match3 } from './match3/match3/match3';
 import { CharactersList } from './user-chararacters/characters-list/characters-list';
 import { Characters } from './user-chararacters/characters/characters';
+import { Ranking } from './ranking/ranking/ranking';
 
 export const routes: Routes = [
 	{
@@ -65,6 +66,11 @@ export const routes: Routes = [
 						path: 'characters',
 						component: Characters,
 						title: 'Characters'
+					},
+					{
+						path: 'ranking',
+						component: Ranking,
+						title: 'Ranking'
 					}
 				]
 			},
