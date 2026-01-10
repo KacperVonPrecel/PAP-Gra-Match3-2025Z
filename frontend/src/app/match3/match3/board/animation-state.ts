@@ -71,7 +71,7 @@ export class AnimationState {
 	}
 	addNew(row: number, column: number, offset: number): void {
 		const key = `${row},${column}`;
-		this.falling.set(key, { class: 'falling', distance: 0, startOffset: offset, fallType: FallType.NEW });
+		this.falling.set(key, { class: 'new', distance: 0, startOffset: offset, fallType: FallType.NEW });
 	}
 
 	getFallParameters(row: number, col: number): Record<string, string> {

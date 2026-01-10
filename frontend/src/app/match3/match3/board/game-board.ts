@@ -323,7 +323,6 @@ export class GameBoard {
 				await this.wait(biggestDistance * GameBoard.FALLING_ONE_BLOCK_DURATION);
 				//after animation finished remove animation class and modify the display board
 				this.animationState.clearFallingAndNew();
-				void document.body.offsetHeight;
 				this.rebuildCollumnsAfterFall(step.falling);
 
 				//grouping new blocks by column

@@ -82,6 +82,19 @@
 	}
 }
 
+@keyframes new {
+	from {
+		transform: translateY(var(--fall-start-offset));
+	}
+	to {
+		transform: translateY(var(--fall-distance));
+	}
+}
+
 .falling {
 	animation: fall var(--fall-duration) var(--fall-ease) forwards;
+}
+
+.new {
+	animation: new var(--fall-duration) var(--fall-ease) forwards;
 }
