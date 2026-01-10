@@ -1,5 +1,7 @@
 package pap.project.match3.model;
 
+import org.springframework.lang.Nullable;
+
 public record GameState(
-        BoardState boardState
+        @Nullable BoardState boardState
 ) { }

@@ -1,13 +1,16 @@
 package pap.project.match3.model;
 
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import pap.project.match3.Match3Block;
 
 import java.util.List;
 
 public record AnimationStep(
-        Match3Block[][] board,
-        MoveRequest swapped,
-        List<Position> destroyed,
-        List<MoveRequest> falling,
-        List<NewBlock> newBlocks
+        @NonNull Match3Block[][] board,
+        @Nullable MoveRequest swapped,
+        @NonNull List<Position> destroyed,
+        @NonNull List<MoveRequest> falling,
+        @NonNull List<NewBlock> newBlocks,
+        boolean resetBoard
 ) { }
