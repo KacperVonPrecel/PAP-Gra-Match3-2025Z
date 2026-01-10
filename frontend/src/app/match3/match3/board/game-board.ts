@@ -45,7 +45,7 @@ export class GameBoard {
 	private static readonly SWAP_DURATION = 150;
 	private static readonly DESTROY_DURATION = 250;
 	private static readonly NEW_DURATION = 150;
-	public static readonly FALLING_ONE_BLOCK_DURATION = 1000; //needs to be accessible in animation state
+	public static readonly FALLING_ONE_BLOCK_DURATION = 250; //needs to be accessible in animation state
 	private static readonly BOARD_RESET_DURATION = 150;
 
 	/*assigning values to variables used in css, that are dependant on the constants in the component*/
@@ -61,7 +61,6 @@ export class GameBoard {
 				this._oldBoard = this.state()!.board.map((row) => row.map((cell) => ({ ...cell })));
 			}
 			this._animationsPlaying = true;
-			console.log(this.oldBoard);
 			await this.animationSequence();
 			this.animationState.clearAllClasses();
 			//snapshotting the board (as old board for the next animation) before the move request is sent
@@ -324,6 +323,7 @@ export class GameBoard {
 				await this.wait(biggestDistance * GameBoard.FALLING_ONE_BLOCK_DURATION);
 				//after animation finished remove animation class and modify the display board
 				this.animationState.clearFallingAndNew();
+				void document.body.offsetHeight;
 				this.rebuildCollumnsAfterFall(step.falling);
 
 				//grouping new blocks by column
@@ -341,6 +341,7 @@ export class GameBoard {
 					for (const block of blocks) {
 						const offset = -(maxRow + 1);
 						const distance = maxRow + 1;
+						console.log(block.position.row, distance, offset);
 						if (distance > biggestDistance) {
 							biggestDistance = distance;
 						}

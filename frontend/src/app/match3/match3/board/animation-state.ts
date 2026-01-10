@@ -1,5 +1,4 @@
 import { GameBoard } from './game-board';
-import { Crystal } from '../../game-state';
 
 enum FallType {
 	NEW,
@@ -79,16 +78,13 @@ export class AnimationState {
 		const key = `${row},${col}`;
 		const fall = this.falling.get(key);
 		if (!fall) return {};
-		let pxDistance = `calc(var(--cell-size) * ${fall.distance})`;
+		let pxDistance = `calc(var(--cell-size) * ${fall.distance})`; //0 * cell size in new, actual distance in falling
 		let duration = ``;
-		let startOffset = `calc(var(--cell-size) * ${fall.startOffset})`;
+		let startOffset = `calc(var(--cell-size) * ${fall.startOffset})`; //0 * cell size in falling, actual offset in new
 		if (fall.fallType == FallType.FALLING) {
-			pxDistance = `calc(var(--cell-size) * ${fall.distance})`;
-			duration = `${GameBoard.FALLING_ONE_BLOCK_DURATION * fall.distance}ms`;
-			startOffset = `calc(var(--cell-size) * ${fall.startOffset})`;
+			duration = `${GameBoard.FALLING_ONE_BLOCK_DURATION * fall.distance}ms`; //duration based on distance
 		} else {
-			const blocksTraversed = -1 * fall.startOffset + row; //blocks beyond the board + blocks on the board that were traversed
-			duration = `${GameBoard.FALLING_ONE_BLOCK_DURATION * blocksTraversed}ms`;
+			duration = `${GameBoard.FALLING_ONE_BLOCK_DURATION * -1 * fall.startOffset}ms`; //duration based on offset
 		}
 		return { '--fall-distance': pxDistance, '--fall-duration': duration, '--fall-start-offset': startOffset };
 	}
