@@ -7,7 +7,6 @@ public class Match3Block
 {
     private @NonNull BlockType blockType = BlockType.EMPTY;
 
-    // TODO: Block type for disabled block (different board shapes support)
     public enum BlockType
     {
         DISABLED,
