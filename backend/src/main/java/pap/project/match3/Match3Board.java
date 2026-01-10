@@ -179,10 +179,13 @@ public class Match3Board
                 {
                     board[swap_row][col].setBlockType(board[row][col].getBlockType());
 
-                    droppedMoves.add(new MoveRequest(
-                            new Position(row, col),
-                            new Position(swap_row, col)
-                    ));
+                    if (row !=  swap_row)
+                    {
+                        droppedMoves.add(new MoveRequest(
+                                new Position(row, col),
+                                new Position(swap_row, col)
+                        ));
+                    }
 
                     swap_row--;
                 }
