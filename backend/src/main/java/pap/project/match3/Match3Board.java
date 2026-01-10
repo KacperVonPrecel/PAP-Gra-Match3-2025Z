@@ -23,7 +23,11 @@ public class Match3Board
 
         fillBoard();
 
-        // TODO: DESTROY MATCHED UNTIL NONE REMAIN
+        while (!findMatchedBlocks().blocks.isEmpty() || getAllowedMoves().isEmpty())
+        {
+            clearBoard();
+            fillBoard();
+        }
     }
 
     public @NonNull BoardState playTurn(@NonNull MoveRequest moveRequest)
@@ -173,6 +177,15 @@ public class Match3Board
         }
 
         return allowedMoves;
+    }
+
+    private void clearBoard()
+    {
+        for (Match3Block[] row : board)
+        {
+            for (Match3Block block : row)
+                destroyBlock(block);
+        }
     }
 
     private boolean isMoveAllowed(@NonNull MoveRequest move)
