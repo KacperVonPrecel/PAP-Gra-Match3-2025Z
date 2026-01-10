@@ -3,6 +3,7 @@ package pap.project.user_data.model;
 import org.springframework.lang.NonNull;
 import pap.project.users.characters.UserCharacter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public record UserData(
@@ -25,10 +26,12 @@ public record UserData(
                 won ? matchWon + 1 : matchWon);
     }
 
-    public @NonNull UserData changeUserDataAfterDrawing(int cost)
+    public @NonNull UserData changeUserDataAfterDrawing(int cost, @NonNull List<UserCharacter> changeUserCharacters)
     {
-        //XXX update characters list
-        return new UserData(username, userCharacters,
+        final var changeCharacters = changeUserCharacters.stream().map(UserCharacter::getCharacterType).toList();
+        final var newUserCharacters = new ArrayList<>(userCharacters.stream().filter(data -> !changeCharacters.contains(data.getCharacterType())).toList());
+        newUserCharacters.addAll(changeUserCharacters);
+        return new UserData(username, newUserCharacters,
                 activeTeamIds,
                 currency - cost,
                 eloPoints,

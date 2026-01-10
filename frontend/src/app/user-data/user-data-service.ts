@@ -125,21 +125,8 @@ export class UserDataService {
 				// XXXW handle error 0 - NO_INTERNET. Show user error
 				return EMPTY;
 			}),
-			tap(() => {
-				const oldUserData = this.userData;
-				const currentCurrency = oldUserData.currency - cost;
-				// It shouldn't happen because before calling request currency value was checked if it enough.
-				// But possibly something can change currency in memory during this request, and this means some error in code,
-				// because it shouldn't be possible during request.
-
-				if (currentCurrency < 0) throw Error('Currency cannot be negative');
-				// XXXW change also characters data append characters count or create new character if in prev data it was absent.
-				this._userData.next({
-					id: oldUserData.id,
-					characters: oldUserData.characters,
-					currency: currentCurrency,
-					rankingPosition: oldUserData.rankingPosition
-				});
+			tap((result) => {
+				this.handleDrawResult(result, cost);
 			}),
 			catchError((error: Error) => {
 				//Do we need the URL tree here?? like in user data guard
@@ -148,6 +135,58 @@ export class UserDataService {
 				return EMPTY;
 			})
 		);
+	}
+
+	private handleDrawResult(drawResult: DrawResult, cost: number) {
+		const oldUserData = this.userData;
+		const currentCurrency = oldUserData.currency - cost;
+		// It shouldn't happen because before calling request currency value was checked if it enough.
+		// But possibly something can change currency in memory during this request, and this means some error in code,
+		// because it shouldn't be possible during request.
+
+		if (currentCurrency < 0) throw Error('Currency cannot be negative');
+
+		let characters: CharacterData[] = oldUserData.characters.map((c) => {
+			const resultEntry = drawResult.results.find((r) => r.characterType === c.characterType);
+			if (resultEntry) {
+				return {
+					characterType: c.characterType,
+					damage: c.damage,
+					health: c.health,
+					level: c.level,
+					requiredCopiesForNextLevel: c.requiredCopiesForNextLevel,
+					currentCopiesCount: c.currentCopiesCount + resultEntry.amount
+				};
+			}
+			return c;
+		});
+		let lockedCharactersData: CharacterData[] = oldUserData.lockedCharacterData;
+
+		const unlockedCharacters: CharacterData[] = [];
+		lockedCharactersData.forEach((c) => {
+			const resultEntry = drawResult.results.find((r) => r.characterType === c.characterType);
+			if (resultEntry) {
+				characters.push({
+					characterType: c.characterType,
+					damage: c.damage,
+					health: c.health,
+					level: c.level,
+					requiredCopiesForNextLevel: c.requiredCopiesForNextLevel,
+					currentCopiesCount: c.currentCopiesCount + resultEntry.amount
+				});
+				unlockedCharacters.push(c);
+			}
+		});
+
+		lockedCharactersData = lockedCharactersData.filter((c) => !unlockedCharacters.includes(c));
+
+		this._userData.next({
+			id: oldUserData.id,
+			characters: characters,
+			currency: currentCurrency,
+			rankingPosition: oldUserData.rankingPosition,
+			lockedCharacterData: lockedCharactersData
+		});
 	}
 
 	upgrade(characterType: CharacterType): Observable<void> {
@@ -166,7 +205,13 @@ export class UserDataService {
 				const newCharactersList = userData.characters.filter((c) => c.characterType !== characterType);
 				newCharactersList.push(result.characterData);
 
-				this._userData.next({ id: userData.id, currency: userData.currency, characters: newCharactersList, rankingPosition: userData.rankingPosition });
+				this._userData.next({
+					id: userData.id,
+					currency: userData.currency,
+					characters: newCharactersList,
+					rankingPosition: userData.rankingPosition,
+					lockedCharacterData: userData.lockedCharacterData
+				});
 			}),
 			map(() => {})
 		);
@@ -187,6 +232,7 @@ export interface UserData {
 	readonly characters: CharacterData[];
 	readonly currency: number;
 	readonly rankingPosition: number;
+	readonly lockedCharacterData: CharacterData[];
 }
 
 export interface CharacterData {

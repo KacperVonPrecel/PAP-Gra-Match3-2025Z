@@ -173,7 +173,7 @@ public class UserDataService
             if (cost > userDataSession.getUserData().currency())
                 throw new RuntimeException("XXX");
 
-            List<DrawResultEntry> drawResults = Stream.generate(() -> {
+            final List<DrawResultEntry> drawResults = Stream.generate(() -> {
                 Rarity drawRarity = drawRarity(request.drawType());
                 return drawCharacterByRarity(drawRarity);
             })
@@ -210,7 +210,7 @@ public class UserDataService
                 }
                 charactersToSave.add(character);
             }
-            userDataSession.setUserData(userDataSession.getUserData().changeUserDataAfterDrawing(cost));
+            userDataSession.setUserData(userDataSession.getUserData().changeUserDataAfterDrawing(cost, charactersToSave));
 
             userStatsRepository.updateUserStatsAfterDrawing(userDataSession.getUserData().currency(), userId);
             userCharactersRepository.saveAll(charactersToSave);

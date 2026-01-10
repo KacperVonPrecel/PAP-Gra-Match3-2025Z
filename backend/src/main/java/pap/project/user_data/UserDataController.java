@@ -10,8 +10,10 @@ import pap.project.user_data.model.controller.*;
 import pap.project.user_stats.RankingService;
 import pap.project.users.UserAuthDetails;
 import pap.project.users.characters.UserCharactersService;
+import pap.project.users.characters.model.CharacterType;
 import pap.project.users.characters.model.controller.CharacterData;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -36,8 +38,12 @@ public class UserDataController
         final long userId = user.getUserId();
         final UserData userData = userDataService.getUserData(userId);
         final List<CharacterData> charactersData = userCharactersService.createCharactersData(userData.userCharacters());
+        final List<CharacterType> unlockedCharacters = charactersData.stream().map(CharacterData::characterType).toList();
+
+        final List<CharacterData> lockedCharacters = Arrays.stream(CharacterType.values()).filter(type -> !unlockedCharacters.contains(type))
+                .map(userCharactersService::createEmptyCharacterData).toList();
         final long userRankingPosition = rankingService.getUserPositionInRanking(userId);
-        return new UserDataResponse(userId, charactersData, userData.currency(), userRankingPosition);
+        return new UserDataResponse(userId, charactersData, userData.currency(), userRankingPosition, lockedCharacters);
     }
 
     @GetMapping("get_team")

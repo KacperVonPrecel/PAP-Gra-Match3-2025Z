@@ -38,7 +38,7 @@ export class Ranking implements OnInit {
 			this._loadingRanking = true;
 
 			this.rankingService.loadRankingEntries(this.pageNumber).subscribe((res) => {
-				let prev = this._rankingElements[this._rankingElements.length - 1];
+				const prev = this._rankingElements[this._rankingElements.length - 1];
 				this.handleLoadRankingEntries(prev, res.loadedRankingEntries);
 				this._hasMoreRankingToLoad = res.isMoreToLoad;
 				this._loadingRanking = false;
