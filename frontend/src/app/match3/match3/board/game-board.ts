@@ -68,7 +68,7 @@ export class GameBoard {
 			this._oldBoard = this.state()!.board.map((row) => row.map((cell) => ({ ...cell }))); //... is object spread operator -> for copying objects
 			this._animationsPlaying = false;
 		});
-		async () => {
+		() => {
 			const _moveValid = this.moveValid();
 
 			if (_moveValid === null) return;
@@ -196,18 +196,13 @@ export class GameBoard {
 	}
 
 	animateSwapBack(move: MoveRequest): void {
-		const sourceKey = `${move.source.row},${move.source.column}`;
-		const targetKey = `${move.target.row},${move.target.column}`;
+		//we're assuming the first swap happened and ended sure
+		this.animationState.addSwap(move.source.row, move.source.column, `go-back`);
+		this.animationState.addSwap(move.target.row, move.target.column, `go-back`);
 		setTimeout(() => {
-			//make sure first swap happened
-			this.animationState.addSwap(move.source.row, move.source.column, `go-back`);
-			this.animationState.addSwap(move.target.row, move.target.column, `go-back`);
-			setTimeout(() => {
-				//make sure second swap happened
-				this.animationState.deleteSwap(move.source.row, move.source.column);
-				this.animationState.deleteSwap(move.target.row, move.target.column);
-			}, GameBoard.SWAP_DURATION);
-
+			//make sure second swap happened
+			this.animationState.deleteSwap(move.source.row, move.source.column);
+			this.animationState.deleteSwap(move.target.row, move.target.column);
 			this.allowSwapping = true;
 		}, GameBoard.SWAP_DURATION);
 	}
@@ -250,12 +245,14 @@ export class GameBoard {
 			this.lastMove = moveRequest;
 			this.animateSwap(moveRequest);
 			this.allowSwapping = false;
-			if (this.isMoveValid(moveRequest)) {
-				this.emitSwapAttempt(moveRequest);
-			} else {
-				this.animateSwapBack(moveRequest);
-				this.allowSwapping = true;
-			}
+			setTimeout(() => {
+				if (this.isMoveValid(moveRequest)) {
+					this.emitSwapAttempt(moveRequest);
+				} else {
+					this.animateSwapBack(moveRequest);
+					this.allowSwapping = true;
+				}
+			}, GameBoard.SWAP_DURATION);
 		}
 	}
 
@@ -289,8 +286,21 @@ export class GameBoard {
 		async to avoid cascading timeouts - we need to wait for one type of animation to finish before starting another*/
 		if (this.state()) {
 			const animationSteps = this.state()!.animationSteps;
+			//play swap if im not the player who swapped
 			for (const step of animationSteps) {
-				//play swap if im not the player who swapped
+				if (step.swapped && !this.swapWasAnimated) {
+					this.animateSwap(step.swapped);
+					await this.wait(GameBoard.SWAP_DURATION);
+				}
+				if (step.swapped) {
+					const sourceCrystal = this._oldBoard![step.swapped.source.row][step.swapped.source.column];
+					this._oldBoard![step.swapped.source.row][step.swapped.source.column] =
+						this._oldBoard![step.swapped.target.row][step.swapped.target.column];
+					this._oldBoard![step.swapped.target.row][step.swapped.target.column] = sourceCrystal;
+				}
+				this.animationState.clearSwap();
+				this.swapWasAnimated = false; //for next time - saying the swap wasnt animated yet
+
 				for (const destroyedBlock of step.destroyed) {
 					this.animationState.addDestroyed(destroyedBlock.row, destroyedBlock.column, `destroying`);
 				}
@@ -300,7 +310,7 @@ export class GameBoard {
 				//after animation finished remove animation class and modify the display board
 				this.animationState.clearDestroy();
 				for (const destroyedBlock of step.destroyed) {
-					this.oldBoard[destroyedBlock.row][destroyedBlock.column] = { crystalType: CrystalType.EMPTY };
+					this._oldBoard![destroyedBlock.row][destroyedBlock.column] = { crystalType: CrystalType.EMPTY };
 				}
 
 				let biggestDistance = 0;
@@ -334,7 +344,7 @@ export class GameBoard {
 						if (distance > biggestDistance) {
 							biggestDistance = distance;
 						}
-						this.oldBoard[block.position.row][block.position.column] = block.crystal;
+						this._oldBoard![block.position.row][block.position.column] = block.crystal;
 						this.animationState.addNew(block.position.row, block.position.column, offset);
 					}
 				}
@@ -343,7 +353,7 @@ export class GameBoard {
 				//after animation finished remove animation class and modify the display board
 				this.animationState.clearFallingAndNew();
 				for (const newBlock of step.newBlocks) {
-					this.oldBoard[newBlock.position.row][newBlock.position.column] = newBlock.crystal;
+					this._oldBoard![newBlock.position.row][newBlock.position.column] = newBlock.crystal;
 				}
 			}
 		}
