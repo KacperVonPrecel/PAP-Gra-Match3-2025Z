@@ -2,7 +2,12 @@ package pap.project.match3;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import pap.project.match3.model.BoardState;
+import pap.project.match3.model.GameState;
+import pap.project.match3.model.MoveRequest;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,7 +22,7 @@ public class Match3Service {
     {
         int gameId = generateId();
 
-        Match3Block[][] blocks = new Match3Block[5][5];
+        final Match3Block[][] blocks = new Match3Block[5][5];
         for (int i = 0; i < 5; i++)
         {
             for (int j = 0; j < 5; j++)
@@ -26,23 +31,7 @@ public class Match3Service {
             }
         }
 
-        // TODO: Move this somewhere else
-        MatchableShape.RelativeCoordinates[] threeInLineHorizontal = {
-            new MatchableShape.RelativeCoordinates(1, 0),
-            new MatchableShape.RelativeCoordinates(2, 0),
-        };
-
-        MatchableShape.RelativeCoordinates[] threeInLineVertical = {
-                new MatchableShape.RelativeCoordinates(0, 1),
-                new MatchableShape.RelativeCoordinates(0, 2),
-        };
-
-        MatchableShape[] matchableShapes = new MatchableShape[] {
-            new MatchableShape(threeInLineHorizontal),
-            new MatchableShape(threeInLineVertical),
-        };
-
-        Match3Board board = new Match3Board(blocks, matchableShapes);
+        final Match3Board board = new Match3Board(blocks, MatchableShapeLibrary.ALL_SHAPES);
 
         games.put(gameId, board);
 
@@ -59,32 +48,30 @@ public class Match3Service {
         return 0; // TODO: id generation
     }
 
-    public Match3Board getBoard(int gameId)
+    public @Nullable GameState playTurn(int gameId, @NonNull MoveRequest moveRequest)
     {
-        return games.get(gameId);
+        if  (games.containsKey(gameId))
+        {
+            BoardState boardState = games.get(gameId).playTurn(moveRequest);
+
+            if (boardState != null)
+                return new GameState(boardState, 0);
+            else
+                return null;
+        }
+
+        return null;
     }
 
-    public void fillBoard(int gameId)
-    {
-        games.get(gameId).fillBoard();
-    }
-
-    public void dropFloatingBlocks(int gameId)
-    {
-        games.get(gameId).dropFloatingBlocks();
-    }
-
-    public boolean swapBlocks(int gameId, Match3Board.MoveRequest moveRequest)
+    public @Nullable GameState getState(int gameId)
     {
         if (games.containsKey(gameId))
-            return games.get(gameId).swapBlocks(moveRequest);
+        {
+            BoardState boardState = games.get(gameId).getState();
 
-        return false;
-    }
+            return new GameState(boardState, 0);
+        }
 
-    public void destroyMatchedBlocks(int gameId)
-    {
-        if (games.containsKey(gameId))
-            games.get(gameId).destroyMatchedBlocks();
+        return null;
     }
 }

@@ -5,18 +5,18 @@ import org.springframework.lang.NonNull;
 
 public class Match3Block
 {
-    @NonNull private BlockType blockType = BlockType.Empty;
+    private @NonNull BlockType blockType = BlockType.EMPTY;
 
-    // TODO: Block type for disabled block (different board shapes support)
-    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     public enum BlockType
     {
-        Disabled,
-        Empty,
-        Red,
-        Green,
-        Blue,
-        Yellow,
+        DISABLED,
+        EMPTY,
+        AMETHYST,
+        CITRINE,
+        DIAMOND,
+        EMERALD,
+        HEMATITE,
+        RUBY
     }
 
     public Match3Block() { }

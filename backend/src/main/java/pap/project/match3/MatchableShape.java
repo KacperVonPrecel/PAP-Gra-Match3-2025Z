@@ -7,7 +7,7 @@ public class MatchableShape {
 
     public record RelativeCoordinates(int x, int y) { }
 
-    public MatchableShape(RelativeCoordinates[] relativeCoordinates)
+    public MatchableShape(@NonNull RelativeCoordinates[] relativeCoordinates)
     {
         this.relativeCoordinates = relativeCoordinates;
     }
