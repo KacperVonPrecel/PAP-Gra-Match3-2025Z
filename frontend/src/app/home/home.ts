@@ -1,5 +1,5 @@
 import { Component, computed, DestroyRef, OnInit, Signal } from '@angular/core';
-import { RouterOutlet, RouterLinkWithHref, RouterLinkActive, Router } from '@angular/router';
+import { RouterOutlet, RouterLinkWithHref, RouterLinkActive, Router, NavigationEnd, NavigationStart, RoutesRecognized } from '@angular/router';
 import { MatAnchor, MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { BreakpointObserver } from '@angular/cdk/layout';

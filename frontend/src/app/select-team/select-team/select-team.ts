@@ -18,11 +18,12 @@ export class SelectTeam {
 	private readonly matSnackBar = inject(MatSnackBar);
 	private readonly router = inject(Router);
 
-	protected readonly selectedCharacters = this.userDataService.userData!.activeTeam!.map(
-		(charType) => this.userDataService.userDataSignal()!.characters.find((char) => char.characterType === charType)!
-	);
+	protected readonly selectedCharacters =
+		this.userDataService.userData!.activeTeam?.map(
+			(charType) => this.userDataService.userDataSignal()!.characters.find((char) => char.characterType === charType)!
+		) ?? [];
 	protected readonly availableCharacters = this.userDataService.userData!.characters.filter(
-		(char) => !this.userDataService.userData!.activeTeam!.includes(char.characterType)
+		(char) => !this.userDataService.userData!.activeTeam?.includes(char.characterType)
 	);
 
 	protected drop(event: CdkDragDrop<CharacterData[]>) {

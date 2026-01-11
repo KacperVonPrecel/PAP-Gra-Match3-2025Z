@@ -203,7 +203,7 @@ export class UserDataService {
 			}),
 			tap((result) => {
 				const userData = this.userData;
-				const newCharactersList = userData.characters.filter((c) => c.characterType !== characterType);
+				const newCharactersList = userData.characters.slice().filter((c) => c.characterType !== characterType);
 				newCharactersList.push(result.characterData);
 
 				this._userData.next({
