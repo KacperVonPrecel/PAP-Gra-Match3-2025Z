@@ -6,7 +6,7 @@
 			@for (row of boardToRender; track $index; let row_idx = $index) {
 				<div class="row">
 					@for (crystal of row; track $index; let column_idx = $index) {
-						<div class="cell-background" [class.transparent]="crystal.crystalType === CrystalType.DISABLED">
+						<div class="cell-background" [class.transparent]="crystal.blockType === BlockType.DISABLED">
 							<div
 								class="cell"
 								[class]="animationState.getAnimationClasses(row_idx, column_idx)"
@@ -15,8 +15,8 @@
 								(pointermove)="onPointerMove($event)"
 								(pointerup)="onPointerUp()"
 							>
-								@if (crystal.crystalType != CrystalType.EMPTY && crystal.crystalType != CrystalType.DISABLED) {
-									<img [src]="getCrystalImage(crystal)" />
+								@if (crystal.blockType != BlockType.EMPTY && crystal.blockType != BlockType.DISABLED) {
+									<img [src]="getBlockImage(crystal)" />
 								}
 							</div>
 						</div>

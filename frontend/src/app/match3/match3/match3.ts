@@ -1,5 +1,5 @@
 import { Component, signal } from '@angular/core';
-import { Board, Match3Service, MoveRequest } from '../match3-service';
+import { Match3Service, MoveRequest } from '../match3-service';
 import { BoardState, GameState } from '../game-state';
 import { GameBoard } from './board/game-board';
 
@@ -10,7 +10,7 @@ import { GameBoard } from './board/game-board';
 	styleUrl: './match3.scss'
 })
 export class Match3 {
-	private gameId?: number;
+	private gameId?: number = 0;
 	private gameState?: GameState; //nullable because if we dont connect, no state
 	public moveValid = signal<boolean | null>(null);
 	playerId = 0;
@@ -18,15 +18,17 @@ export class Match3 {
 	constructor(private socket: Match3Service) {}
 
 	ngOnInit(): void {
-		//here getting starting game state
-		this.gameState = this.socket.getCurrentGameState();
+		this.socket.client.onConnect = () => {
+			console.log('STOMP connected');
+			this.connect(0);
+		};
 	}
 
 	get isItMyTurn(): boolean {
 		if (!this.gameState) {
 			return false;
 		}
-		if (this.gameState!.currentTurnId == this.playerId) {
+		if (this.gameState!.currentPlayerId == this.playerId) {
 			return true;
 		}
 		return false;
@@ -43,10 +45,16 @@ export class Match3 {
 		console.log(gameId);
 		this.gameId = gameId;
 		this.socket.subscribeToGame(this.gameId);
-		this.socket.board$.subscribe((board) => {
-			//this.updateBoard(board);
+		this.socket.gameState$.subscribe((gameState) => {
+			console.log(gameState);
+			if (gameState) {
+				this.moveValid.set(true);
+				this.gameState = gameState;
+			} else {
+				this.moveValid.set(false);
+			}
 		});
-		//this.fetchBoard();
+		this.fetchState();
 	}
 
 	disconnect(): void {
@@ -56,14 +64,14 @@ export class Match3 {
 		}
 	}
 
+	fetchState(): void {
+		if (this.gameId != undefined) this.socket?.fetchState(this.gameId);
+	}
+
 	makeMove(move: MoveRequest): void {
-		this.socket.sendMoveRequest(move).subscribe((newState) => {
-			if (newState === null) {
-				this.moveValid.set(false);
-				return;
-			}
-			this.moveValid.set(true);
-			this.gameState = newState;
-		});
+		console.log('Make move in match3 executed');
+		if (this.gameId != undefined) {
+			this.socket.makeMove(this.gameId, move);
+		}
 	}
 }

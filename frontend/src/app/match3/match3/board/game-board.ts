@@ -1,6 +1,6 @@
 import { Component, effect, HostBinding, input, output } from '@angular/core';
-import { BoardState, Crystal, NewBlock, Position } from '../../game-state';
-import { CrystalType, getCrystalFileName } from '../../match3-service';
+import { BoardState, Match3Block, NewBlock, Position } from '../../game-state';
+import { BlockType, getBlockFileName } from '../../match3-service';
 import { MoveRequest } from '../../match3-service';
 import { AnimationState } from './animation-state';
 import { NgStyle } from '@angular/common';
@@ -12,7 +12,7 @@ import { NgStyle } from '@angular/common';
 	styleUrl: './game-board.scss'
 })
 export class GameBoard {
-	CrystalType = CrystalType; // to expose the enum to the template
+	BlockType = BlockType; // to expose the enum to the template
 	/*current board state - includes information about animation played from the previous state, to get to the current one*/
 	state = input.required<BoardState | null>();
 	/*did the server give a valid response to the player's attempted move*/
@@ -33,11 +33,11 @@ export class GameBoard {
 	/*object managing maps of animation classes for animations that are currently happening*/
 	animationState: AnimationState = new AnimationState();
 	/*board before a move was executes - stored for the purpose of animating*/
-	private _oldBoard: Crystal[][] | null = null;
+	private _oldBoard: Match3Block[][] | null = null;
 	private _animationsPlaying: boolean = false;
 	/*value determining whether the swap for the move in animation step was already animated*/
 	private swapWasAnimated: boolean = false;
-	private crystalImages = new Map<CrystalType, string>();
+	private crystalImages = new Map<BlockType, string>();
 	/*value to ensure all images of crystals are loaded before displaying the board - should be equal to the number of types in CrystalType*/
 	private imagesLoadedCount: number = 0;
 
@@ -90,7 +90,7 @@ export class GameBoard {
 		return this._animationsPlaying;
 	}
 
-	get oldBoard(): Crystal[][] {
+	get oldBoard(): Match3Block[][] {
 		if (this._oldBoard) {
 			return this._oldBoard;
 		}
@@ -100,8 +100,8 @@ export class GameBoard {
 
 	loadCrystalAssets(): void {
 		//loop over all types in crystal type
-		for (const type of Object.values(CrystalType)) {
-			const url = getCrystalFileName(type);
+		for (const type of Object.values(BlockType)) {
+			const url = getBlockFileName(type);
 			const img = new Image();
 			img.src = url;
 			img.onload = () => {
@@ -114,12 +114,12 @@ export class GameBoard {
 	ngOnInit() {
 		this.loadCrystalAssets();
 	}
-	getCrystalImage(crystal: Crystal): string | undefined {
-		return this.crystalImages.get(crystal.crystalType);
+	getBlockImage(crystal: Match3Block): string | undefined {
+		return this.crystalImages.get(crystal.blockType);
 	}
 
 	get assetsLoaded(): boolean {
-		return this.imagesLoadedCount == Object.values(CrystalType).length;
+		return this.imagesLoadedCount == Object.values(BlockType).length;
 	}
 
 	onPointerDown(event: PointerEvent, row_idx: number, column_idx: number): void {
@@ -216,17 +216,12 @@ export class GameBoard {
 			return;
 		}
 		const targetCrystal = this.state()!.board[target.row][target.column];
-		const targetType = targetCrystal.crystalType;
+		const targetType = targetCrystal.blockType;
 
 		const sourceCrystal = this.state()!.board[this.dragStart!.row][this.dragStart!.column];
-		const sourceType = sourceCrystal.crystalType;
+		const sourceType = sourceCrystal.blockType;
 
-		if (
-			targetType == CrystalType.EMPTY ||
-			targetType == CrystalType.DISABLED ||
-			sourceType == CrystalType.EMPTY ||
-			sourceType == CrystalType.DISABLED
-		) {
+		if (targetType == BlockType.EMPTY || targetType == BlockType.DISABLED || sourceType == BlockType.EMPTY || sourceType == BlockType.DISABLED) {
 			return;
 		}
 
@@ -256,6 +251,7 @@ export class GameBoard {
 	}
 
 	emitSwapAttempt(move: MoveRequest): void {
+		console.log('Swap emitted');
 		this.swapAttempt.emit(move);
 	}
 
@@ -309,7 +305,7 @@ export class GameBoard {
 				//after animation finished remove animation class and modify the display board
 				this.animationState.clearDestroy();
 				for (const destroyedBlock of step.destroyed) {
-					this._oldBoard![destroyedBlock.row][destroyedBlock.column] = { crystalType: CrystalType.EMPTY };
+					this._oldBoard![destroyedBlock.row][destroyedBlock.column] = { blockType: BlockType.EMPTY };
 				}
 
 				let biggestDistance = 0;
@@ -344,7 +340,7 @@ export class GameBoard {
 						if (distance > biggestDistance) {
 							biggestDistance = distance;
 						}
-						this._oldBoard![block.position.row][block.position.column] = block.crystal;
+						this._oldBoard![block.position.row][block.position.column] = block.block;
 						this.animationState.addNew(block.position.row, block.position.column, offset);
 					}
 				}
@@ -353,7 +349,7 @@ export class GameBoard {
 				//after animation finished remove animation class and modify the display board
 				this.animationState.clearFallingAndNew();
 				for (const newBlock of step.newBlocks) {
-					this._oldBoard![newBlock.position.row][newBlock.position.column] = newBlock.crystal;
+					this._oldBoard![newBlock.position.row][newBlock.position.column] = newBlock.block;
 				}
 			}
 		}
@@ -380,7 +376,7 @@ export class GameBoard {
 
 		const columnHeight = this.oldBoard.length;
 		for (const [col, falls] of fallsByColumn.entries()) {
-			const newCol: Crystal[] = new Array(columnHeight);
+			const newCol: Match3Block[] = new Array(columnHeight);
 			//map of target row-> source row for this column
 			const fallMap = new Map<number, number>();
 			//set of source rows for this column
@@ -395,7 +391,7 @@ export class GameBoard {
 				if (fallMap.has(idx)) {
 					newCol[idx] = this.oldBoard[fallMap.get(idx)!][col]; //replacing with source crystal
 				} else if (sources.has(idx)) {
-					newCol[idx] = { crystalType: CrystalType.EMPTY };
+					newCol[idx] = { blockType: BlockType.EMPTY };
 				} else {
 					newCol[idx] = this.oldBoard[idx][col];
 				}

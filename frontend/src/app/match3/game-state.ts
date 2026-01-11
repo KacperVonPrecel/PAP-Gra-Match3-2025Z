@@ -1,25 +1,15 @@
-import { CrystalType, MoveRequest } from './match3-service';
+import { BlockType, MoveRequest } from './match3-service';
 export interface GameState {
-	currentPlayer: Player;
 	boardState: BoardState;
-	currentTurnId: number;
+	currentPlayerId: number;
 }
 
-export interface Crystal {
-	crystalType: CrystalType;
-}
-
-export enum Player {
-	ME = 'ME',
-	OPPONENT = 'OPPONENT'
-}
-
-export interface PlayerMove {
-	player: Player;
-	move: MoveRequest;
+export interface Match3Block {
+	blockType: BlockType;
 }
 
 export interface AnimationStep {
+	board: Match3Block[][];
 	swapped: MoveRequest | null; //null when no swap in step
 	destroyed: Position[]; //empty array will be passed to these fields if there is nothing destroyed
 	falling: MoveRequest[];
@@ -34,12 +24,11 @@ export interface Position {
 
 export interface NewBlock {
 	position: Position;
-	crystal: Crystal;
+	block: Match3Block;
 }
 
 export interface BoardState {
-	board: Crystal[][];
+	board: Match3Block[][];
 	allowedMoves: MoveRequest[];
 	animationSteps: AnimationStep[];
-	lastMove?: PlayerMove;
 }

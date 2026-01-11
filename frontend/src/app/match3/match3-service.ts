@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Client, IMessage, StompSubscription } from '@stomp/stompjs';
 import { Observable, of, Subject } from 'rxjs';
 import SockJS from 'sockjs-client';
-import { GameState, Player, Crystal, Position } from './game-state';
+import { GameState, Position } from './game-state';
 
 @Injectable({
 	providedIn: 'root'
@@ -11,7 +11,7 @@ export class Match3Service {
 	public client: Client;
 	private subscription?: StompSubscription;
 
-	public board$ = new Subject<Board>();
+	public gameState$ = new Subject<GameState>();
 
 	constructor() {
 		this.client = new Client({
@@ -31,8 +31,8 @@ export class Match3Service {
 		}
 
 		this.subscription = this.client.subscribe(`/topic/board/${gameId}/state`, (msg: IMessage) => {
-			const board: Board = { board: JSON.parse(msg.body) };
-			this.board$.next(board);
+			const gamestate: GameState = JSON.parse(msg.body);
+			this.gameState$.next(gamestate);
 		});
 
 		console.log(`Subscribed to game with id: ${gameId}`);
@@ -45,256 +45,25 @@ export class Match3Service {
 		console.log('Unsubscribed from game');
 	}
 
-	updateBoard(gameId: number): void {
-		this.client.publish({ destination: `/app/board/${gameId}/state`, body: '{}' });
-		console.log('board updated');
+	fetchState(gameId: number): void {
+		this.client.publish({ destination: `/app/board/${gameId}/getState`, body: '{}' });
 	}
 
-	fillBoard(gameId: number): void {
-		this.client.publish({ destination: `/app/board/${gameId}/fillBoard`, body: '{}' });
-	}
-
-	dropFloatingBlocks(gameId: number): void {
-		this.client.publish({ destination: `/app/board/${gameId}/dropFloatingBlocks`, body: '{}' });
-	}
-
-	// TODO: Handle swap success status
-	swapBlocks(gameId: number, moveRequest: MoveRequest): void {
+	makeMove(gameId: number, moveRequest: MoveRequest): void {
+		console.log('make move in match3 service');
 		this.client.publish({
-			destination: `/app/board/${gameId}/swap`,
+			destination: `/app/board/${gameId}/playTurn`,
 			body: JSON.stringify(moveRequest)
 		});
 	}
-
-	destroyMatchedBlocks(gameId: number): void {
-		this.client.publish({ destination: `/app/board/${gameId}/destroyMatchedBlocks`, body: `{}` });
-	}
-
-	sendMoveRequest(move: MoveRequest): Observable<GameState | null> {
-		const mockBoard: Crystal[][] = [
-			[
-				{ crystalType: CrystalType.RUBY },
-				{ crystalType: CrystalType.DIAMOND },
-				{ crystalType: CrystalType.DIAMOND },
-				{ crystalType: CrystalType.EMERALD },
-				{ crystalType: CrystalType.RUBY },
-				{ crystalType: CrystalType.HEMATITE },
-				{ crystalType: CrystalType.AMETHYST },
-				{ crystalType: CrystalType.CITRINE }
-			],
-			[
-				{ crystalType: CrystalType.RUBY },
-				{ crystalType: CrystalType.DIAMOND },
-				{ crystalType: CrystalType.CITRINE },
-				{ crystalType: CrystalType.AMETHYST },
-				{ crystalType: CrystalType.EMERALD },
-				{ crystalType: CrystalType.RUBY },
-				{ crystalType: CrystalType.HEMATITE },
-				{ crystalType: CrystalType.DIAMOND }
-			],
-			[
-				{ crystalType: CrystalType.EMERALD },
-				{ crystalType: CrystalType.RUBY },
-				{ crystalType: CrystalType.AMETHYST },
-				{ crystalType: CrystalType.CITRINE },
-				{ crystalType: CrystalType.DIAMOND },
-				{ crystalType: CrystalType.EMERALD },
-				{ crystalType: CrystalType.CITRINE },
-				{ crystalType: CrystalType.HEMATITE }
-			],
-			[
-				{ crystalType: CrystalType.HEMATITE },
-				{ crystalType: CrystalType.EMERALD },
-				{ crystalType: CrystalType.RUBY },
-				{ crystalType: CrystalType.DIAMOND },
-				{ crystalType: CrystalType.AMETHYST },
-				{ crystalType: CrystalType.DIAMOND },
-				{ crystalType: CrystalType.RUBY },
-				{ crystalType: CrystalType.AMETHYST }
-			],
-			[
-				{ crystalType: CrystalType.CITRINE },
-				{ crystalType: CrystalType.AMETHYST },
-				{ crystalType: CrystalType.EMERALD },
-				{ crystalType: CrystalType.RUBY },
-				{ crystalType: CrystalType.HEMATITE },
-				{ crystalType: CrystalType.DIAMOND },
-				{ crystalType: CrystalType.EMERALD },
-				{ crystalType: CrystalType.CITRINE }
-			],
-			[
-				{ crystalType: CrystalType.DIAMOND },
-				{ crystalType: CrystalType.HEMATITE },
-				{ crystalType: CrystalType.CITRINE },
-				{ crystalType: CrystalType.EMERALD },
-				{ crystalType: CrystalType.RUBY },
-				{ crystalType: CrystalType.AMETHYST },
-				{ crystalType: CrystalType.DIAMOND },
-				{ crystalType: CrystalType.RUBY }
-			],
-			[
-				{ crystalType: CrystalType.AMETHYST },
-				{ crystalType: CrystalType.CITRINE },
-				{ crystalType: CrystalType.RUBY },
-				{ crystalType: CrystalType.HEMATITE },
-				{ crystalType: CrystalType.EMERALD },
-				{ crystalType: CrystalType.CITRINE },
-				{ crystalType: CrystalType.AMETHYST },
-				{ crystalType: CrystalType.DIAMOND }
-			],
-			[
-				{ crystalType: CrystalType.RUBY },
-				{ crystalType: CrystalType.EMERALD },
-				{ crystalType: CrystalType.DIAMOND },
-				{ crystalType: CrystalType.CITRINE },
-				{ crystalType: CrystalType.AMETHYST },
-				{ crystalType: CrystalType.HEMATITE },
-				{ crystalType: CrystalType.RUBY },
-				{ crystalType: CrystalType.EMERALD }
-			]
-		];
-		const mockState: GameState = {
-			currentTurnId: 0,
-			currentPlayer: Player.ME,
-			boardState: {
-				board: mockBoard,
-				allowedMoves: [],
-				animationSteps: [
-					{
-						destroyed: [
-							{ row: 4, column: 0 },
-							{ row: 4, column: 1 },
-							{ row: 4, column: 2 }
-						],
-						swapped: null,
-						falling: [{ source: { row: 0, column: 6 }, target: { row: 3, column: 6 } }],
-						newBlocks: [
-							{ position: { row: 0, column: 6 }, crystal: { crystalType: CrystalType.AMETHYST } },
-							{ position: { row: 1, column: 6 }, crystal: { crystalType: CrystalType.HEMATITE } },
-							{ position: { row: 2, column: 6 }, crystal: { crystalType: CrystalType.CITRINE } }
-						],
-						resetBoard: false
-					}
-				]
-			}
-		};
-		return of(mockState).pipe();
-	}
-
-	getCurrentGameState(): GameState {
-		const mockBoard: Crystal[][] = [
-			[
-				{ crystalType: CrystalType.AMETHYST },
-				{ crystalType: CrystalType.CITRINE },
-				{ crystalType: CrystalType.DIAMOND },
-				{ crystalType: CrystalType.EMERALD },
-				{ crystalType: CrystalType.RUBY },
-				{ crystalType: CrystalType.HEMATITE },
-				{ crystalType: CrystalType.RUBY },
-				{ crystalType: CrystalType.DISABLED }
-			],
-			[
-				{ crystalType: CrystalType.RUBY },
-				{ crystalType: CrystalType.DIAMOND },
-				{ crystalType: CrystalType.CITRINE },
-				{ crystalType: CrystalType.AMETHYST },
-				{ crystalType: CrystalType.EMERALD },
-				{ crystalType: CrystalType.RUBY },
-				{ crystalType: CrystalType.EMPTY },
-				{ crystalType: CrystalType.DIAMOND }
-			],
-			[
-				{ crystalType: CrystalType.EMERALD },
-				{ crystalType: CrystalType.RUBY },
-				{ crystalType: CrystalType.AMETHYST },
-				{ crystalType: CrystalType.CITRINE },
-				{ crystalType: CrystalType.DIAMOND },
-				{ crystalType: CrystalType.EMERALD },
-				{ crystalType: CrystalType.EMPTY },
-				{ crystalType: CrystalType.HEMATITE }
-			],
-			[
-				{ crystalType: CrystalType.HEMATITE },
-				{ crystalType: CrystalType.EMERALD },
-				{ crystalType: CrystalType.RUBY },
-				{ crystalType: CrystalType.DIAMOND },
-				{ crystalType: CrystalType.AMETHYST },
-				{ crystalType: CrystalType.CITRINE },
-				{ crystalType: CrystalType.EMPTY },
-				{ crystalType: CrystalType.AMETHYST }
-			],
-			[
-				{ crystalType: CrystalType.AMETHYST },
-				{ crystalType: CrystalType.AMETHYST },
-				{ crystalType: CrystalType.EMERALD },
-				{ crystalType: CrystalType.AMETHYST },
-				{ crystalType: CrystalType.HEMATITE },
-				{ crystalType: CrystalType.DIAMOND },
-				{ crystalType: CrystalType.EMERALD },
-				{ crystalType: CrystalType.CITRINE }
-			],
-			[
-				{ crystalType: CrystalType.DIAMOND },
-				{ crystalType: CrystalType.HEMATITE },
-				{ crystalType: CrystalType.CITRINE },
-				{ crystalType: CrystalType.EMERALD },
-				{ crystalType: CrystalType.RUBY },
-				{ crystalType: CrystalType.AMETHYST },
-				{ crystalType: CrystalType.DIAMOND },
-				{ crystalType: CrystalType.RUBY }
-			],
-			[
-				{ crystalType: CrystalType.AMETHYST },
-				{ crystalType: CrystalType.CITRINE },
-				{ crystalType: CrystalType.RUBY },
-				{ crystalType: CrystalType.HEMATITE },
-				{ crystalType: CrystalType.EMERALD },
-				{ crystalType: CrystalType.CITRINE },
-				{ crystalType: CrystalType.AMETHYST },
-				{ crystalType: CrystalType.DIAMOND }
-			],
-			[
-				{ crystalType: CrystalType.RUBY },
-				{ crystalType: CrystalType.EMERALD },
-				{ crystalType: CrystalType.DIAMOND },
-				{ crystalType: CrystalType.CITRINE },
-				{ crystalType: CrystalType.AMETHYST },
-				{ crystalType: CrystalType.HEMATITE },
-				{ crystalType: CrystalType.RUBY },
-				{ crystalType: CrystalType.EMERALD }
-			]
-		];
-
-		const allowedMoves: MoveRequest[] = [
-			{ source: { row: 0, column: 0 }, target: { row: 0, column: 1 } },
-			{ source: { row: 5, column: 1 }, target: { row: 6, column: 1 } },
-			{ source: { row: 4, column: 2 }, target: { row: 4, column: 3 } }
-		];
-		return {
-			currentTurnId: 0,
-			currentPlayer: Player.ME,
-			boardState: {
-				board: mockBoard,
-				allowedMoves: allowedMoves,
-				animationSteps: []
-			}
-		};
-	}
-}
-
-export interface Block {
-	blockType: number;
-}
-
-export interface Board {
-	board: Block[][];
 }
 
 export interface MoveRequest {
 	source: Position;
 	target: Position;
 }
-export enum CrystalType {
+
+export enum BlockType {
 	AMETHYST = 'AMETHYST',
 	CITRINE = 'CITRINE',
 	DIAMOND = 'DIAMOND',
@@ -305,17 +74,17 @@ export enum CrystalType {
 	EMPTY = 'EMPTY'
 }
 
-export function getCrystalFileName(CrystalType: CrystalType): string {
-	return 'assets/crystals/' + crystalFileMap[CrystalType];
+export function getBlockFileName(blockType: BlockType): string {
+	return 'assets/crystals/' + blockFileMap[blockType];
 }
 
-const crystalFileMap: { [key in CrystalType]: string } = {
-	[CrystalType.AMETHYST]: 'amethyst.svg',
-	[CrystalType.CITRINE]: 'citrine.svg',
-	[CrystalType.DIAMOND]: 'diamond.svg',
-	[CrystalType.EMERALD]: 'emerald.svg',
-	[CrystalType.HEMATITE]: 'hematite.svg',
-	[CrystalType.RUBY]: 'ruby.svg',
-	[CrystalType.DISABLED]: 'ruby.svg',
-	[CrystalType.EMPTY]: 'ruby.svg'
+const blockFileMap: { [key in BlockType]: string } = {
+	[BlockType.AMETHYST]: 'amethyst.svg',
+	[BlockType.CITRINE]: 'citrine.svg',
+	[BlockType.DIAMOND]: 'diamond.svg',
+	[BlockType.EMERALD]: 'emerald.svg',
+	[BlockType.HEMATITE]: 'hematite.svg',
+	[BlockType.RUBY]: 'ruby.svg',
+	[BlockType.DISABLED]: 'ruby.svg',
+	[BlockType.EMPTY]: 'ruby.svg'
 };
