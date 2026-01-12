@@ -2,10 +2,11 @@ import { Component, signal } from '@angular/core';
 import { Match3Service, MoveRequest } from '../match3-service';
 import { BoardState, GameState } from '../game-state';
 import { GameBoard } from './board/game-board';
+import { CharactersDisplay } from './characters-display/characters-display';
 
 @Component({
 	selector: 'app-match3',
-	imports: [GameBoard],
+	imports: [GameBoard, CharactersDisplay],
 	templateUrl: './match3.html',
 	styleUrl: './match3.scss'
 })

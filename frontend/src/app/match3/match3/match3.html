@@ -1,5 +1,7 @@
 <div id="game-container">
-	<div id="characters-container"></div>
+	<div id="characters-container">
+		<app-characters-display></app-characters-display>
+	</div>
 	<div id="game-container">
 		@if (boardState) {
 			<app-board [state]="boardState" [moveValid]="moveValid" [myTurn]="isItMyTurn" (swapAttempt)="makeMove($event)"></app-board>

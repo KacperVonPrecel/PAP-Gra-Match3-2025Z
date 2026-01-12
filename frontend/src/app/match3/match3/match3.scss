@@ -1,5 +1,6 @@
 #characters-container {
-	padding: 5rem;
+	display: flex;
+	flex-direction: row;
 }
 #game-container {
 	display: flex;
