@@ -274,7 +274,8 @@ export enum CharacterType {
 	SACRED_CAT = 'SACRED_CAT',
 	EMERALD_CORE_KNIGHT = 'EMERALD_CORE_KNIGHT',
 	RUBY_HORNED_DAME = 'RUBY_HORNED_DAME',
-	EXPERIENCED_SWORDMAN = 'EXPERIENCED_SWORDMAN'
+	EXPERIENCED_SWORDMAN = 'EXPERIENCED_SWORDMAN',
+	HONEY_TRIGGER = 'HONEY_TRIGGER'
 }
 
 export function getCharacterFileName(characterType: CharacterType): string {
@@ -287,7 +288,8 @@ const characterFileMap: { [key in CharacterType]: string } = {
 	[CharacterType.SACRED_CAT]: 'sacred_cat.svg',
 	[CharacterType.EMERALD_CORE_KNIGHT]: 'emerald_core_knight.svg',
 	[CharacterType.RUBY_HORNED_DAME]: 'ruby_horned_dame.svg',
-	[CharacterType.EXPERIENCED_SWORDMAN]: 'experienced_swordman.svg'
+	[CharacterType.EXPERIENCED_SWORDMAN]: 'experienced_swordman.svg',
+	[CharacterType.HONEY_TRIGGER]: 'honey_trigger'
 };
 
 export enum DrawType {
