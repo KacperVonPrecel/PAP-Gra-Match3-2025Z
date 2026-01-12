@@ -308,63 +308,16 @@ export class GameBoard {
 				this.animationState.clearSwap();
 				this.swapWasAnimated = false; //for next time - saying the swap wasnt animated yet
 
-				for (const destroyedBlock of step.destroyed) {
-					this.animationState.addDestroyed(destroyedBlock.row, destroyedBlock.column, `destroying`);
-				}
-				if (step.destroyed.length > 0) {
-					await this.wait(GameBoard.DESTROY_DURATION);
-				}
-				//after animation finished remove animation class and modify the display board
-				this.animationState.clearDestroy();
-				for (const destroyedBlock of step.destroyed) {
-					this._oldBoard![destroyedBlock.row][destroyedBlock.column] = { blockType: BlockType.EMPTY };
-				}
+				await this.destroyAnimation(step.destroyed);
+				await this.fallAnimation(step.falling);
+				await this.newBlocksAnimation(step.newBlocks);
 
-				let biggestDistance = 0;
-				for (const falling of step.falling) {
-					let distance = falling.target.row - falling.source.row;
-					if (distance > biggestDistance) {
-						biggestDistance = distance;
-					}
-					this.animationState.addFalling(falling.source.row, falling.source.column, falling.target.row);
-				}
-				await this.wait(biggestDistance * GameBoard.FALLING_ONE_BLOCK_DURATION);
-				//after animation finished remove animation class and modify the display board
-				this.animationState.clearFallingAndNew();
-				this.rebuildCollumnsAfterFall(step.falling);
-
-				//grouping new blocks by column
-				const newByColumn = new Map<number, Array<NewBlock>>(); //map->column, new block
-				for (const newBlock of step.newBlocks) {
-					if (!newByColumn.has(newBlock.position.column)) {
-						newByColumn.set(newBlock.position.column, []);
-					}
-					newByColumn.get(newBlock.position.column)!.push(newBlock);
-				}
-				//going through new blocks for each column
-				biggestDistance = 0;
-				for (const [col, blocks] of newByColumn.entries()) {
-					const maxRow = Math.max(...blocks.map((block) => block.position.row));
-					for (const block of blocks) {
-						const offset = -(maxRow + 1);
-						const distance = maxRow + 1;
-						if (distance > biggestDistance) {
-							biggestDistance = distance;
-						}
-						this._oldBoard![block.position.row][block.position.column] = block.block;
-						this.animationState.addNew(block.position.row, block.position.column, offset);
-					}
-				}
-
-				await this.wait(biggestDistance * GameBoard.FALLING_ONE_BLOCK_DURATION);
-				//after animation finished remove animation class and modify the display board
-				this.animationState.clearFallingAndNew();
-				for (const newBlock of step.newBlocks) {
-					this._oldBoard![newBlock.position.row][newBlock.position.column] = newBlock.block;
+				const board = step.board;
+				if (step.resetBoard) {
+					await this.resetBoardAnimation(board);
 				}
 			}
 		}
-
 		//play swap if im not the player who swapped
 		//destroyed animation
 		//falling animation
@@ -372,6 +325,79 @@ export class GameBoard {
 		//new board animation if needed
 		//commit all changes (including swap) to display board and clear classes
 		return;
+	}
+
+	async resetBoardAnimation(board: Match3Block[][]) {
+		let destroyed: Position[] = [];
+		let newBlocks: NewBlock[] = [];
+		for (let y = 0; y < board!.length; y++) {
+			for (let x = 0; x < board![0].length; x++) {
+				destroyed.push({ row: y, column: x });
+				newBlocks.push({ position: { row: y, column: x }, block: board![y][x] });
+			}
+		}
+		await this.destroyAnimation(destroyed);
+		await this.newBlocksAnimation(newBlocks);
+	}
+
+	async newBlocksAnimation(newBlocks: NewBlock[]) {
+		//grouping new blocks by column
+		const newByColumn = new Map<number, Array<NewBlock>>(); //map->column, new block
+		for (const newBlock of newBlocks) {
+			if (!newByColumn.has(newBlock.position.column)) {
+				newByColumn.set(newBlock.position.column, []);
+			}
+			newByColumn.get(newBlock.position.column)!.push(newBlock);
+		}
+		//going through new blocks for each column
+		let biggestDistance = 0;
+		for (const [col, blocks] of newByColumn.entries()) {
+			const maxRow = Math.max(...blocks.map((block) => block.position.row));
+			for (const block of blocks) {
+				const offset = -(maxRow + 1);
+				const distance = maxRow + 1;
+				if (distance > biggestDistance) {
+					biggestDistance = distance;
+				}
+				this._oldBoard![block.position.row][block.position.column] = block.block;
+				this.animationState.addNew(block.position.row, block.position.column, offset);
+			}
+		}
+		await this.wait(biggestDistance * GameBoard.FALLING_ONE_BLOCK_DURATION);
+		//after animation finished remove animation class and modify the display board
+		this.animationState.clearFallingAndNew();
+		for (const newBlock of newBlocks) {
+			this._oldBoard![newBlock.position.row][newBlock.position.column] = newBlock.block;
+		}
+	}
+
+	async fallAnimation(fallingBlocks: MoveRequest[]) {
+		let biggestDistance = 0;
+		for (const falling of fallingBlocks) {
+			let distance = falling.target.row - falling.source.row;
+			if (distance > biggestDistance) {
+				biggestDistance = distance;
+			}
+			this.animationState.addFalling(falling.source.row, falling.source.column, falling.target.row);
+		}
+		await this.wait(biggestDistance * GameBoard.FALLING_ONE_BLOCK_DURATION);
+		//after animation finished remove animation class and modify the display board
+		this.animationState.clearFallingAndNew();
+		this.rebuildCollumnsAfterFall(fallingBlocks);
+	}
+
+	async destroyAnimation(destroyed: Position[]) {
+		for (const destroyedBlock of destroyed) {
+			this.animationState.addDestroyed(destroyedBlock.row, destroyedBlock.column, `destroying`);
+		}
+		if (destroyed.length > 0) {
+			await this.wait(GameBoard.DESTROY_DURATION);
+		}
+		//after animation finished remove animation class and modify the display board
+		this.animationState.clearDestroy();
+		for (const destroyedBlock of destroyed) {
+			this._oldBoard![destroyedBlock.row][destroyedBlock.column] = { blockType: BlockType.EMPTY };
+		}
 	}
 
 	rebuildCollumnsAfterFall(falling: MoveRequest[]) {
