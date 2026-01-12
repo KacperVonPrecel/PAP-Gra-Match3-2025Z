@@ -10,8 +10,17 @@ import { Draw } from './home/draw/draw';
 import { DrawResultControllerPage } from './draw-result/draw-result-page/draw-result-controller-page';
 import { HistoryComponent } from './history/history-component/history-component';
 import { Match3 } from './match3/match3/match3';
+import { CharactersList } from './user-chararacters/characters-list/characters-list';
+import { Characters } from './user-chararacters/characters/characters';
+import { Ranking } from './ranking/ranking/ranking';
+import { SelectTeam } from './select-team/select-team/select-team';
 
 export const routes: Routes = [
+	{
+		path: '',
+		pathMatch: 'full',
+		redirectTo: 'auth/login'
+	},
 	{
 		path: 'auth/register',
 		component: Register,
@@ -45,9 +54,29 @@ export const routes: Routes = [
 						title: 'Draw'
 					},
 					{
+						path: 'user-history/:id',
+						component: HistoryComponent,
+						title: 'History'
+					},
+					{
 						path: 'history',
 						component: HistoryComponent,
 						title: 'History'
+					},
+					{
+						path: 'characters',
+						component: Characters,
+						title: 'Characters'
+					},
+					{
+						path: 'ranking',
+						component: Ranking,
+						title: 'Ranking'
+					},
+					{
+						path: 'select-team',
+						component: SelectTeam,
+						title: 'Select Team'
 					}
 				]
 			},
@@ -59,9 +88,9 @@ export const routes: Routes = [
 			}
 		]
 	},
-    {
-        path: 'match3',
-        component: Match3,
-        title: 'Match3'
-    }
+	{
+		path: 'match3',
+		component: Match3,
+		title: 'Match3'
+	}
 ];

@@ -9,9 +9,20 @@ import { CharacterType } from '../user-data/user-data-service';
 export class HistoryService {
 	constructor(private http: HttpClient) {}
 
-	loadHistory(latestRecordId?: bigint): Observable<HistoryMatchesData> {
+	userStats(userId?: number): Observable<UserStats> {
+		let params = new HttpParams();
+		if (userId) params = params.set('userId', userId.toString());
+		return this.http.get('api/user/user_stats', { params: params, withCredentials: true }).pipe(
+			map((result) => {
+				//XXX validate result structure
+				return result as UserStats;
+			})
+		);
+	}
+
+	loadHistory(userId?: number, latestRecordId?: bigint): Observable<HistoryMatchesData> {
 		let params = new HttpParams().set('size', 20);
-		console.log(latestRecordId?.toString());
+		if (userId) params = params.set('userId', userId.toString());
 		if (latestRecordId) params = params.set('latestRecordId', latestRecordId.toString());
 
 		return this.http.get('api/match_history/load', { params: params, withCredentials: true }).pipe(
@@ -21,6 +32,13 @@ export class HistoryService {
 			})
 		);
 	}
+}
+
+export interface UserStats {
+	username: string;
+	elo: number;
+	wins: number;
+	loses: number;
 }
 
 export interface HistoryMatchesData {

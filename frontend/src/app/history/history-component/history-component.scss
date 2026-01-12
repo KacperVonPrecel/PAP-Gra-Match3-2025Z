@@ -1,13 +1,56 @@
-#content {
-	//background-color: rgba(240, 226, 163, 0.2);
-	//border-radius: 40px;
+#main-contener {
 	width: 50%;
 	height: 100%;
 	max-height: 100%;
 	margin-left: auto;
 	margin-right: auto;
-	// display: flex;
-	// flex-direction: column;
+
+	background-color: rgba(240, 226, 163, 0.6);
+	padding: 1rem;
+
+	border-radius: 32px;
+
+	#user-stats {
+		display: flex;
+		gap: 2rem;
+		align-items: flex-end;
+
+		.user-info {
+			text-align: center;
+			border-radius: 16px;
+			background-color: rgba(240, 226, 163, 1);
+			font-weight: 1000;
+		}
+
+		#username-elo-container {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-end;
+			gap: 1rem;
+			#username {
+				min-width: 15rem;
+				padding: 1rem;
+				font-size: 2rem;
+			}
+
+			#elo-points {
+				min-width: 7rem;
+				padding: 0.5rem;
+			}
+		}
+
+		#wins {
+			min-width: 7rem;
+			padding: 0.5rem;
+			color: rgb(84, 66, 247);
+		}
+
+		#loses {
+			min-width: 7rem;
+			padding: 0.5rem;
+			color: red;
+		}
+	}
 
 	#history-list {
 		//background-color: white;
@@ -21,6 +64,16 @@
 		padding-inline-end: 0.3rem;
 
 		.history-element {
+		}
+
+		#empty-history {
+			text-align: center;
+			margin-top: 2rem;
+			font-size: 1.5rem;
+			color: rgba(102, 78, 76, 1);
+			border-radius: 16px;
+			padding: 2rem;
+			background-color: rgba(240, 226, 163, 0.9);
 		}
 	}
 }

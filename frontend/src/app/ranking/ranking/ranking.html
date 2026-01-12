@@ -1,0 +1,14 @@
+<div id="main-contener">
+	<ul id="ranking-list" appScrollable (scrollState)="onScrollState($event)">
+		@for (item of rankingElements; track $index) {
+			<li>
+				<app-ranking-element
+					[place]="item.place"
+					[username]="item.rankingEntry.username"
+					[eloPoints]="item.rankingEntry.eloPoints"
+					(clicked)="handleClick(item.rankingEntry.userId)"
+				></app-ranking-element>
+			</li>
+		}
+	</ul>
+</div>

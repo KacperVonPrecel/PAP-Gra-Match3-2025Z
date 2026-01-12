@@ -1,10 +1,10 @@
 <div id="main">
 	<div id="utility-bar">
-		<button id="settings" matFab (click)="openSettings()">
-			<mat-icon>settings</mat-icon>
+		<button id="settings" matFab (click)="logout()">
+			<mat-icon style="transform: rotate(180deg)">logout</mat-icon>
 		</button>
 		<div id="data-contener">
-			<span class="label" id="rank" (click)="openRanking()" i18n>{{ rank }} rank</span>
+			<span class="label" id="rank" (click)="openRanking()" i18n>{{ rank() }} rank</span>
 			<span class="label" i18n>{{ (userData | async)!.currency }} money</span>
 		</div>
 	</div>
@@ -24,7 +24,7 @@
 				<span i18n>Home</span>
 			}
 		</button>
-		<button matFab [extended]="!smallScreen">
+		<button matFab [extended]="!smallScreen" [routerLinkActive]="['selected']" routerLink="/main/home/characters">
 			<mat-icon>face</mat-icon>
 			@if (!smallScreen) {
 				<span i18n>Characters</span>

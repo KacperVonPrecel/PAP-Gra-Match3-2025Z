@@ -80,4 +80,14 @@ public class UserCharacter
     {
         return copiesCount;
     }
+
+    public void setCopiesCount(int copiesCount)
+    {
+        this.copiesCount = copiesCount;
+    }
+
+    public void setLevel(int level)
+    {
+        this.level = level;
+    }
 }

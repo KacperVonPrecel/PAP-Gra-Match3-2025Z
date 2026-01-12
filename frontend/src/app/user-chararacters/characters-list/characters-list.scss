@@ -1,0 +1,12 @@
+#content {
+	display: grid;
+	place-items: center;
+	min-height: 100%;
+
+	#characters-list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 2rem;
+		justify-content: center;
+	}
+}

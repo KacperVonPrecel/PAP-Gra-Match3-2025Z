@@ -1,8 +1,9 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, Signal } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from '@angular/router';
 import { BehaviorSubject, catchError, delay, EMPTY, map, Observable, of, retry, shareReplay, Subscription, take, tap } from 'rxjs';
 import { UserDataLoadingPage } from './user-data-loading-page/user-data-loading-page';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
 	providedIn: 'root'
@@ -10,8 +11,12 @@ import { UserDataLoadingPage } from './user-data-loading-page/user-data-loading-
 export class UserDataService {
 	private readonly _userData = new BehaviorSubject<UserData | undefined>(undefined);
 	private _lodingUserDataSubscription: Subscription | undefined;
+	private readonly _userDataSignal = toSignal(this._userData);
 
-	constructor(private readonly http: HttpClient) {}
+	constructor(
+		private readonly http: HttpClient,
+		private readonly router: Router
+	) {}
 
 	get observableUserDataLoaded(): Observable<boolean> {
 		return this._userData.asObservable().pipe(map((data) => data !== undefined));
@@ -44,6 +49,10 @@ export class UserDataService {
 		const userData = this._userData.value;
 		if (userData === undefined) throw new Error('User data not loaded yet.');
 		return userData;
+	}
+
+	get userDataSignal(): Signal<UserData | undefined> {
+		return this._userDataSignal;
 	}
 
 	/**
@@ -90,9 +99,14 @@ export class UserDataService {
 		this._userData.next(undefined);
 	}
 
-	// XXX add method's for updating user drawCharacters, upgradeCharacter and maybe more.
-	// Also handling game and should be here. Like updating currency after win/loss.
-	// This methods should update the _userData BehaviorSubject accordingly.
+	logout() {
+		return this.http.post('api/logout', {}, { responseType: 'json' }).pipe(
+			tap({
+				next: () => this.handleLogout(),
+				error: () => this.handleLogout() //XXX it should check error code and depending on error handle logout or not
+			})
+		);
+	}
 
 	/**
 	 * @param cost cannot be negative. It need to be lower than {@link userData} {@link UserData#currency}, otherwise error will be thrown.
@@ -111,23 +125,116 @@ export class UserDataService {
 				// XXXW handle error 0 - NO_INTERNET. Show user error
 				return EMPTY;
 			}),
-			tap(() => {
-				const oldUserData = this.userData;
-				const currentCurrency = oldUserData.currency - cost;
-				// It shouldn't happen because before calling request currency value was checked if it enough.
-				// But possibly something can change currency in memory during this request, and this means some error in code,
-				// because it shouldn't be possible during request.
-
-				if (currentCurrency < 0) throw Error('Currency cannot be negative');
-				// XXXW change also characters data append characters count or create new character if in prev data it was absent.
-				this._userData.next({
-					characters: oldUserData.characters,
-					currency: currentCurrency
-				});
+			tap((result) => {
+				this.handleDrawResult(result, cost);
 			}),
 			catchError((error: Error) => {
+				//Do we need the URL tree here?? like in user data guard
+				this.router.navigate(['main/loading']);
 				//XXXW move back user to loading page.
 				return EMPTY;
+			})
+		);
+	}
+
+	private handleDrawResult(drawResult: DrawResult, cost: number) {
+		const oldUserData = this.userData;
+		const currentCurrency = oldUserData.currency - cost;
+		// It shouldn't happen because before calling request currency value was checked if it enough.
+		// But possibly something can change currency in memory during this request, and this means some error in code,
+		// because it shouldn't be possible during request.
+
+		if (currentCurrency < 0) throw Error('Currency cannot be negative');
+
+		let characters: CharacterData[] = oldUserData.characters.map((c) => {
+			const resultEntry = drawResult.results.find((r) => r.characterType === c.characterType);
+			if (resultEntry) {
+				return {
+					characterType: c.characterType,
+					damage: c.damage,
+					health: c.health,
+					level: c.level,
+					requiredCopiesForNextLevel: c.requiredCopiesForNextLevel,
+					currentCopiesCount: c.currentCopiesCount + resultEntry.amount
+				};
+			}
+			return c;
+		});
+		let lockedCharactersData: CharacterData[] = oldUserData.lockedCharacterData;
+
+		const unlockedCharacters: CharacterData[] = [];
+		lockedCharactersData.forEach((c) => {
+			const resultEntry = drawResult.results.find((r) => r.characterType === c.characterType);
+			if (resultEntry) {
+				characters.push({
+					characterType: c.characterType,
+					damage: c.damage,
+					health: c.health,
+					level: c.level,
+					requiredCopiesForNextLevel: c.requiredCopiesForNextLevel,
+					currentCopiesCount: c.currentCopiesCount + resultEntry.amount
+				});
+				unlockedCharacters.push(c);
+			}
+		});
+
+		lockedCharactersData = lockedCharactersData.filter((c) => !unlockedCharacters.includes(c));
+
+		this._userData.next({
+			id: oldUserData.id,
+			characters: characters,
+			currency: currentCurrency,
+			rankingPosition: oldUserData.rankingPosition,
+			lockedCharacterData: lockedCharactersData,
+			activeTeam: oldUserData.activeTeam
+		});
+	}
+
+	upgrade(characterType: CharacterType): Observable<void> {
+		const request: UpgradeRequest = { characterType: characterType };
+
+		return this.http.post('api/user/upgrade_character', request, { responseType: 'json' }).pipe(
+			map((result) => {
+				return result as UpgradeResult;
+			}),
+			catchError((error: HttpErrorResponse) => {
+				// XXXW handle error 0 - NO_INTERNET. Show user error
+				return EMPTY;
+			}),
+			tap((result) => {
+				const userData = this.userData;
+				const newCharactersList = userData.characters.slice().filter((c) => c.characterType !== characterType);
+				newCharactersList.push(result.characterData);
+
+				this._userData.next({
+					id: userData.id,
+					currency: userData.currency,
+					characters: newCharactersList,
+					rankingPosition: userData.rankingPosition,
+					lockedCharacterData: userData.lockedCharacterData,
+					activeTeam: userData.activeTeam
+				});
+			}),
+			map(() => {})
+		);
+	}
+
+	setActiveTeam(characterTypes: CharacterType[]): Observable<void> {
+		const request: SetActiveTeamRequest = { newTeam: characterTypes };
+		return this.http.post<void>('api/user/set_team', request, { responseType: 'json' }).pipe(
+			catchError((error: HttpErrorResponse) => {
+				return EMPTY;
+			}),
+			tap(() => {
+				const userData = this.userData;
+				this._userData.next({
+					id: userData.id,
+					currency: userData.currency,
+					characters: userData.characters,
+					rankingPosition: userData.rankingPosition,
+					lockedCharacterData: userData.lockedCharacterData,
+					activeTeam: characterTypes
+				});
 			})
 		);
 	}
@@ -143,8 +250,12 @@ export const userDataGuard: CanActivateFn = (route: ActivatedRouteSnapshot, stat
 };
 
 export interface UserData {
+	readonly id: number; //XXX it's should be bigint
 	readonly characters: CharacterData[];
 	readonly currency: number;
+	readonly rankingPosition: number;
+	readonly lockedCharacterData: CharacterData[];
+	readonly activeTeam: CharacterType[] | null;
 }
 
 export interface CharacterData {
@@ -196,4 +307,16 @@ export interface DrawResultEntry {
 }
 export interface DrawResult {
 	readonly results: DrawResultEntry[];
+}
+
+export interface UpgradeRequest {
+	readonly characterType: CharacterType;
+}
+
+export interface UpgradeResult {
+	readonly characterData: CharacterData;
+}
+
+export interface SetActiveTeamRequest {
+	readonly newTeam: CharacterType[];
 }

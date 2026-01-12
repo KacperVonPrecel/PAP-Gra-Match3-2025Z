@@ -1,0 +1,32 @@
+#main-contener {
+	width: 50%;
+	height: 100%;
+	max-height: 100%;
+	margin-left: auto;
+	margin-right: auto;
+
+	background-color: rgba(240, 226, 163, 0.6);
+	padding: 1rem;
+
+	border-radius: 32px;
+
+	#ranking-list {
+		height: 100%;
+		overflow-y: auto;
+		list-style-type: none;
+		padding: 0;
+		margin-left: auto;
+		margin-right: auto;
+		margin-top: 0%;
+		padding-inline-end: 0.3rem;
+	}
+}
+
+nav ul {
+	height: 200px;
+	width: 18%;
+}
+nav ul {
+	overflow: hidden;
+	overflow-y: scroll;
+}

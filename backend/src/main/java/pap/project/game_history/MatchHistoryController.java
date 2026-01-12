@@ -9,7 +9,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import pap.project.game_history.model.DataNotFoundException;
-import pap.project.user_data.UserDataService;
 import pap.project.users.UserAuthDetails;
 
 import java.util.concurrent.atomic.AtomicInteger;

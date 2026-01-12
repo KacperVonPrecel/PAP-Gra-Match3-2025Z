@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SettingsDialog } from './settings-dialog';
+import { Characters } from './characters';
 
-describe('SettingsDialog', () => {
-  let component: SettingsDialog;
-  let fixture: ComponentFixture<SettingsDialog>;
+describe('Characters', () => {
+  let component: Characters;
+  let fixture: ComponentFixture<Characters>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SettingsDialog]
+      imports: [Characters]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SettingsDialog);
+    fixture = TestBed.createComponent(Characters);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

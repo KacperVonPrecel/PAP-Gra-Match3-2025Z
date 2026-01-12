@@ -1,0 +1,26 @@
+<div id="details">
+	<div class="text-container">
+		<span id="character-name">Character name</span>
+	</div>
+	<div class="text-container">
+		<span class="title"> Description </span>
+		<span class="content"> Dupa </span>
+	</div>
+
+	<div class="text-container">
+		<span class="title"> Damage </span>
+		<span class="content"> {{ data().damage }} </span>
+	</div>
+	<div class="text-container">
+		<span class="title"> Health </span>
+		<span class="content"> {{ data().health }} </span>
+	</div>
+
+	<div class="divider"></div>
+
+	<button matButton="filled" (click)="upgrade()">
+		<mat-icon>upgrade</mat-icon>
+
+		Upgrade
+	</button>
+</div>

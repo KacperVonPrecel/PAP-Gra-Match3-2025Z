@@ -9,6 +9,7 @@ describe('UserDataService', () => {
 	let httpMock: HttpTestingController;
 
 	const userData: UserData = {
+		id: 1,
 		characters: [
 			{
 				characterType: CharacterType.AMETHYST_ENCHANTRESS,
@@ -159,6 +160,7 @@ describe('UserDataService', () => {
 
 		it('should handle max level character (null requiredCopiesForNextLevel)', (done) => {
 			const mockDataWithMaxLevel: UserData = {
+				id: 1,
 				characters: [maxLevelCharacterData],
 				currency: 10000
 			};
@@ -252,6 +254,7 @@ describe('UserDataService', () => {
 				});
 
 				const updatedUserData: UserData = {
+					id: 1,
 					characters: userData.characters,
 					currency: 7500 // Updated currency
 				};
@@ -272,7 +275,6 @@ describe('UserDataService', () => {
 
 	describe('draw', () => {
 		//XXXW
-
-		// XXXW Test for error inside tap() 
-	})
+		// XXXW Test for error inside tap()
+	});
 });

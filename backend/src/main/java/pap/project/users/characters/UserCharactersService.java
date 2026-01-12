@@ -55,7 +55,13 @@ public class UserCharactersService
         return characters.stream().map(this::createCharacterData).toList();
     }
 
-    private @NonNull CharacterData createCharacterData(@NonNull UserCharacter character)
+    public @NonNull CharacterData createEmptyCharacterData(@NonNull CharacterType type)
+    {
+        final CharacterStats stats = getCharacterStats(type);
+        return new CharacterData(type, stats.getDamage(1), stats.getHealth(1), 1, stats.getRequiredCopiesForNextLevel(1), 0);
+    }
+
+    public @NonNull CharacterData createCharacterData(@NonNull UserCharacter character)
     {
         final CharacterType type = character.getCharacterType();
         final int level = character.getLevel();

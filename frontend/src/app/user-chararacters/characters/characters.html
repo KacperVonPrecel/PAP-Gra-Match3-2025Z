@@ -1,0 +1,8 @@
+<div id="content">
+	<div id="character-list-wrapper">
+		<app-characters-list id="characters-list" (selectedCharacter)="handleCharacterSelected($event)"></app-characters-list>
+	</div>
+	@if (selectedCharacter) {
+		<app-characters-details id="characters-details" [characterType]="selectedCharacter"></app-characters-details>
+	}
+</div>

@@ -54,7 +54,7 @@ public class RegisterService
         try
         {
             userRepository.save(userToSave);
-            final UserStats userStatsToSave = new UserStats(userToSave.getId().orElseThrow());
+            final UserStats userStatsToSave = new UserStats(userToSave);
             userStatsRepository.save(userStatsToSave);
             LOG.info("%s user saved to database".formatted(logPrefix));
             return RegisterResult.REGISTERED;
