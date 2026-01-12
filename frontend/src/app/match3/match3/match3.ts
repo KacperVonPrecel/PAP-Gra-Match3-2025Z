@@ -12,8 +12,10 @@ import { GameBoard } from './board/game-board';
 export class Match3 {
 	private gameId?: number = 0;
 	private gameState?: GameState; //nullable because if we dont connect, no state
-	public moveValid = signal<boolean | null>(null);
-	playerId = 0;
+	public _moveValid: { valid: boolean | null; moveId: number } = { valid: null, moveId: 0 };
+	playerId: number = 0;
+	lastSentMoveRequestId: number = 0;
+	lastProcessedMoveId: number = 0;
 
 	constructor(private socket: Match3Service) {}
 
@@ -22,6 +24,10 @@ export class Match3 {
 			console.log('STOMP connected');
 			this.connect(0);
 		};
+	}
+
+	get moveValid(): { valid: boolean | null; moveId: number } {
+		return this._moveValid;
 	}
 
 	get isItMyTurn(): boolean {
@@ -46,12 +52,26 @@ export class Match3 {
 		this.gameId = gameId;
 		this.socket.subscribeToGame(this.gameId);
 		this.socket.gameState$.subscribe((gameState) => {
-			console.log(gameState);
-			if (gameState) {
-				this.moveValid.set(true);
-				this.gameState = gameState;
+			//if processed id is less than sent move id -> this means make move set a new last sent move id, the user sent a move
+			//(unless a refresh happened exactly after a user moved, but before the server responded? depending on how the backend handles that -> but even then it will work fine,
+			// since refresh has no animations to display)
+			//if processed id is equal to sent move -> the new state is a result of opponents move or refresh
+			if (this.lastProcessedMoveId < this.lastSentMoveRequestId) {
+				console.log('my valid move', this.lastProcessedMoveId, this.lastSentMoveRequestId);
+				this.lastProcessedMoveId = this.lastSentMoveRequestId; //setting my move as the last processedId
+				if (gameState) {
+					this._moveValid = { valid: true, moveId: this.lastSentMoveRequestId };
+					this.gameState = gameState;
+				} else {
+					this._moveValid = { valid: false, moveId: this.lastSentMoveRequestId };
+				}
 			} else {
-				this.moveValid.set(false);
+				console.log('NOT my move', this.lastSentMoveRequestId, this.lastProcessedMoveId);
+				//this was the opponents move or page refresh
+				if (gameState) {
+					this.gameState = gameState;
+				}
+				this._moveValid = { valid: null, moveId: this.lastSentMoveRequestId };
 			}
 		});
 		this.fetchState();
@@ -68,10 +88,11 @@ export class Match3 {
 		if (this.gameId != undefined) this.socket?.fetchState(this.gameId);
 	}
 
-	makeMove(move: MoveRequest): void {
+	makeMove(swapAttempt: { move: MoveRequest; moveId: number }): void {
 		console.log('Make move in match3 executed');
 		if (this.gameId != undefined) {
-			this.socket.makeMove(this.gameId, move);
+			this.lastSentMoveRequestId = swapAttempt.moveId;
+			this.socket.makeMove(this.gameId, swapAttempt.move);
 		}
 	}
 }

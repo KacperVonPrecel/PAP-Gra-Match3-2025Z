@@ -16,13 +16,15 @@ export class GameBoard {
 	/*current board state - includes information about animation played from the previous state, to get to the current one*/
 	state = input.required<BoardState | null>();
 	/*did the server give a valid response to the player's attempted move*/
-	moveValid = input<boolean | null>(); //null because there can be no move happening
+	moveValid = input<{ valid: boolean | null; moveId: number }>(); //null because there can be no move happening
 	/*output to parent with the player's move request*/
-	swapAttempt = output<MoveRequest>();
+	swapAttempt = output<{ move: MoveRequest; moveId: number }>();
 	/*player's last move request - only stored before server gives the response, stored for the purpose of animating the swap back*/
 	private lastMove: MoveRequest | null = null;
 	/*boolean determining if its the player's turn */
 	myTurn = input<boolean>();
+	/*move id used by match3 component in make move to check whether the move was the player's move or the opponent's move */
+	private moveId = 0;
 	/*value determining if the player can swap blocks based on what's happening on the board (eg. after swap, animations) - independant of whose turn it is*/
 	private allowSwapping: boolean = true;
 	private dragStart: Position | null = null;
@@ -67,23 +69,32 @@ export class GameBoard {
 			this._oldBoard = this.state()!.board.map((row) => row.map((cell) => ({ ...cell }))); //... is object spread operator -> for copying objects
 			this._animationsPlaying = false;
 		});
-		() => {
+		effect(() => {
 			const _moveValid = this.moveValid();
+			console.log('effect fired');
 
-			if (_moveValid === null) return;
-			if (this.lastMove === null) return;
-			if (_moveValid === false) {
-				//if sth went wrong, swap back
+			if (_moveValid === null) return; //sth went wrong and move valid is null
+			if (this.lastMove === null) return; //if there is no move saved i have nothing to animate
+			const valid = this.moveValid()!.valid;
+			if (valid === null) {
+				//valid is null - opponents move or refresh -> animate swap if it is there
+				this.swapWasAnimated = false;
+			} else if (valid === false) {
+				//this was my move and it was not valid
 				this.animateSwapBack(this.lastMove);
-				this.allowSwapping = true;
-			}
-			if (_moveValid === true) {
+				setTimeout(() => {
+					//wait for swap back to animate before allowing user to swap again
+					this.allowSwapping = true;
+				}, GameBoard.SWAP_DURATION);
+			} else if (valid === true) {
+				//this was my move and it was valid
 				this.swapWasAnimated = true;
 				this.allowSwapping = true;
+				console.log('my valid move', this.allowSwapping, this.myTurn());
 			}
 			this.lastMove = null;
 			return;
-		};
+		});
 	}
 
 	get animationsPlaying(): boolean {
@@ -251,8 +262,9 @@ export class GameBoard {
 	}
 
 	emitSwapAttempt(move: MoveRequest): void {
-		console.log('Swap emitted');
-		this.swapAttempt.emit(move);
+		//new move -> increase moveId
+		this.moveId += 1;
+		this.swapAttempt.emit({ move: move, moveId: this.moveId });
 	}
 
 	getSwapDirection(move: MoveRequest): string {
@@ -336,7 +348,6 @@ export class GameBoard {
 					for (const block of blocks) {
 						const offset = -(maxRow + 1);
 						const distance = maxRow + 1;
-						console.log(block.position.row, distance, offset);
 						if (distance > biggestDistance) {
 							biggestDistance = distance;
 						}
