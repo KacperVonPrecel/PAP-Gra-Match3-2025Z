@@ -5,11 +5,11 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { CharacterType, UserDataService, CharacterData } from '../../user-data/user-data-service';
 import { CharacterInList } from '../../user-chararacters/character-in-list/character-in-list';
 import { CharacterInTeam } from './character-in-team/character-in-team';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
 	selector: 'app-home-page',
-	imports: [MatButtonModule, MatIconModule, MatDialogModule, CharacterInTeam],
+	imports: [MatButtonModule, MatIconModule, MatDialogModule, CharacterInTeam, RouterLink],
 	templateUrl: './home-page.html',
 	styleUrl: './home-page.scss'
 })
