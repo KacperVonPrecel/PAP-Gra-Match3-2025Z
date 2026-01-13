@@ -1,9 +1,14 @@
-#characters-container {
-	display: flex;
-	flex-direction: row;
-}
 #game-container {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	#characters-container {
+		display: flex;
+		flex-direction: row;
+	}
+	#board-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
 }
