@@ -1,77 +1,99 @@
 package pap.project.match3;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
-import pap.project.match3.model.BoardState;
-import pap.project.match3.model.GameState;
-import pap.project.match3.model.MoveRequest;
+import pap.project.match3.model.*;
+import pap.project.user_stats.UserStatsRepository;
+import pap.project.users.UserAuthDetails;
 
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Service
 public class Match3Service {
-    private final Map<Integer, Match3Board> games = new ConcurrentHashMap<>();
+    private final Map<String, Match3Board> games = new ConcurrentHashMap<>();
+    public final Queue<PlayerData> waitingPlayers = new ConcurrentLinkedQueue<PlayerData>();
 
-    private Logger logger = LogManager.getLogger(Match3Service.class);
+    private final int DEFAULT_SIZE = 5;
 
-    public int startNewGame()
+    public @Nullable GameStartData joinOrCreateGame(@NonNull PlayerData player) // Returns gameId (or null if not created)
     {
-        int gameId = generateId();
-
-        final Match3Block[][] blocks = new Match3Block[5][5];
-        for (int i = 0; i < 5; i++)
+        for (Map.Entry<String, Match3Board> entry : games.entrySet())
         {
-            for (int j = 0; j < 5; j++)
+            if (Arrays.stream(entry.getValue().getPlayerData()).anyMatch((playerData -> playerData.playerId() == player.playerId())))
+            {
+                PlayerData[] players = entry.getValue().getPlayerData();
+
+                return new GameStartData(
+                        entry.getKey(),
+                        entry.getValue().getGameState(),
+                        new ConcurrentHashMap<>(Map.of(
+                                players[0].playerId(), players[0],
+                                players[1].playerId(), players[1]
+                        ))
+                );
+            }
+        }
+
+        if (waitingPlayers.contains(player))
+            return null;
+
+        if (waitingPlayers.isEmpty())
+        {
+            waitingPlayers.add(player);
+            return null;
+        }
+
+        final PlayerData otherPlayer = waitingPlayers.poll();
+        final String gameId = generateId();
+
+        final Match3Block[][] blocks = new Match3Block[DEFAULT_SIZE][DEFAULT_SIZE];
+        for (int i = 0; i < DEFAULT_SIZE; i++)
+        {
+            for (int j = 0; j < DEFAULT_SIZE; j++)
             {
                 blocks[i][j] = new Match3Block();
             }
         }
 
-        final Match3Board board = new Match3Board(blocks, MatchableShapeLibrary.ALL_SHAPES);
-
+        final Match3Board board = new Match3Board(blocks, MatchableShapeLibrary.ALL_SHAPES, new PlayerData[] {player, otherPlayer});
         games.put(gameId, board);
 
-        return gameId;
+        return new GameStartData(
+                gameId,
+                board.getGameState(),
+                new ConcurrentHashMap<>(Map.of(
+                        player.playerId(), player,
+                        otherPlayer.playerId(), otherPlayer
+                ))
+        );
     }
 
-    public void endGame(int gameId)
+    public void exitQueue(PlayerData player)
     {
-        games.remove(gameId);
+        waitingPlayers.remove(player);
     }
 
-    private int generateId()
-    {
-        return 0; // TODO: id generation
-    }
-
-    public @Nullable GameState playTurn(int gameId, @NonNull MoveRequest moveRequest)
-    {
-        if  (games.containsKey(gameId))
-        {
-            BoardState boardState = games.get(gameId).playTurn(moveRequest);
-
-            if (boardState != null)
-                return new GameState(boardState, 0);
-            else
-                return null;
-        }
-
-        return null;
-    }
-
-    public @Nullable GameState getState(int gameId)
+    public @Nullable GameState playTurn(String gameId, @NonNull MoveRequest moveRequest, long playerId)
     {
         if (games.containsKey(gameId))
-        {
-            BoardState boardState = games.get(gameId).getState();
-
-            return new GameState(boardState, 0);
-        }
+            return games.get(gameId).playTurn(moveRequest, playerId);
 
         return null;
+    }
+
+    public @Nullable GameState getState(String gameId)
+    {
+        if (games.containsKey(gameId))
+            return games.get(gameId).getGameState();
+
+        return null;
+    }
+
+    private @NonNull String generateId()
+    {
+        return UUID.randomUUID().toString();
     }
 }

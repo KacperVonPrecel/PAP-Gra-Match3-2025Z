@@ -1,8 +1,8 @@
 package pap.project.match3.model;
 
-import org.springframework.lang.Nullable;
+import org.springframework.lang.NonNull;
 
 public record GameState(
-        @Nullable BoardState boardState,
-        int currentPlayerId
+        @NonNull BoardState boardState,
+        long currentPlayerId
 ) { }

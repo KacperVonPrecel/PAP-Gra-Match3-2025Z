@@ -4,40 +4,44 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import pap.project.match3.model.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Match3Board
 {
     private final @NonNull Match3Block[][] board;
     private final @NonNull MatchableShape[] matchableShapes;
 
+    private final @NonNull PlayerData[] playerData;
+    private int currentPlayerIndex;
+
     private final @NonNull Random random = new Random();
 
     public record Matches(List<Match3Block> blocks, List<Position> positions) {}
 
-    public Match3Board(@NonNull Match3Block[][] board, @NonNull MatchableShape[] matchableShapes)
+    public Match3Board(@NonNull Match3Block[][] board, @NonNull MatchableShape[] matchableShapes, @NonNull PlayerData[] playerData)
     {
-        this(board, matchableShapes, false);
+        this(board, matchableShapes, playerData, false);
     }
 
-    public Match3Board(@NonNull Match3Block[][] board, @NonNull MatchableShape[] matchableShapes, boolean forceBoard)
+    public Match3Board(@NonNull Match3Block[][] board, @NonNull MatchableShape[] matchableShapes, @NonNull PlayerData[] playerData, boolean forceBoard)
     {
         this.board = board;
         this.matchableShapes = matchableShapes;
+
+        this.playerData = playerData;
+        this.currentPlayerIndex = random.nextInt(playerData.length);
 
         // If forceBoard = true, do not make sure there are no matches and at least one allowed move
         if (!forceBoard)
             generateValidBoard();
     }
 
-    public @Nullable BoardState playTurn(@NonNull MoveRequest moveRequest)
+    public @Nullable GameState playTurn(@NonNull MoveRequest moveRequest, long playerId)
     {
-        List<AnimationStep> animationSteps = new ArrayList<>();
-
-        if (!swapBlocks(moveRequest))
+        if (!(playerId == playerData[currentPlayerIndex].playerId()) || !swapBlocks(moveRequest))
             return null;
+
+        List<AnimationStep> animationSteps = new ArrayList<>();
 
         MoveRequest swappedBlocks = moveRequest;
 
@@ -47,9 +51,9 @@ public class Match3Board
         {
             destroyBlocks(matches.blocks());
 
-            List<MoveRequest> dropped = dropFloatingBlocks();
+            final List<MoveRequest> dropped = dropFloatingBlocks();
 
-            List<NewBlock> newBlocks = fillBoard();
+            final List<NewBlock> newBlocks = fillBoard();
 
             animationSteps.add(new AnimationStep(
                     board,
@@ -78,20 +82,40 @@ public class Match3Board
             ));
         }
 
-        return new BoardState(
+        currentPlayerIndex = (currentPlayerIndex + 1) % playerData.length;
+
+        final BoardState boardState = new BoardState(
                 board,
                 getAllowedMoves(),
                 animationSteps
         );
+
+        return new GameState(
+                boardState,
+                playerData[currentPlayerIndex].playerId()
+        );
     }
 
-    public @NonNull BoardState getState()
+    public @NonNull BoardState getBoardState()
     {
         return new BoardState(
                 board,
                 getAllowedMoves(),
                 new ArrayList<>()
         );
+    }
+
+    public @NonNull GameState getGameState()
+    {
+        return new GameState(
+                getBoardState(),
+                playerData[currentPlayerIndex].playerId()
+        );
+    }
+
+    public @NonNull PlayerData[] getPlayerData()
+    {
+        return playerData;
     }
 
     public void generateValidBoard()
