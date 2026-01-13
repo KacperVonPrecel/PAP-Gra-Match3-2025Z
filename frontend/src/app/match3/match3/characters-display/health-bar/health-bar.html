@@ -1,3 +1,4 @@
 <div class="bar" id="background-bar">
-	<div class="bar" id="current-bar"></div>
+	<div class="bar" id="current-bar" [style.width.%]="healthPercent"></div>
+	<span id="health-text">{{ getMaxHealth() }}/{{ getCurrentHealth() }}</span>
 </div>
