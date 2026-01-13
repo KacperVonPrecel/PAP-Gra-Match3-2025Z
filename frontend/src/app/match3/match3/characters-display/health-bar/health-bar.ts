@@ -42,4 +42,15 @@ export class HealthBar {
 		}
 		return this.currentHealth()!;
 	}
+
+	get barColor(): string {
+		const healthPercent = this.healthPercent;
+		if (healthPercent > 60) {
+			return 'rgba(154, 205, 50, 1)';
+		}
+		if (healthPercent > 30) {
+			return 'rgba(255,215,0, 1)';
+		}
+		return 'rgba(199, 90, 17)';
+	}
 }

@@ -1,26 +1,29 @@
 #background-bar {
 	background-color: rgba(240, 226, 163, 1);
 	width: 5rem;
-	height: 1rem;
+	height: 1.3rem;
 	border-radius: 10px;
 	border-width: 2px;
 	border-style: solid;
 	border-color: rgba(240, 226, 163, 1);
 	box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.2);
-	padding: 5px;
+	padding: 2px;
 	display: flex;
 	flex-direction: row;
 
 	#current-bar {
+		border-radius: 5px;
 		position: relative;
 		height: 100%;
-		background-color: rgba(154, 205, 50, 1);
-		transition: width 300ms ease-in-out; //will transition on width change to the new width
+		transition:
+			width 300ms ease-in-out,
+			background-color 300ms ease-in-out;
 	}
 
 	#health-text {
-		position: absolute;
-		height: 100%;
+		padding-left: 2px;
+		position: absolute; //so it doesnt move with the current health bar
+		height: 90%;
 		font-weight: 500;
 		text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
 	}
