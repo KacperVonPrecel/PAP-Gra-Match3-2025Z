@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { Match3Service, MoveRequest } from '../match3-service';
-import { BoardState, GameState } from '../game-state';
+import { BoardState, GameStartData, GameState, PlayerData, PlayerState } from '../game-state';
 import { GameBoard } from './board/game-board';
 import { CharactersDisplay } from './characters-display/characters-display';
 
@@ -12,6 +12,7 @@ import { CharactersDisplay } from './characters-display/characters-display';
 })
 export class Match3 {
 	private gameId?: number = 0;
+	private gameStartData?: GameStartData;
 	private gameState?: GameState; //nullable because if we dont connect, no state
 	public _moveValid: { valid: boolean | null; moveId: number } = { valid: null, moveId: 0 };
 	playerId: number = 0;
@@ -44,6 +45,64 @@ export class Match3 {
 	get boardState(): BoardState | null {
 		if (this.gameState) {
 			return this.gameState.boardState;
+		}
+		return null;
+	}
+
+	get playerStates(): Map<number, PlayerState> | null {
+		if (this.gameState) {
+			return this.gameState.playerStates;
+		}
+		return null;
+	}
+
+	get playersData(): Map<number, PlayerData> | null {
+		if (this.gameStartData) {
+			return this.gameStartData.playerData;
+		}
+		return null;
+	}
+
+	get myData() {
+		const playersData = this.playersData;
+		if (!this.playersData) return null;
+		for (const [id, data] of playersData!) {
+			if (id === this.playerId) {
+				return data;
+			}
+		}
+		return null;
+	}
+
+	get opponentData(): PlayerData | null {
+		const playersData = this.playersData;
+		if (!this.playersData) return null;
+		for (const [id, data] of playersData!) {
+			if (id != this.playerId) {
+				return data;
+			}
+		}
+		return null;
+	}
+
+	get opponentState(): PlayerState | null {
+		const playerStates = this.playerStates;
+		if (!playerStates) return null;
+		for (const [id, state] of playerStates!) {
+			if (id != this.playerId) {
+				return state;
+			}
+		}
+		return null;
+	}
+
+	get myState(): PlayerState | null {
+		const playerStates = this.playerStates;
+		if (!playerStates) return null;
+		for (const [id, state] of playerStates!) {
+			if (id === this.playerId) {
+				return state;
+			}
 		}
 		return null;
 	}

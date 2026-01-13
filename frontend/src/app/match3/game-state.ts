@@ -47,6 +47,6 @@ export interface PlayerState {
 export interface GameStartData {
 	gameId: number;
 	gameState: GameState;
-	playerOneData: PlayerData;
-	playerTwoData: PlayerData;
+	//XXXW zamieniam na razie
+	playerData: Map<number, PlayerData>;
 }
