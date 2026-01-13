@@ -36,6 +36,7 @@ export class GameBoard {
 	animationState: AnimationState = new AnimationState();
 	/*board before a move was executes - stored for the purpose of animating*/
 	private _oldBoard: Match3Block[][] | null = null;
+	/*value used to determine which board to display - the old board for animations or the current board*/
 	private _animationsPlaying: boolean = false;
 	/*value determining whether the swap for the move in animation step was already animated*/
 	private swapWasAnimated: boolean = false;
@@ -63,7 +64,7 @@ export class GameBoard {
 				this._oldBoard = this.state()!.board.map((row) => row.map((cell) => ({ ...cell })));
 			}
 			this._animationsPlaying = true;
-			await this.animationSequence();
+			await this.animationSequence(); //handles swapping control as well
 			this.animationState.clearAllClasses();
 			//snapshotting the board (as old board for the next animation) before the move request is sent
 			this._oldBoard = this.state()!.board.map((row) => row.map((cell) => ({ ...cell }))); //... is object spread operator -> for copying objects
@@ -83,13 +84,11 @@ export class GameBoard {
 				//this was my move and it was not valid
 				this.animateSwapBack(this.lastMove);
 				setTimeout(() => {
-					//wait for swap back to animate before allowing user to swap again
-					this.allowSwapping = true;
+					//wait for swap back to animate before continuing
 				}, GameBoard.SWAP_DURATION);
 			} else if (valid === true) {
 				//this was my move and it was valid
 				this.swapWasAnimated = true;
-				this.allowSwapping = true;
 				console.log('my valid move', this.allowSwapping, this.myTurn());
 			}
 			this.lastMove = null;
@@ -249,13 +248,12 @@ export class GameBoard {
 		if (this.allowSwapping) {
 			this.lastMove = moveRequest;
 			this.animateSwap(moveRequest);
-			this.allowSwapping = false;
+			this.allowSwapping = false; //cannot swap until move is processed
 			setTimeout(() => {
 				if (this.isMoveValid(moveRequest)) {
 					this.emitSwapAttempt(moveRequest);
 				} else {
-					this.animateSwapBack(moveRequest);
-					this.allowSwapping = true;
+					this.animateSwapBack(moveRequest); //will set allow swapping to true after animation finishes
 				}
 			}, GameBoard.SWAP_DURATION);
 		}
@@ -291,6 +289,7 @@ export class GameBoard {
 	async animationSequence(): Promise<void> {
 		/*goes through all animations in every animation state, then clears the animations when a new board is to be displayed
 		async to avoid cascading timeouts - we need to wait for one type of animation to finish before starting another*/
+		this.allowSwapping = false; //cannot swap while animations are playing
 		if (this.state()) {
 			const animationSteps = this.state()!.animationSteps;
 			//play swap if im not the player who swapped
@@ -318,6 +317,7 @@ export class GameBoard {
 				}
 			}
 		}
+		this.allowSwapping = true;
 		//play swap if im not the player who swapped
 		//destroyed animation
 		//falling animation

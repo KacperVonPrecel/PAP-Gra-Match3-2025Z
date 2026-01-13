@@ -50,7 +50,6 @@ export class Match3Service {
 	}
 
 	makeMove(gameId: number, moveRequest: MoveRequest): void {
-		console.log('make move in match3 service');
 		this.client.publish({
 			destination: `/app/board/${gameId}/playTurn`,
 			body: JSON.stringify(moveRequest)
