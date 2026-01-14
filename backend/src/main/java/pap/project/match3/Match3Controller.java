@@ -74,10 +74,20 @@ public class Match3Controller {
     }
 
     @MessageMapping("/board/{gameId}/playTurn")
-    @SendTo("/topic/board/{gameId}/state")
-    public @Nullable GameState playTurn(@DestinationVariable String gameId, @NonNull @RequestBody MoveRequest moveRequest, @NonNull Principal principal)
+    public void playTurn(@DestinationVariable String gameId, @NonNull @RequestBody MoveRequest moveRequest, @NonNull Principal principal)
     {
-        return service.playTurn(gameId, moveRequest, getUser(principal).getUserId());
+        GameState gameState = service.playTurn(gameId, moveRequest, getUser(principal).getUserId());
+
+        if  (gameState != null)
+        {
+            messaging.convertAndSend("/topic/board/{gameId}/state", gameState);
+
+            if (service.HasGameEnded(gameId) && service.getPlayers(gameId) != null)
+            {
+                // TODO: Implement
+                // notifyGameEnded(PLAYER GAINS HERE, service.getPlayers(gameId));
+            }
+        }
     }
 
     @MessageMapping("/board/{gameId}/getState")
@@ -91,6 +101,12 @@ public class Match3Controller {
     {
         for (PlayerData data : gameStartData.playerData().values())
             messaging.convertAndSendToUser(data.playerName(), "/queue/gameStart", gameStartData);
+    }
+
+    private void notifyGameEnded(GameEndData gameEndData, List<PlayerData> playerData)
+    {
+        for (PlayerData data : playerData)
+            messaging.convertAndSendToUser(data.playerName(), "/queue/gameEnd", gameEndData);
     }
 
     private @NonNull UserAuthDetails getUser(@NonNull Principal principal)

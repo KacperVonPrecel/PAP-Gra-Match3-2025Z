@@ -16,6 +16,8 @@ public class Match3Board
     private final @NonNull PlayerState[] playerStates;
     private int currentPlayerIndex;
 
+    private long timeStarted;
+
     private final @NonNull Random random = new Random();
 
     public record Matches(List<Match3Block> blocks, List<Position> positions) {}
@@ -40,6 +42,8 @@ public class Match3Board
         // If forceBoard = true, do not make sure there are no matches and at least one allowed move
         if (!forceBoard)
             generateValidBoard();
+
+        timeStarted = System.currentTimeMillis();
     }
 
     public @Nullable GameState playTurn(@NonNull MoveRequest moveRequest, long playerId)
@@ -155,6 +159,22 @@ public class Match3Board
     public @NonNull PlayerData[] getPlayerData()
     {
         return playerData;
+    }
+
+    public boolean hasGameEnded()
+    {
+        for (PlayerState state : playerStates)
+        {
+            if (state.charactersHealth().values().stream().allMatch(health -> health <= 0))
+                return true;
+        }
+
+        return false;
+    }
+
+    public long getElapsedTime()
+    {
+        return System.currentTimeMillis() - timeStarted;
     }
 
     public void generateValidBoard()

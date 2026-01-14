@@ -71,12 +71,12 @@ public class Match3Service {
         );
     }
 
-    public void exitQueue(PlayerData player)
+    public void exitQueue(@NonNull PlayerData player)
     {
         waitingPlayers.remove(player);
     }
 
-    public @Nullable GameState playTurn(String gameId, @NonNull MoveRequest moveRequest, long playerId)
+    public @Nullable GameState playTurn(@NonNull String gameId, @NonNull MoveRequest moveRequest, long playerId)
     {
         if (games.containsKey(gameId))
             return games.get(gameId).playTurn(moveRequest, playerId);
@@ -84,12 +84,28 @@ public class Match3Service {
         return null;
     }
 
-    public @Nullable GameState getState(String gameId)
+    public @Nullable GameState getState(@NonNull String gameId)
     {
         if (games.containsKey(gameId))
             return games.get(gameId).getGameState();
 
         return null;
+    }
+
+    public @Nullable PlayerData[] getPlayers(@NonNull String gameId)
+    {
+        if (games.containsKey(gameId))
+            return games.get(gameId).getPlayerData();
+
+        return null;
+    }
+
+    public boolean HasGameEnded(@NonNull String gameId)
+    {
+        if (games.containsKey(gameId))
+            return games.get(gameId).hasGameEnded();
+
+        return false;
     }
 
     private @NonNull String generateId()
