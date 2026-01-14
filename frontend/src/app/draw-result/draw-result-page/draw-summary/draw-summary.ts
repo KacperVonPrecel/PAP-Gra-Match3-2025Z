@@ -1,6 +1,6 @@
 import { Component, Input, input } from '@angular/core';
 import { Router } from '@angular/router';
-import { DrawResult, DrawResultEntry } from '../../../user-data/user-data-service';
+import { characterNameMap, DrawResult, DrawResultEntry } from '../../../user-data/user-data-service';
 import { MatList, MatListItem } from '@angular/material/list';
 
 @Component({
@@ -10,7 +10,15 @@ import { MatList, MatListItem } from '@angular/material/list';
 	styleUrl: './draw-summary.scss'
 })
 export class DrawSummary {
-	@Input() result!: DrawResultEntry[];
+	result = input.required<DrawLineInfo[], DrawResultEntry[]>({
+		transform: (v: DrawResultEntry[]) =>
+			v.map((d) => {
+				return {
+					characterName: characterNameMap[d.characterType],
+					amount: d.amount
+				};
+			})
+	});
 	constructor(private router: Router) {}
 
 	ngAfterViewInit() {
@@ -18,4 +26,9 @@ export class DrawSummary {
 			this.router.navigate(['/main/home/draw']);
 		}
 	}
+}
+
+interface DrawLineInfo {
+	characterName: string;
+	amount: number;
 }

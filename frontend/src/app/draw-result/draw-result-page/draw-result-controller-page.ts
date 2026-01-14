@@ -70,7 +70,7 @@ export class DrawResultControllerPage {
 	private navigateOut(): void {
 		if (this._navigatedOut) return;
 		this._navigatedOut = true;
-		this.router.navigate(['/main/home/draw']);
+		this.router.navigate(['/main/home/draw'], { replaceUrl: true });
 	}
 
 	private showSummaryToUser(): void {

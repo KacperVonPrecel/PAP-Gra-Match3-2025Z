@@ -28,7 +28,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-public class GameController {
+public class GameController
+{
     private final GameService service;
     private final UserDataService userDataService;
     private final UserStatsRepository userStatsRepository;
@@ -81,12 +82,12 @@ public class GameController {
         if  (gameState != null)
         {
             messaging.convertAndSend("/topic/board/{gameId}/state", gameState);
-
-            if (service.hasGameEnded(gameId) && service.getPlayers(gameId) != null)
-            {
+//          XXX
+//            if (service.hasGameEnded(gameId) && service.getPlayers(gameId) != null)
+//            {
                 // TODO: Implement
 //                 notifyGameEnded(PLAYER GAINS HERE, service.getPlayers(gameId));
-            }
+//            }
         }
     }
 
@@ -109,25 +110,22 @@ public class GameController {
             messaging.convertAndSendToUser(data.playerName(), "/queue/gameEnd", gameEndData);
     }
 
-    private @NonNull UserAuthDetails getUser(@NonNull Principal principal)
-    {
-        return (UserAuthDetails)((Authentication)principal).getPrincipal();
-    }
+
 
     private @Nullable PlayerData getPlayer(@NonNull Principal principal)
     {
-        UserAuthDetails user = getUser(principal);
-        Optional<UserStats> userStats = userStatsRepository.findUserStatsById(user.getUserId());
-        UserData userData = userDataService.getUserData(user.getUserId());
+        final UserAuthDetails user = getUser(principal);
+        final Optional<UserStats> userStats = userStatsRepository.findUserStatsById(user.getUserId());
+        final UserData userData = userDataService.getUserData(user.getUserId());
 
         if (userStats.isEmpty() || userData.userCharacters().isEmpty())
             return null;
 
-        List<GameCharacter> gameCharacters = new ArrayList<>();
+        final List<GameCharacter> gameCharacters = new ArrayList<>();
         for (UserCharacter character : userData.userCharacters())
         {
             long characterId = character.getId().getAsLong();
-            CharacterData characterData = userCharactersService.createCharacterData(character);
+            final CharacterData characterData = userCharactersService.createCharacterData(character);
 
             gameCharacters.add(new GameCharacter(characterId, character.getCharacterType(), characterData.damage(), characterData.health()));
         }
@@ -138,5 +136,10 @@ public class GameController {
                 userStats.get().getEloPoints(),
                 gameCharacters
         );
+    }
+
+    private @NonNull UserAuthDetails getUser(@NonNull Principal principal)
+    {
+        return (UserAuthDetails) ((Authentication) principal).getPrincipal();
     }
 }

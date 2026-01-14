@@ -1,0 +1,19 @@
+#main-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+	#show-results {
+		background: rgba(240, 226, 163, 1);
+		border-radius: 1rem;
+		padding: 6rem;
+	}
+
+	button {
+		color: white;
+		background-color: rgba(102, 78, 76);
+		width: 30rem;
+		height: 4rem;
+	}
+}

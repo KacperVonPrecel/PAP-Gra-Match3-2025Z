@@ -1,6 +1,6 @@
 package pap.project.game;
 
-import kotlin.Pair;
+import org.springframework.data.util.Pair;
 import org.springframework.lang.NonNull;
 import pap.project.game.match3.Match3Block;
 import pap.project.game.model.CharacterCombatResult;
@@ -52,7 +52,7 @@ public class CharactersCombat
             }
         }
 
-        return new Pair<>(maxAttackDamage, attackingCharacter.characterId);
+        return Pair.of(maxAttackDamage, attackingCharacter.characterId);
     }
 
     /**

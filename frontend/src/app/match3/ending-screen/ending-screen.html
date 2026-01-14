@@ -1,0 +1,14 @@
+<div id="main-container">
+	<div id="show-results">
+		<h2 i18n>{{ data.victory }}</h2>
+
+		<div>Money gain: {{ data.moneyEarned }}</div>
+
+		@if (data.eloChange >= 0) {
+			<div>Elo gain: {{ data.eloChange }}</div>
+		} @else {
+			<div>Elo loss: {{ -data.eloChange }}</div>
+		}
+		<button matButton="filled" (click)="leave()">Ok</button>
+	</div>
+</div>

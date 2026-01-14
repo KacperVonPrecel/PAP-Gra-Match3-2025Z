@@ -10,11 +10,11 @@ import { Draw } from './home/draw/draw';
 import { DrawResultControllerPage } from './draw-result/draw-result-page/draw-result-controller-page';
 import { HistoryComponent } from './history/history-component/history-component';
 import { Match3 } from './match3/match3/match3';
-import { CharactersList } from './user-chararacters/characters-list/characters-list';
 import { Characters } from './user-chararacters/characters/characters';
 import { Ranking } from './ranking/ranking/ranking';
 import { SelectTeam } from './select-team/select-team/select-team';
 import { FindingMatch } from './match3/finding-match/finding-match';
+import { EndingScreen } from './match3/ending-screen/ending-screen';
 
 export const routes: Routes = [
 	{
@@ -44,6 +44,11 @@ export const routes: Routes = [
 				component: Home,
 				title: 'Home',
 				children: [
+					{
+						path: '',
+						pathMatch: 'full',
+						redirectTo: 'home-page'
+					},
 					{
 						path: 'home-page',
 						component: HomePage,
@@ -98,5 +103,10 @@ export const routes: Routes = [
 		path: 'finding-match',
 		component: FindingMatch,
 		title: 'FindingMatch'
+	},
+	{
+		path: 'ending-screen',
+		component: EndingScreen,
+		title: 'Game'
 	}
 ];
