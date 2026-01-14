@@ -1,6 +1,5 @@
-package pap.project.match3;
+package pap.project.game.match3;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.lang.NonNull;
 
 public class Match3Block

@@ -1,6 +1,6 @@
 package pap.project.users.characters.model;
 
-import pap.project.match3.Match3Block;
+import pap.project.game.match3.Match3Block;
 
 public enum CharacterType
 {

@@ -1,10 +1,10 @@
-package pap.project.match3.game;
+package pap.project.game;
 
 import kotlin.Pair;
 import org.springframework.lang.NonNull;
-import pap.project.match3.Match3Block;
-import pap.project.match3.game.model.CharacterCombatResult;
-import pap.project.match3.model.PlayerCharactersState;
+import pap.project.game.match3.Match3Block;
+import pap.project.game.model.CharacterCombatResult;
+import pap.project.game.model.communication.PlayerCharactersState;
 
 import java.util.List;
 import java.util.Map;

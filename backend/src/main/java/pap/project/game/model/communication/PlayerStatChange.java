@@ -1,4 +1,4 @@
-package pap.project.match3.model;
+package pap.project.game.model.communication;
 
 /**
  * @param elo gained/losed by player. If it negative, it. Otherwise, it will be non-negative.

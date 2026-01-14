@@ -1,4 +1,4 @@
-package pap.project.match3.model;
+package pap.project.game.match3.model;
 
 import org.springframework.lang.NonNull;
 

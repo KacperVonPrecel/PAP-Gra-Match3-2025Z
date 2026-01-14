@@ -1,4 +1,4 @@
-package pap.project.match3.model;
+package pap.project.game.model.communication;
 
 import org.springframework.lang.NonNull;
 import pap.project.users.characters.model.CharacterType;

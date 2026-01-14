@@ -1,9 +1,12 @@
-package pap.project.match3.game;
+package pap.project.game;
 
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
-import pap.project.match3.model.*;
+import pap.project.game.match3.model.MoveRequest;
+import pap.project.game.model.communication.GameStartData;
+import pap.project.game.model.communication.GameState;
+import pap.project.game.model.communication.PlayerData;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

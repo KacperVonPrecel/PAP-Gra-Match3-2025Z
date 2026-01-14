@@ -1,7 +1,7 @@
-package pap.project.match3.game.model;
+package pap.project.game.model;
 
 import org.springframework.lang.NonNull;
-import pap.project.match3.model.PlayerCharactersState;
+import pap.project.game.model.communication.PlayerCharactersState;
 
 public record CharacterCombatResult(
         @NonNull PlayerCharactersState firstPlayerCharacterState,

@@ -1,7 +1,7 @@
-package pap.project.match3.game;
+package pap.project.game;
 
 import org.springframework.lang.NonNull;
-import pap.project.match3.Match3Block;
+import pap.project.game.match3.Match3Block;
 
 import java.util.Map;
 

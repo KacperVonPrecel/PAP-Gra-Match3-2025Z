@@ -1,8 +1,8 @@
-package pap.project.match3.model;
+package pap.project.game.match3.model;
 
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import pap.project.match3.Match3Block;
+import pap.project.game.match3.Match3Block;
 
 import java.util.List;
 

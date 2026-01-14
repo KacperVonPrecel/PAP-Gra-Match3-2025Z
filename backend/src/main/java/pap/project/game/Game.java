@@ -1,10 +1,14 @@
-package pap.project.match3.game;
+package pap.project.game;
 
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import pap.project.match3.Match3Board;
-import pap.project.match3.game.model.CharacterCombatResult;
-import pap.project.match3.model.*;
+import pap.project.game.match3.Match3Board;
+import pap.project.game.match3.model.Match3MoveResult;
+import pap.project.game.match3.model.MoveRequest;
+import pap.project.game.model.CharacterCombatResult;
+import pap.project.game.model.communication.GameState;
+import pap.project.game.model.communication.PlayerCharactersState;
+import pap.project.game.model.communication.PlayerData;
 
 import java.util.Map;
 import java.util.OptionalLong;

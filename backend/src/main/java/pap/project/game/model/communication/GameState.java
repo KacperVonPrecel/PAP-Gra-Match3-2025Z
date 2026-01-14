@@ -1,6 +1,7 @@
-package pap.project.match3.model;
+package pap.project.game.model.communication;
 
 import org.springframework.lang.NonNull;
+import pap.project.game.match3.model.BoardState;
 
 import java.util.Map;
 import java.util.OptionalLong;

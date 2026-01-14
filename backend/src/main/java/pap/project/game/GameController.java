@@ -1,4 +1,4 @@
-package pap.project.match3;
+package pap.project.game;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,8 +11,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
-import pap.project.match3.game.GameService;
-import pap.project.match3.model.*;
+import pap.project.game.match3.model.MoveRequest;
+import pap.project.game.model.communication.*;
 import pap.project.user_data.UserDataService;
 import pap.project.user_data.model.UserData;
 import pap.project.user_stats.UserStats;
@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-public class Match3Controller {
+public class GameController {
     private final GameService service;
     private final UserDataService userDataService;
     private final UserStatsRepository userStatsRepository;
@@ -36,9 +36,9 @@ public class Match3Controller {
 
     private final SimpMessagingTemplate messaging;
 
-    private static final Logger log = LoggerFactory.getLogger(Match3Controller.class);
+    private static final Logger log = LoggerFactory.getLogger(GameController.class);
 
-    public Match3Controller(GameService service, UserDataService userDataService, UserStatsRepository userStatsRepository, UserCharactersService userCharactersService, SimpMessagingTemplate messaging)
+    public GameController(GameService service, UserDataService userDataService, UserStatsRepository userStatsRepository, UserCharactersService userCharactersService, SimpMessagingTemplate messaging)
     {
         this.service = service;
         this.userDataService = userDataService;
