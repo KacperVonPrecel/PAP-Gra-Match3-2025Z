@@ -28,17 +28,14 @@ export class Match3 {
 	constructor(private socket: Match3Service) {}
 
 	ngOnInit(): void {
-		this.socket.connectSocket();
-
 		this.userDataService.userDataObservable.subscribe((data) => {
 			this.playerId = data.id;
 		});
 
 		this.socket.client.onConnect = () => {
 			console.log('STOMP connected');
+			this.join();
 		};
-
-		this.join();
 	}
 
 	leaveQueue(): void {
@@ -55,11 +52,9 @@ export class Match3 {
 
 			this.gameStartData = gameData;
 
-			if (this.gameStartData) {
-				this.connect(this.gameStartData.gameId);
-				this.gameId = this.gameStartData.gameId;
-			}
+			if (this.gameStartData) this.connect(this.gameStartData.gameId);
 		});
+
 		this.socket.sendJoinRequest();
 	}
 

@@ -15,22 +15,20 @@ export class Match3Service {
 	public gameState$ = new BehaviorSubject<GameState | null>(null);
 	public gameStartData$ = new BehaviorSubject<GameStartData | null>(null);
 	private gameStartSub?: StompSubscription;
+	public connected$ = new BehaviorSubject<boolean>(false);
 
 	constructor() {
 		this.client = new Client({
 			webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
 			reconnectDelay: 5000
 		});
-		this.client.onConnect = () => {
-			console.log('STOMP connected');
-		};
+
+		this.client.activate();
 	}
 
 	sendJoinRequest(): void {
-		this.gameStartSub = this.client.subscribe(`/user/queue/gameStart`, (msg: IMessage) => {
-			console.log(msg.body);
+		this.client.subscribe(`/user/queue/gameStart`, (msg: IMessage) => {
 			const gameData: GameStartData = JSON.parse(msg.body);
-			console.log(gameData);
 			this.gameStartData$.next(gameData);
 		});
 
@@ -57,12 +55,10 @@ export class Match3Service {
 
 	subscribeToGame(gameId: string): void {
 		if (this.subscription != undefined) {
-			// this.unsubscribeFromGame();
-			return;
+			this.unsubscribeFromGame();
 		}
 
 		this.subscription = this.client.subscribe(`/topic/board/${gameId}/state`, (msg: IMessage) => {
-			console.log('zzz' + msg.body);
 			const gamestate: GameState = JSON.parse(msg.body);
 			this.gameState$.next(gamestate);
 		});
@@ -136,38 +132,38 @@ export class Match3Service {
 		return { boardState: boardState, currentPlayerId: 0, playerStates: playerStates, attackingCharacterId: 0 };
 	}
 
-	// mockGameStartData() {
-	// 	const board: Match3Block[][] = [
-	// 		[{ blockType: BlockType.DIAMOND }, { blockType: BlockType.RUBY }],
-	// 		[{ blockType: BlockType.RUBY }, { blockType: BlockType.RUBY }]
-	// 	];
-	// 	const boardState: BoardState = { board, allowedMoves: [], animationSteps: [] };
-	// 	const playerCharacters: GameCharacter[] = [
-	// 		{ characterId: 0, characterType: CharacterType.SACRED_CAT, maxHealth: 100, damage: 100, level: 1 },
-	// 		{ characterId: 1, characterType: CharacterType.AMETHYST_ENCHANTRESS, maxHealth: 100, damage: 100, level: 1 },
-	// 		{ characterId: 2, characterType: CharacterType.RUBY_HORNED_DAME, maxHealth: 80, damage: 100, level: 1 }
-	// 	];
-	// 	const opponentCharacters: GameCharacter[] = [
-	// 		{ characterId: 3, characterType: CharacterType.AMETHYST_ENCHANTRESS, maxHealth: 90, damage: 100, level: 1 },
-	// 		{ characterId: 4, characterType: CharacterType.EMERALD_CORE_KNIGHT, maxHealth: 110, damage: 100, level: 1 },
-	// 		{ characterId: 5, characterType: CharacterType.TRASH_MAN, maxHealth: 100, damage: 100, level: 1 }
-	// 	];
-	// 	const playerState = new Map<number, number>([
-	// 		[1, 100],
-	// 		[2, 80]
-	// 	]);
-	// 	const opponentState = new Map<number, number>([
-	// 		[3, 90],
-	// 		[4, 100]
-	// 	]);
-	// 	const playerStates = new Map<number, PlayerState>();
-	// 	playerStates.set(0, { charactersHealth: playerState });
-	// 	playerStates.set(1, { charactersHealth: opponentState });
-	// 	const playerData = new Map<number, PlayerData>();
-	// 	playerData.set(0, { playerId: 1, playerName: 'PlayerOne', playerElo: 1500, characters: playerCharacters });
-	// 	playerData.set(1, { playerId: 2, playerName: 'Opponent', playerElo: 1480, characters: opponentCharacters });
-	// 	return { gameId: '0', playerData };
-	// }
+	mockGameStartData() {
+		const board: Match3Block[][] = [
+			[{ blockType: BlockType.DIAMOND }, { blockType: BlockType.RUBY }],
+			[{ blockType: BlockType.RUBY }, { blockType: BlockType.RUBY }]
+		];
+		const boardState: BoardState = { board, allowedMoves: [], animationSteps: [] };
+		const playerCharacters: GameCharacter[] = [
+			{ characterId: 0, characterType: CharacterType.SACRED_CAT, maxHealth: 100, damage: 100, level: 1 },
+			{ characterId: 1, characterType: CharacterType.AMETHYST_ENCHANTRESS, maxHealth: 100, damage: 100, level: 1 },
+			{ characterId: 2, characterType: CharacterType.RUBY_HORNED_DAME, maxHealth: 80, damage: 100, level: 1 }
+		];
+		const opponentCharacters: GameCharacter[] = [
+			{ characterId: 3, characterType: CharacterType.AMETHYST_ENCHANTRESS, maxHealth: 90, damage: 100, level: 1 },
+			{ characterId: 4, characterType: CharacterType.EMERALD_CORE_KNIGHT, maxHealth: 110, damage: 100, level: 1 },
+			{ characterId: 5, characterType: CharacterType.TRASH_MAN, maxHealth: 100, damage: 100, level: 1 }
+		];
+		const playerState = new Map<number, number>([
+			[1, 100],
+			[2, 80]
+		]);
+		const opponentState = new Map<number, number>([
+			[3, 90],
+			[4, 100]
+		]);
+		const playerStates = new Map<number, PlayerState>();
+		playerStates.set(0, { charactersHealth: playerState });
+		playerStates.set(1, { charactersHealth: opponentState });
+		const playerData = new Map<number, PlayerData>();
+		playerData.set(0, { playerId: 1, playerName: 'PlayerOne', playerElo: 1500, characters: playerCharacters });
+		playerData.set(1, { playerId: 2, playerName: 'Opponent', playerElo: 1480, characters: opponentCharacters });
+		return { gameId: '0', playerData };
+	}
 }
 
 export interface MoveRequest {
