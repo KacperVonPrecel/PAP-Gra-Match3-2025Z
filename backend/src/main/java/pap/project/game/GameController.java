@@ -116,12 +116,15 @@ public class GameController
         final Optional<UserStats> userStats = userStatsRepository.findUserStatsById(user.getUserId());
         final UserData userData = userDataService.getUserData(user.getUserId());
 
-        if (userStats.isEmpty() || userData.userCharacters().isEmpty())
+        if (userStats.isEmpty() || userData.userCharacters().isEmpty() || userStats.get().getActiveTeam() == null)
             return null;
 
         final List<GameCharacter> gameCharacters = new ArrayList<>();
         for (UserCharacter character : userData.userCharacters())
         {
+            if (!userStats.get().getActiveTeam().contains(character.getCharacterType()))
+                continue;
+
             long characterId = character.getId().getAsLong();
             final CharacterData characterData = userCharactersService.createCharacterData(character);
 
