@@ -15,19 +15,19 @@ export class Match3Service {
 	public gameState$ = new BehaviorSubject<GameState | null>(null);
 	public gameStartData$ = new BehaviorSubject<GameStartData | null>(null);
 	private gameStartSub?: StompSubscription;
+	public connected$ = new BehaviorSubject<boolean>(false);
 
 	constructor() {
 		this.client = new Client({
 			webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
 			reconnectDelay: 5000
 		});
-		this.client.onConnect = () => {
-			console.log('STOMP connected');
-		};
+
+		this.client.activate();
 	}
 
 	sendJoinRequest(): void {
-		this.gameStartSub = this.client.subscribe(`/user/queue/gameStart`, (msg: IMessage) => {
+		this.client.subscribe(`/user/queue/gameStart`, (msg: IMessage) => {
 			const gameData: GameStartData = JSON.parse(msg.body);
 			this.gameStartData$.next(gameData);
 		});
