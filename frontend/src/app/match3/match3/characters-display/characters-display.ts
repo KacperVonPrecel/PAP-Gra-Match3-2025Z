@@ -11,6 +11,8 @@ import { CharacterAnimationState } from './character-animation-state';
 	styleUrl: './characters-display.scss'
 })
 export class CharactersDisplay {
+	private static readonly DAMAGE_DURATION = 50000;
+
 	myData = input<PlayerData | null>();
 	opponentData = input<PlayerData | null>();
 	myState = input<PlayerState | null>();
@@ -39,9 +41,8 @@ export class CharactersDisplay {
 					const newHealth = opponentState.charactersHealth.get(key);
 					console.log(oldHealth, newHealth);
 					if (oldHealth != newHealth) {
-						console.log(key, 'ENTERED');
 						if (newHealth! <= 0) {
-							console.log('Added dead');
+							this.animationState.addDamage(key);
 							this.animationState.addDead(key);
 						} else {
 							this.animationState.addDamage(key);
@@ -55,7 +56,8 @@ export class CharactersDisplay {
 					const oldHealth = this.myOldState.charactersHealth.get(key);
 					const newHealth = myState.charactersHealth.get(key);
 					if (oldHealth != newHealth) {
-						if (newHealth && newHealth <= 0) {
+						if (newHealth! <= 0) {
+							this.animationState.addDamage(key);
 							this.animationState.addDead(key);
 						} else {
 							this.animationState.addDamage(key);
@@ -63,6 +65,10 @@ export class CharactersDisplay {
 					}
 				}
 			}
+
+			setTimeout(() => {
+				this.animationState.clearDamage();
+			}, CharactersDisplay.DAMAGE_DURATION);
 
 			if (opponentState) {
 				this.opponentOldState = opponentState;
