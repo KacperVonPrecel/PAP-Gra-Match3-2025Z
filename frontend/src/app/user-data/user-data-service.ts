@@ -288,8 +288,8 @@ const characterFileMap: { [key in CharacterType]: string } = {
 	[CharacterType.SACRED_CAT]: 'sacred_cat.svg',
 	[CharacterType.EMERALD_CORE_KNIGHT]: 'emerald_core_knight.svg',
 	[CharacterType.RUBY_HORNED_DAME]: 'ruby_horned_dame.svg',
-	[CharacterType.EXPERIENCED_SWORDMAN]: 'experienced_swordman.svg',
-	[CharacterType.HONEY_TRIGGER]: 'honey_trigger'
+	[CharacterType.EXPERIENCED_SWORDMAN]: 'experienced_swordsman.svg',
+	[CharacterType.HONEY_TRIGGER]: 'honey_trigger.svg'
 };
 export const characterNameMap: { [key in CharacterType]: string } = {
 	[CharacterType.AMETHYST_ENCHANTRESS]: 'Amethyst Enchantress',

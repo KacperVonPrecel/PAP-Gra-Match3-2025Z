@@ -24,7 +24,7 @@ export class UserDataLoadingPage implements OnInit, OnDestroy {
 			if (isLoaded) {
 				const returnUrl = this.route.snapshot.queryParamMap.get(RETURN_URL_QUERY_PARAM);
 				if (returnUrl) this.router.navigate([returnUrl]);
-				else this.router.navigate(['/main/home']);
+				else this.router.navigate(['/main/home'], { replaceUrl: true });
 			}
 		});
 	}

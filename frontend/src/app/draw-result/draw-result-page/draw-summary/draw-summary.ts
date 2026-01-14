@@ -1,6 +1,6 @@
 import { Component, Input, input } from '@angular/core';
 import { Router } from '@angular/router';
-import { DrawResult, DrawResultEntry } from '../../../user-data/user-data-service';
+import { characterNameMap, DrawResult, DrawResultEntry } from '../../../user-data/user-data-service';
 import { MatList, MatListItem } from '@angular/material/list';
 
 @Component({
@@ -14,7 +14,7 @@ export class DrawSummary {
 		transform: (v: DrawResultEntry[]) =>
 			v.map((d) => {
 				return {
-					characterName: d.characterType,
+					characterName: characterNameMap[d.characterType],
 					amount: d.amount
 				};
 			})
