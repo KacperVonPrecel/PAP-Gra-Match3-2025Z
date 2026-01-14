@@ -2,6 +2,7 @@ package pap.project.characters;
 
 import org.springframework.lang.NonNull;
 import pap.project.game.match3.Match3Block;
+import pap.project.game_history.model.HistoryCharacterData;
 
 import java.util.Map;
 
@@ -42,4 +43,6 @@ public abstract class CharacterInGame
      * @return damage count which character are about to deal. It is non-negative int.
      */
     public abstract int calculateDamage(@NonNull Map<Match3Block.BlockType, Integer> totalMatchedBlocks);
+
+    public abstract @NonNull HistoryCharacterData historyCharacterData();
 }

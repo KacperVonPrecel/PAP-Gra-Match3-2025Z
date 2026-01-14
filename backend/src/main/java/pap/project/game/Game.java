@@ -6,6 +6,7 @@ import pap.project.game.match3.Match3Board;
 import pap.project.game.match3.model.Match3MoveResult;
 import pap.project.game.match3.model.MoveRequest;
 import pap.project.game.model.CharacterCombatResult;
+import pap.project.game.model.communication.GameEndData;
 import pap.project.game.model.communication.GameState;
 import pap.project.game.model.communication.PlayerCharactersState;
 import pap.project.game.model.communication.PlayerData;
@@ -65,6 +66,7 @@ public class Game
 
             final CharacterCombatResult combatResult = charactersCombat.process(firstPlayerMove, match3Result.totalMatchedBlocks());
 
+            final boolean wasFirstPlayerMove = firstPlayerMove;
             firstPlayerMove = !firstPlayerMove;
 
             final long playerIdToTakeNextMove = getIdOfPlayerWhichShouldMakeMove();
@@ -74,7 +76,8 @@ public class Game
                     secondPlayerData.playerId(), combatResult.secondPlayerCharacterState()
             );
 
-            return new GameState(match3Result.newBoardState(), playerIdToTakeNextMove, playerCharacterState, OptionalLong.of(combatResult.attackingCharacterId()));
+            return new GameState(match3Result.newBoardState(), playerIdToTakeNextMove, playerCharacterState, OptionalLong.of(combatResult.attackingCharacterId()),
+                    combatResult.gameEnded() ? new GameEndData(playerIdToMakeMove, playerIdToTakeNextMove, charactersCombat.getHistoryCharacters(wasFirstPlayerMove), charactersCombat.getHistoryCharacters(!wasFirstPlayerMove)) : null);
         } finally
         {
             gameSemaphore.release();
@@ -90,7 +93,7 @@ public class Game
                 firstPlayerData.playerId(), charactersCombat.getPlayerCharactersState(true),
                 secondPlayerData.playerId(), charactersCombat.getPlayerCharactersState(false)
         );
-        return new GameState(match3Board.getBoardState(), getIdOfPlayerWhichShouldMakeMove(), playerCharacterState, OptionalLong.empty());
+        return new GameState(match3Board.getBoardState(), getIdOfPlayerWhichShouldMakeMove(), playerCharacterState, OptionalLong.empty(), null);
     }
 
     private long getIdOfPlayerWhichShouldMakeMove()

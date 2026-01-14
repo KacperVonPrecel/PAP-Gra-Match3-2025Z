@@ -6,5 +6,6 @@ import pap.project.game.model.communication.PlayerCharactersState;
 public record CharacterCombatResult(
         @NonNull PlayerCharactersState firstPlayerCharacterState,
         @NonNull PlayerCharactersState secondPlayerCharacterState,
-        long attackingCharacterId
+        long attackingCharacterId,
+        boolean gameEnded
 ) {}

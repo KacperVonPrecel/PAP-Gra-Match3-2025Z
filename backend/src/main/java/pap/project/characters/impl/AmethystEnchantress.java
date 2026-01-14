@@ -1,11 +1,7 @@
 package pap.project.characters.impl;
 
-import org.springframework.lang.NonNull;
-import pap.project.characters.Character;
-import pap.project.characters.CharacterInGame;
+import pap.project.characters.model.CharacterType;
 import pap.project.game.match3.Match3Block;
-
-import java.util.OptionalInt;
 
 public class AmethystEnchantress extends OneMainBlockCharacter
 {
@@ -19,6 +15,6 @@ public class AmethystEnchantress extends OneMainBlockCharacter
 
     public AmethystEnchantress()
     {
-        super(BASE_HEALTH, BASE_DAMAGE, HEALTH_PER_LEVEL_INCREASE, DAMAGE_PER_LEVEL_INCREASE, MAIN_BLOCK);
+        super(CharacterType.AMETHYST_ENCHANTRESS, BASE_HEALTH, BASE_DAMAGE, HEALTH_PER_LEVEL_INCREASE, DAMAGE_PER_LEVEL_INCREASE, MAIN_BLOCK);
     }
 }

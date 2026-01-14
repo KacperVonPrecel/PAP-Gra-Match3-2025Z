@@ -30,16 +30,15 @@ import java.util.Optional;
 @Controller
 public class GameController
 {
-    private final GameService service;
-    private final UserDataService userDataService;
-    private final UserStatsRepository userStatsRepository;
-    private final UserCharactersService userCharactersService;
+    private final @NonNull GameService service;
+    private final @NonNull UserDataService userDataService;
+    private final @NonNull UserStatsRepository userStatsRepository;
+    private final @NonNull UserCharactersService userCharactersService;
 
-    private final SimpMessagingTemplate messaging;
+    private final @NonNull SimpMessagingTemplate messaging;
 
-    private static final Logger log = LoggerFactory.getLogger(GameController.class);
-
-    public GameController(GameService service, UserDataService userDataService, UserStatsRepository userStatsRepository, UserCharactersService userCharactersService, SimpMessagingTemplate messaging)
+    public GameController(@NonNull GameService service, @NonNull UserDataService userDataService, @NonNull UserStatsRepository userStatsRepository,
+                          @NonNull UserCharactersService userCharactersService, @NonNull SimpMessagingTemplate messaging)
     {
         this.service = service;
         this.userDataService = userDataService;
@@ -81,13 +80,15 @@ public class GameController
 
         if  (gameState != null)
         {
-            messaging.convertAndSend("/topic/board/{gameId}/state", gameState);
-//          XXX
-//            if (service.hasGameEnded(gameId) && service.getPlayers(gameId) != null)
-//            {
-                // TODO: Implement
-//                 notifyGameEnded(PLAYER GAINS HERE, service.getPlayers(gameId));
-//            }
+            GameEndDataResponse gameEndDataResponse = null;
+            if (gameState.gameEndData() != null)
+            {
+                final var playerStatChange = userDataService.processGameEnd(gameState.gameEndData().winnerId(), gameState.gameEndData().loserId(), System.currentTimeMillis(),
+                        gameState.gameEndData().winnerCharacters(), gameState.gameEndData().loserCharacters());
+                gameEndDataResponse = new GameEndDataResponse(gameState.gameEndData().winnerId(), false, playerStatChange); //XXX
+
+            }
+            messaging.convertAndSend("/topic/board/{gameId}/state", new GameStateResponse(gameState, gameEndDataResponse));
         }
     }
 
@@ -98,19 +99,11 @@ public class GameController
         return service.getState(gameId);
     }
 
-    private void notifyGameStarted(GameStartData gameStartData)
+    private void notifyGameStarted(@NonNull GameStartData gameStartData)
     {
         for (PlayerData data : gameStartData.playerData().values())
             messaging.convertAndSendToUser(data.playerName(), "/queue/gameStart", gameStartData);
     }
-
-    private void notifyGameEnded(@NonNull GameEndData gameEndData, @NonNull List<PlayerData> playerData)
-    {
-        for (PlayerData data : playerData)
-            messaging.convertAndSendToUser(data.playerName(), "/queue/gameEnd", gameEndData);
-    }
-
-
 
     private @Nullable PlayerData getPlayer(@NonNull Principal principal)
     {
@@ -127,7 +120,7 @@ public class GameController
             long characterId = character.getId().getAsLong();
             final CharacterData characterData = userCharactersService.createCharacterData(character);
 
-            gameCharacters.add(new GameCharacter(characterId, character.getCharacterType(), characterData.damage(), characterData.health(), characterData.level()));
+            gameCharacters.add(new GameCharacter(characterId, character.getCharacterType(), characterData.health(), characterData.level()));
         }
 
         return new PlayerData(

@@ -1,11 +1,15 @@
 package pap.project.game.model.communication;
 
 import org.springframework.lang.NonNull;
+import org.w3c.dom.stylesheets.LinkStyle;
+import pap.project.game_history.model.HistoryCharacterData;
 
-import java.util.Map;
+import java.util.List;
 
 public record GameEndData(
         long winnerId,
-        boolean disconnected,
-        @NonNull Map<Long, PlayerStatChange> playerGains
-) { }
+        long loserId,
+        @NonNull List<HistoryCharacterData> winnerCharacters,
+        @NonNull List<HistoryCharacterData> loserCharacters
+        ) {
+}

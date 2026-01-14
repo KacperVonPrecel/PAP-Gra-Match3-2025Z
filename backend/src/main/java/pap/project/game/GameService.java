@@ -74,7 +74,10 @@ public class GameService
         {
             try
             {
-                return games.get(gameId).playTurn(playerId, moveRequest);
+                final GameState gameState = games.get(gameId).playTurn(playerId, moveRequest);;
+                if (gameState != null && gameState.gameEndData() != null)
+                    games.remove(gameId);
+                return gameState;
             } catch (InterruptedException e)
             {
                 Thread.interrupted();
@@ -93,22 +96,6 @@ public class GameService
 
         return null;
     }
-// XXX
-//    public @Nullable PlayerData[] getPlayers(@NonNull String gameId)
-//    {
-//        if (games.containsKey(gameId))
-//            return games.get(gameId).getPlayerData();
-//
-//        return null;
-//    }
-
-//    public boolean hasGameEnded(@NonNull String gameId)
-//    {
-//        if (games.containsKey(gameId))
-//            return games.get(gameId).hasGameEnded();
-//
-//        return false;
-//    }
 
     private @NonNull String generateId()
     {

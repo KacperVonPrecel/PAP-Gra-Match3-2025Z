@@ -3,12 +3,16 @@ package pap.project.characters.impl;
 import org.springframework.lang.NonNull;
 import pap.project.characters.Character;
 import pap.project.characters.CharacterInGame;
+import pap.project.characters.model.CharacterType;
 import pap.project.game.match3.Match3Block;
+import pap.project.game_history.model.HistoryCharacterData;
 
 import java.util.OptionalInt;
 
 public class OneMainBlockCharacter implements Character
 {
+    private final @NonNull CharacterType characterType;
+
     private final int baseHealth;
     private final int baseDamage;
     private final int healthPerLevelIncrease;
@@ -16,9 +20,10 @@ public class OneMainBlockCharacter implements Character
 
     private final @NonNull Match3Block.BlockType mainBlock;
 
-    OneMainBlockCharacter(int baseHealth, int baseDamage, int healthPerLevelIncrease, int damagePerLevelIncrease,
+    OneMainBlockCharacter(@NonNull CharacterType characterType, int baseHealth, int baseDamage, int healthPerLevelIncrease, int damagePerLevelIncrease,
                           @NonNull Match3Block.BlockType mainBlock)
     {
+        this.characterType = characterType;
         this.baseHealth = baseHealth;
         this.baseDamage = baseDamage;
         this.healthPerLevelIncrease = healthPerLevelIncrease;
@@ -51,6 +56,6 @@ public class OneMainBlockCharacter implements Character
     @Override
     public final @NonNull CharacterInGame createCharacterInGame(long characterId, int level)
     {
-        return new OneMainBlockCharacterInGame(characterId, getDamage(level), getHealth(level), mainBlock);
+        return new OneMainBlockCharacterInGame(characterId, getDamage(level), getHealth(level), mainBlock, new HistoryCharacterData(characterType, level));
     }
 }

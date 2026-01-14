@@ -6,6 +6,7 @@ import pap.project.characters.CharacterInGame;
 import pap.project.game.match3.Match3Block;
 import pap.project.game.model.CharacterCombatResult;
 import pap.project.game.model.communication.PlayerCharactersState;
+import pap.project.game_history.model.HistoryCharacterData;
 
 import java.util.List;
 import java.util.Map;
@@ -25,8 +26,8 @@ public class CharactersCombat
     public @NonNull CharacterCombatResult process(boolean firstPlayerMove, @NonNull Map<Match3Block.BlockType, Integer> totalMatchedBlocks)
     {
         final Pair<Integer, Long> attackInfo = getAttackInfo(firstPlayerMove, totalMatchedBlocks);
-        takeDamage(!firstPlayerMove, attackInfo.getFirst());
-        return new CharacterCombatResult(getPlayerCharactersState(true), getPlayerCharactersState(false), attackInfo.getSecond());
+        final boolean gameEnded = takeDamage(!firstPlayerMove, attackInfo.getFirst());
+        return new CharacterCombatResult(getPlayerCharactersState(true), getPlayerCharactersState(false), attackInfo.getSecond(), gameEnded);
     }
 
     /**
@@ -62,7 +63,7 @@ public class CharactersCombat
      *                               If true that mean second player make move, and he is dealing damage to first player characters.
      * @param damageToTake damage dealt to the opponent characters, by moving player.
      */
-    private void takeDamage(boolean firstPlayerTakesDamage, int damageToTake)
+    private boolean takeDamage(boolean firstPlayerTakesDamage, int damageToTake)
     {
         final List<CharacterInGame> aliveCharacters = (firstPlayerTakesDamage ? firstPlayerCharacters : secondPlayerCharacters)
                 .stream().filter(CharacterInGame::isAlive).toList();
@@ -72,11 +73,18 @@ public class CharactersCombat
 
         final CharacterInGame characterToGetDamage = aliveCharacters.getFirst();
         characterToGetDamage.takeDamage(damageToTake);
+        return !characterToGetDamage.isAlive() && aliveCharacters.size() == 1;
     }
 
     public @NonNull PlayerCharactersState getPlayerCharactersState(boolean firstPlayer)
     {
         final List<CharacterInGame> characters = (firstPlayer ? firstPlayerCharacters : secondPlayerCharacters);
         return new PlayerCharactersState(characters.stream().collect(Collectors.toMap((c) -> c.characterId, CharacterInGame::getCurrentHealth)));
+    }
+
+    public @NonNull List<HistoryCharacterData> getHistoryCharacters(boolean firstPlayer)
+    {
+        final List<CharacterInGame> characters = (firstPlayer ? firstPlayerCharacters : secondPlayerCharacters);
+        return characters.stream().map(CharacterInGame::historyCharacterData).toList();
     }
 }

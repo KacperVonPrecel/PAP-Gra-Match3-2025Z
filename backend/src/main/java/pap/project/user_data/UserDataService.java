@@ -3,6 +3,7 @@ package pap.project.user_data;
 import jakarta.transaction.Transactional;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import pap.project.game.model.communication.PlayerStatChange;
 import pap.project.game_history.Match;
 import pap.project.game_history.MatchCharacters;
 import pap.project.game_history.MatchCharactersRepository;
@@ -83,7 +84,7 @@ public class UserDataService
      * This function can take long time to execute, so don't call this in thread which need to do something else.
      */
     @Transactional
-    public void processGameEnd(long winnerId, long loserId, long finishTime, List<HistoryCharacterData> winnerCharacters, List<HistoryCharacterData> loserCharacters)
+    public @NonNull Map<Long, PlayerStatChange> processGameEnd(long winnerId, long loserId, long finishTime, @NonNull List<HistoryCharacterData> winnerCharacters, @NonNull List<HistoryCharacterData> loserCharacters)
     {
         final UserSessionData winnerUserSessionData = userSessionData.computeIfAbsent(winnerId, _ -> new UserSessionData());
         final UserSessionData loserUserSessionData  = userSessionData.computeIfAbsent(loserId, _ -> new UserSessionData());
@@ -100,7 +101,7 @@ public class UserDataService
             {
                 Thread.interrupted();
             }
-            processGameEnd(winnerId, loserId, finishTime, winnerCharacters, loserCharacters);
+            return processGameEnd(winnerId, loserId, finishTime, winnerCharacters, loserCharacters);
         }
 
         try
@@ -148,6 +149,10 @@ public class UserDataService
             matchCharactersRepository.save(matchCharacters);
             matchRepository.save(match);
 
+            return Map.of(
+                    winnerId, new PlayerStatChange(ELO_UP, CURRENCY_WINNER),
+                    loserId, new PlayerStatChange(ELO_DOWN, CURRENCY_LOSER)
+            );
         } finally
         {
             winnerUserSessionData.unlock();
