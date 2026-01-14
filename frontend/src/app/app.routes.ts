@@ -86,17 +86,19 @@ export const routes: Routes = [
 				path: 'draw-result',
 				component: DrawResultControllerPage,
 				title: 'DrawResultPage'
+			},
+			{
+				canActivate: [userDataGuard],
+				path: 'match3',
+				component: Match3,
+				title: 'Match3'
+			},
+			{
+				canActivate: [userDataGuard],
+				path: 'finding-match',
+				component: FindingMatch,
+				title: 'FindingMatch'
 			}
 		]
-	},
-	{
-		path: 'match3',
-		component: Match3,
-		title: 'Match3'
-	},
-	{
-		path: 'finding-match',
-		component: FindingMatch,
-		title: 'FindingMatch'
 	}
 ];

@@ -16,13 +16,20 @@ export class Match3 {
 	private gameStartData?: GameStartData;
 	private gameState?: GameState; //nullable because if we dont connect, no state
 	public _moveValid: { valid: boolean | null; moveId: number } = { valid: null, moveId: 0 };
-	playerId: number = 0;
+	playerId?: number = 0;
 	lastSentMoveRequestId: number = 0;
 	lastProcessedMoveId: number = 0;
+
+	private readonly userDataService = inject(UserDataService);
 
 	constructor(private socket: Match3Service) {}
 
 	ngOnInit(): void {
+		/*
+		this.userDataService.userDataObservable.subscribe((data) => {
+			this.playerId = data.id;
+		});
+		*/
 		//this.socket.client.onConnect = () => {
 		//console.log('STOMP connected');
 		//this.connect(0);
