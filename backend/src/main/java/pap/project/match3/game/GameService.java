@@ -1,4 +1,4 @@
-package pap.project.match3;
+package pap.project.match3.game;
 
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -10,10 +10,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Service
-public class Match3Service {
-    private static final int DEFAULT_BOARD_SIZE = 5;
-
-    private final Map<String, Match3Board> games = new ConcurrentHashMap<>();
+public class GameService
+{
+    private final Map<String, Game> games = new ConcurrentHashMap<>();
     public final Queue<PlayerData> waitingPlayers = new ConcurrentLinkedQueue<>();
 
     /**
@@ -21,19 +20,17 @@ public class Match3Service {
      */
     public @Nullable GameStartData joinOrCreateGame(@NonNull PlayerData player)
     {
-        for (Map.Entry<String, Match3Board> entry : games.entrySet())
+        for (Map.Entry<String, Game> entry : games.entrySet())
         {
-            if (Arrays.stream(entry.getValue().getPlayerData()).anyMatch((playerData -> playerData.playerId() == player.playerId())))
+            if (entry.getValue().firstPlayerData.playerId() == player.playerId() || entry.getValue().secondPlayerData.playerId() == player.playerId())
             {
-                final PlayerData[] players = entry.getValue().getPlayerData();
-
                 return new GameStartData(
                         entry.getKey(),
                         entry.getValue().getGameState(),
-                        new ConcurrentHashMap<>(Map.of(
-                                players[0].playerId(), players[0],
-                                players[1].playerId(), players[1]
-                        ))
+                        Map.of(
+                                entry.getValue().firstPlayerData.playerId(), entry.getValue().firstPlayerData,
+                                entry.getValue().secondPlayerData.playerId(), entry.getValue().secondPlayerData
+                        )
                 );
             }
         }
@@ -50,25 +47,16 @@ public class Match3Service {
         final PlayerData otherPlayer = waitingPlayers.poll();
         final String gameId = generateId();
 
-        final Match3Block[][] blocks = new Match3Block[DEFAULT_BOARD_SIZE][DEFAULT_BOARD_SIZE];
-        for (int i = 0; i < DEFAULT_BOARD_SIZE; i++)
-        {
-            for (int j = 0; j < DEFAULT_BOARD_SIZE; j++)
-            {
-                blocks[i][j] = new Match3Block();
-            }
-        }
-
-        final Match3Board board = new Match3Board(blocks, MatchableShapeLibrary.ALL_SHAPES, new PlayerData[] {player, otherPlayer});
-        games.put(gameId, board);
+        final Game game = new Game(player, otherPlayer);
+        games.put(gameId, game);
 
         return new GameStartData(
                 gameId,
-                board.getGameState(),
-                new ConcurrentHashMap<>(Map.of(
+                game.getGameState(),
+                Map.of(
                         player.playerId(), player,
                         otherPlayer.playerId(), otherPlayer
-                ))
+                )
         );
     }
 
@@ -80,7 +68,17 @@ public class Match3Service {
     public @Nullable GameState playTurn(@NonNull String gameId, @NonNull MoveRequest moveRequest, long playerId)
     {
         if (games.containsKey(gameId))
-            return games.get(gameId).playTurn(moveRequest, playerId);
+        {
+            try
+            {
+                return games.get(gameId).playTurn(playerId, moveRequest);
+            } catch (InterruptedException e)
+            {
+                Thread.interrupted();
+                return null;
+            }
+        }
+
 
         return null;
     }
@@ -92,22 +90,22 @@ public class Match3Service {
 
         return null;
     }
+// XXX
+//    public @Nullable PlayerData[] getPlayers(@NonNull String gameId)
+//    {
+//        if (games.containsKey(gameId))
+//            return games.get(gameId).getPlayerData();
+//
+//        return null;
+//    }
 
-    public @Nullable PlayerData[] getPlayers(@NonNull String gameId)
-    {
-        if (games.containsKey(gameId))
-            return games.get(gameId).getPlayerData();
-
-        return null;
-    }
-
-    public boolean hasGameEnded(@NonNull String gameId)
-    {
-        if (games.containsKey(gameId))
-            return games.get(gameId).hasGameEnded();
-
-        return false;
-    }
+//    public boolean hasGameEnded(@NonNull String gameId)
+//    {
+//        if (games.containsKey(gameId))
+//            return games.get(gameId).hasGameEnded();
+//
+//        return false;
+//    }
 
     private @NonNull String generateId()
     {

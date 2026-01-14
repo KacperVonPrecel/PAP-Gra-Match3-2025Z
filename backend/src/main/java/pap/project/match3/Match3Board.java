@@ -5,55 +5,45 @@ import org.springframework.lang.Nullable;
 import pap.project.match3.model.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Match3Board
 {
+    private static final int DEFAULT_BOARD_SIZE = 5;
+
     private record Matches(List<Match3Block> blocks, List<Position> positions) {}
-    
+
     private final @NonNull Match3Block[][] board;
     private final @NonNull MatchableShape[] matchableShapes;
 
-    private final @NonNull PlayerData[] playerData;
-    private final @NonNull PlayerState[] playerStates;
-    private int currentPlayerIndex;
-
-    private final long timeStarted;
-
     private final @NonNull Random random = new Random();
 
-
-    public Match3Board(@NonNull Match3Block[][] board, @NonNull MatchableShape[] matchableShapes, @NonNull PlayerData[] playerData)
+    public Match3Board()
     {
-        this(board, matchableShapes, playerData, false);
+        this.board = generateEmptyBoard();
+        this.matchableShapes = MatchableShapeLibrary.ALL_SHAPES;
+
+        generateValidBoard();
     }
 
-    public Match3Board(@NonNull Match3Block[][] board, @NonNull MatchableShape[] matchableShapes, @NonNull PlayerData[] playerData, boolean forceBoard)
+    private @NonNull Match3Block[][] generateEmptyBoard()
     {
-        this.board = board;
-        this.matchableShapes = matchableShapes;
-
-        this.playerData = playerData;
-        this.playerStates = new PlayerState[playerData.length];
-        this.currentPlayerIndex = random.nextInt(playerData.length);
-
-        for (int i  = 0; i < playerData.length; i++)
-            playerStates[i] = new PlayerState(playerData[i].characters().stream().collect((Collectors.toMap(GameCharacter::characterId, GameCharacter::maxHealth))));
-
-        // If forceBoard = true, do not make sure there are no matches and at least one allowed move
-        if (!forceBoard)
-            generateValidBoard();
-
-        timeStarted = System.currentTimeMillis();
+        final Match3Block[][] blocks = new Match3Block[DEFAULT_BOARD_SIZE][DEFAULT_BOARD_SIZE];
+        for (int i = 0; i < DEFAULT_BOARD_SIZE; i++)
+        {
+            for (int j = 0; j < DEFAULT_BOARD_SIZE; j++)
+            {
+                blocks[i][j] = new Match3Block();
+            }
+        }
+        return blocks;
     }
 
     /**
-     * @return null if move wasn't allowed, which mean it's not this player move, or requested move is invalid. Move is consider valid if
-     *         after moving blocks there is some connection between blocks - XXX check if is valid sentence.
+     * @return null if move invalid. Move is consider valid if after moving blocks there is some connection between blocks - XXX check if is valid sentence.
      */
-    public @Nullable GameState playTurn(@NonNull MoveRequest moveRequest, long playerId)
+    public @Nullable Match3MoveResult makeMove(@NonNull MoveRequest moveRequest)
     {
-        if (!(playerId == playerData[currentPlayerIndex].playerId()) || !swapBlocks(moveRequest))
+        if (!swapBlocks(moveRequest))
             return null;
 
         final List<AnimationStep> animationSteps = new ArrayList<>();
@@ -101,45 +91,13 @@ public class Match3Board
             ));
         }
 
-        int totalDamage = 0;
-        for (Map.Entry<Match3Block.BlockType, Integer> entry : totalMatchedBlocks.entrySet())
-        {
-            int maxDamage = 1;
-            for (GameCharacter character : playerData[currentPlayerIndex].characters())
-            {
-                if (character.damage() > maxDamage)
-                    maxDamage = character.damage();
-            }
-
-            totalDamage += maxDamage;
-        }
-
-        for (Map.Entry<Long, Integer> entry : playerStates[(currentPlayerIndex + 1) % playerData.length].charactersHealth().entrySet())
-        {
-            if (entry.getValue() > 0)
-            {
-                entry.setValue(entry.getValue() - totalDamage);
-
-                if (entry.getValue() <= 0)
-                    entry.setValue(0);
-
-                break;
-            }
-        }
-
-        currentPlayerIndex = (currentPlayerIndex + 1) % playerData.length;
-
         final BoardState boardState = new BoardState(
                 board,
                 getAllowedMoves(),
                 animationSteps
         );
 
-        return new GameState(
-                boardState,
-                playerData[currentPlayerIndex].playerId(),
-                playerStates
-        );
+        return new Match3MoveResult(boardState, totalMatchedBlocks);
     }
 
     public @NonNull BoardState getBoardState()
@@ -151,37 +109,7 @@ public class Match3Board
         );
     }
 
-    public @NonNull GameState getGameState()
-    {
-        return new GameState(
-                getBoardState(),
-                playerData[currentPlayerIndex].playerId(),
-                playerStates
-        );
-    }
-
-    public @NonNull PlayerData[] getPlayerData()
-    {
-        return playerData;
-    }
-
-    public boolean hasGameEnded()
-    {
-        for (PlayerState state : playerStates)
-        {
-            if (state.charactersHealth().values().stream().allMatch(health -> health <= 0))
-                return true;
-        }
-
-        return false;
-    }
-
-    public long getElapsedTime()
-    {
-        return System.currentTimeMillis() - timeStarted;
-    }
-
-    public void generateValidBoard()
+    private void generateValidBoard()
     {
         fillBoard();
 
@@ -193,7 +121,7 @@ public class Match3Board
 
     }
 
-    public @NonNull List<NewBlock> fillBoard()
+    private @NonNull List<NewBlock> fillBoard()
     {
         List<NewBlock> filledPositions = new ArrayList<>();
 
@@ -213,7 +141,7 @@ public class Match3Board
         return filledPositions;
     }
 
-    public @NonNull Matches findMatchedBlocks()
+    private @NonNull Matches findMatchedBlocks()
     {
         // TODO: Look into 2D Rabin-Karp because this is awful
         List<Match3Block> matches = new ArrayList<>();
@@ -251,7 +179,7 @@ public class Match3Board
         return new Matches(matches, matchPositions);
     }
 
-    public @NonNull List<MoveRequest> dropFloatingBlocks()
+    private @NonNull List<MoveRequest> dropFloatingBlocks()
     {
         List<MoveRequest> droppedMoves = new ArrayList<>();
 
@@ -288,7 +216,7 @@ public class Match3Board
         return droppedMoves;
     }
 
-    public boolean swapBlocks(@NonNull MoveRequest moveRequest)
+    private boolean swapBlocks(@NonNull MoveRequest moveRequest)
     {
         if (!areBlocksSwappable(moveRequest))
             return false;
@@ -298,7 +226,7 @@ public class Match3Board
         return true;
     }
 
-    public void destroyBlocks(@NonNull List<Match3Block> toDestroy)
+    private void destroyBlocks(@NonNull List<Match3Block> toDestroy)
     {
         for (Match3Block match : toDestroy)
         {
@@ -306,15 +234,15 @@ public class Match3Board
         }
     }
 
-    public @NonNull List<MoveRequest> getAllowedMoves()
+    private @NonNull List<MoveRequest> getAllowedMoves()
     {
-        List<MoveRequest> allowedMoves = new ArrayList<>();
+        final List<MoveRequest> allowedMoves = new ArrayList<>();
 
         for (int i = 0; i < board.length; i++)
         {
             for (int j = 0; j < board[i].length; j++)
             {
-                List<MoveRequest> movesToCheck = new ArrayList<>();
+                final List<MoveRequest> movesToCheck = new ArrayList<>();
 
                 if (i > 0)
                     movesToCheck.add(new MoveRequest(new Position(i, j), new Position(i - 1, j)));
