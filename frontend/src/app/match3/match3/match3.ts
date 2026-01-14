@@ -149,6 +149,13 @@ export class Match3 {
 		return null;
 	}
 
+	get attackingCharacter(): number | null {
+		if (!this.gameState) {
+			return null;
+		}
+		return this.gameState.attackingCharacterId;
+	}
+
 	connect(gameId: string): void {
 		console.log(gameId);
 		this.gameId = gameId;

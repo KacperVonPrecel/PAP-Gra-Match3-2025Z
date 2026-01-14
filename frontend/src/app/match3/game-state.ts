@@ -57,4 +57,5 @@ export interface GameCharacter {
 	characterType: CharacterType;
 	maxHealth: number;
 	damage: number;
+	level: number;
 }

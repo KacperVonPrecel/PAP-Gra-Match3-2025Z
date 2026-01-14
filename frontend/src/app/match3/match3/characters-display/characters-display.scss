@@ -93,3 +93,44 @@
 		transform: translateX(0);
 	}
 }
+
+.attack {
+	animation:
+		attack-lunge 350ms ease-out,
+		attack-flash 200ms ease-out;
+}
+
+@keyframes attack-lunge {
+	0% {
+		transform: translateX(0) scale(1);
+	}
+	60% {
+		transform: translateX(10%) scale(1.1);
+	}
+	100% {
+		transform: translateX(0) scale(1);
+	}
+}
+
+.attack-flash {
+	position: absolute;
+	top: 40%;
+	left: 100%;
+	width: 1.2rem;
+	height: 1.2rem;
+	background: radial-gradient(circle, rgb(240, 226, 163, 0.8), rgba(255, 255, 200, 0));
+	opacity: 0;
+	pointer-events: none;
+}
+
+@keyframes attack-flash {
+	0% {
+		opacity: 0;
+	}
+	30% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}

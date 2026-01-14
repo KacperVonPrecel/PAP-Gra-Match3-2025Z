@@ -1,6 +1,7 @@
 export class CharacterAnimationState {
 	takingDamage = new Map<string, string>();
 	dead = new Map<string, string>();
+	attacking = new Map<string, string>();
 
 	getAnimationClasses(characterId: number) {
 		const key = `${characterId}`;
@@ -9,6 +10,8 @@ export class CharacterAnimationState {
 		if (dam) classes.push(dam);
 		const dead = this.dead.get(key);
 		if (dead) classes.push(dead);
+		const attack = this.attacking.get(key);
+		if (attack) classes.push(attack);
 		return classes.join(' ');
 	}
 
@@ -18,6 +21,10 @@ export class CharacterAnimationState {
 
 	clearDead(): void {
 		this.dead.clear();
+	}
+
+	clearAttacking(): void {
+		this.attacking.clear();
 	}
 
 	deleteDamage(characterId: number): void {
@@ -33,5 +40,10 @@ export class CharacterAnimationState {
 	addDead(characterId: number): void {
 		const key = `${characterId}`;
 		this.dead.set(key, 'dead');
+	}
+
+	addAttack(characterId: number): void {
+		const key = `${characterId}`;
+		this.attacking.set(key, 'attack');
 	}
 }

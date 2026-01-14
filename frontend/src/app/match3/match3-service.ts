@@ -139,14 +139,14 @@ export class Match3Service {
 		];
 		const boardState: BoardState = { board, allowedMoves: [], animationSteps: [] };
 		const playerCharacters: GameCharacter[] = [
-			{ characterId: 0, characterType: CharacterType.SACRED_CAT, maxHealth: 100, damage: 100 },
-			{ characterId: 1, characterType: CharacterType.AMETHYST_ENCHANTRESS, maxHealth: 100, damage: 100 },
-			{ characterId: 2, characterType: CharacterType.RUBY_HORNED_DAME, maxHealth: 80, damage: 100 }
+			{ characterId: 0, characterType: CharacterType.SACRED_CAT, maxHealth: 100, damage: 100, level: 1 },
+			{ characterId: 1, characterType: CharacterType.AMETHYST_ENCHANTRESS, maxHealth: 100, damage: 100, level: 1 },
+			{ characterId: 2, characterType: CharacterType.RUBY_HORNED_DAME, maxHealth: 80, damage: 100, level: 1 }
 		];
 		const opponentCharacters: GameCharacter[] = [
-			{ characterId: 3, characterType: CharacterType.AMETHYST_ENCHANTRESS, maxHealth: 90, damage: 100 },
-			{ characterId: 4, characterType: CharacterType.EMERALD_CORE_KNIGHT, maxHealth: 110, damage: 100 },
-			{ characterId: 5, characterType: CharacterType.TRASH_MAN, maxHealth: 100, damage: 100 }
+			{ characterId: 3, characterType: CharacterType.AMETHYST_ENCHANTRESS, maxHealth: 90, damage: 100, level: 1 },
+			{ characterId: 4, characterType: CharacterType.EMERALD_CORE_KNIGHT, maxHealth: 110, damage: 100, level: 1 },
+			{ characterId: 5, characterType: CharacterType.TRASH_MAN, maxHealth: 100, damage: 100, level: 1 }
 		];
 		const playerState = new Map<number, number>([
 			[1, 100],

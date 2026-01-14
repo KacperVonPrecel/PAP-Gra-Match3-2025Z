@@ -12,11 +12,13 @@ import { CharacterAnimationState } from './character-animation-state';
 })
 export class CharactersDisplay {
 	private static readonly DAMAGE_DURATION = 50000;
+	private static readonly ATTACK_DURATION = 55000;
 
 	myData = input<PlayerData | null>();
 	opponentData = input<PlayerData | null>();
 	myState = input<PlayerState | null>();
 	opponentState = input<PlayerState | null>();
+	attackingCharacter = input<number | null>();
 
 	private myOldState: PlayerState | null = null;
 	private opponentOldState: PlayerState | null = null;
@@ -76,6 +78,15 @@ export class CharactersDisplay {
 			if (myState) {
 				this.myOldState = myState;
 			}
+		});
+		effect(() => {
+			const attackingCharacter = this.attackingCharacter();
+			if (attackingCharacter != null) {
+				this.animationState.addAttack(attackingCharacter);
+			}
+			setTimeout(() => {
+				this.animationState.clearAttacking();
+			}, CharactersDisplay.ATTACK_DURATION);
 		});
 	}
 
