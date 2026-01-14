@@ -4,8 +4,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import pap.project.match3.model.*;
-import pap.project.user_stats.UserStatsRepository;
-import pap.project.users.UserAuthDetails;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,18 +11,21 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Service
 public class Match3Service {
+    private static final int DEFAULT_BOARD_SIZE = 5;
+
     private final Map<String, Match3Board> games = new ConcurrentHashMap<>();
-    public final Queue<PlayerData> waitingPlayers = new ConcurrentLinkedQueue<PlayerData>();
+    public final Queue<PlayerData> waitingPlayers = new ConcurrentLinkedQueue<>();
 
-    private final int DEFAULT_SIZE = 5;
-
-    public @Nullable GameStartData joinOrCreateGame(@NonNull PlayerData player) // Returns gameId (or null if not created)
+    /**
+     * @return if null then game is not created, otherwise it means that game got created.
+     */
+    public @Nullable GameStartData joinOrCreateGame(@NonNull PlayerData player)
     {
         for (Map.Entry<String, Match3Board> entry : games.entrySet())
         {
             if (Arrays.stream(entry.getValue().getPlayerData()).anyMatch((playerData -> playerData.playerId() == player.playerId())))
             {
-                PlayerData[] players = entry.getValue().getPlayerData();
+                final PlayerData[] players = entry.getValue().getPlayerData();
 
                 return new GameStartData(
                         entry.getKey(),
@@ -49,10 +50,10 @@ public class Match3Service {
         final PlayerData otherPlayer = waitingPlayers.poll();
         final String gameId = generateId();
 
-        final Match3Block[][] blocks = new Match3Block[DEFAULT_SIZE][DEFAULT_SIZE];
-        for (int i = 0; i < DEFAULT_SIZE; i++)
+        final Match3Block[][] blocks = new Match3Block[DEFAULT_BOARD_SIZE][DEFAULT_BOARD_SIZE];
+        for (int i = 0; i < DEFAULT_BOARD_SIZE; i++)
         {
-            for (int j = 0; j < DEFAULT_SIZE; j++)
+            for (int j = 0; j < DEFAULT_BOARD_SIZE; j++)
             {
                 blocks[i][j] = new Match3Block();
             }
@@ -100,7 +101,7 @@ public class Match3Service {
         return null;
     }
 
-    public boolean HasGameEnded(@NonNull String gameId)
+    public boolean hasGameEnded(@NonNull String gameId)
     {
         if (games.containsKey(gameId))
             return games.get(gameId).hasGameEnded();

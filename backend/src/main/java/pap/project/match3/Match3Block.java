@@ -5,8 +5,6 @@ import org.springframework.lang.NonNull;
 
 public class Match3Block
 {
-    private @NonNull BlockType blockType = BlockType.EMPTY;
-
     public enum BlockType
     {
         DISABLED,
@@ -18,6 +16,8 @@ public class Match3Block
         HEMATITE,
         RUBY
     }
+
+    private @NonNull BlockType blockType = BlockType.EMPTY;
 
     public Match3Block() { }
     public Match3Block(@NonNull BlockType blockType)

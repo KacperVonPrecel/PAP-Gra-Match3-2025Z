@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 public class Match3Board
 {
+    private record Matches(List<Match3Block> blocks, List<Position> positions) {}
+    
     private final @NonNull Match3Block[][] board;
     private final @NonNull MatchableShape[] matchableShapes;
 
@@ -16,11 +18,10 @@ public class Match3Board
     private final @NonNull PlayerState[] playerStates;
     private int currentPlayerIndex;
 
-    private long timeStarted;
+    private final long timeStarted;
 
     private final @NonNull Random random = new Random();
 
-    public record Matches(List<Match3Block> blocks, List<Position> positions) {}
 
     public Match3Board(@NonNull Match3Block[][] board, @NonNull MatchableShape[] matchableShapes, @NonNull PlayerData[] playerData)
     {
@@ -46,28 +47,31 @@ public class Match3Board
         timeStarted = System.currentTimeMillis();
     }
 
+    /**
+     * @return null if move wasn't allowed, which mean it's not this player move, or requested move is invalid. Move is consider valid if
+     *         after moving blocks there is some connection between blocks - XXX check if is valid sentence.
+     */
     public @Nullable GameState playTurn(@NonNull MoveRequest moveRequest, long playerId)
     {
         if (!(playerId == playerData[currentPlayerIndex].playerId()) || !swapBlocks(moveRequest))
             return null;
 
-        List<AnimationStep> animationSteps = new ArrayList<>();
+        final List<AnimationStep> animationSteps = new ArrayList<>();
 
         MoveRequest swappedBlocks = moveRequest;
 
         // Destroy, drop and repeat until no matches are left
         Matches matches = findMatchedBlocks();
-        Map<Match3Block.BlockType, Integer> totalMatchedBlocks = new HashMap<>();
+        final Map<Match3Block.BlockType, Integer> totalMatchedBlocks = new HashMap<>();
 
         while (!matches.blocks().isEmpty())
         {
             for (Match3Block block : matches.blocks())
-                totalMatchedBlocks.put(block.getBlockType(), totalMatchedBlocks.getOrDefault(block.getBlockType(), 0) + 1);
+                totalMatchedBlocks.compute(block.getBlockType(), (_, v) -> (v != null ? v : 0) + 1);
 
             destroyBlocks(matches.blocks());
 
             final List<MoveRequest> dropped = dropFloatingBlocks();
-
             final List<NewBlock> newBlocks = fillBoard();
 
             animationSteps.add(new AnimationStep(
@@ -103,7 +107,7 @@ public class Match3Board
             int maxDamage = 1;
             for (GameCharacter character : playerData[currentPlayerIndex].characters())
             {
-                if (character.damage() >  maxDamage)
+                if (character.damage() > maxDamage)
                     maxDamage = character.damage();
             }
 
@@ -230,7 +234,7 @@ public class Match3Board
                         matchPositions.add(new Position(i, j));
                     }
 
-                    for (MatchableShape.RelativeCoordinates relativeCoordinates : shape.getRelativeCoordinates())
+                    for (MatchableShape.RelativeCoordinates relativeCoordinates : shape.relativeCoordinates())
                     {
                         Match3Block block = board[i + relativeCoordinates.x()][j + relativeCoordinates.y()];
 
@@ -381,7 +385,7 @@ public class Match3Board
         if  (thisBlockType == Match3Block.BlockType.DISABLED || thisBlockType == Match3Block.BlockType.EMPTY)
             return false;
 
-        for (MatchableShape.RelativeCoordinates coordinates : shape.getRelativeCoordinates())
+        for (MatchableShape.RelativeCoordinates coordinates : shape.relativeCoordinates())
         {
             if (isOutOfBounds(row + coordinates.x(), column + coordinates.y()))
                 return false;

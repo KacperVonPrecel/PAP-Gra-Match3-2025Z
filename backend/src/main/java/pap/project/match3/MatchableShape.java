@@ -2,18 +2,7 @@ package pap.project.match3;
 
 import org.springframework.lang.NonNull;
 
-public class MatchableShape {
-    @NonNull private final RelativeCoordinates[] relativeCoordinates;
-
+//XXX remove it if only is required RelativeCoordinates
+public record MatchableShape(@NonNull RelativeCoordinates[] relativeCoordinates) {
     public record RelativeCoordinates(int x, int y) { }
-
-    public MatchableShape(@NonNull RelativeCoordinates[] relativeCoordinates)
-    {
-        this.relativeCoordinates = relativeCoordinates;
-    }
-
-    public RelativeCoordinates[] getRelativeCoordinates()
-    {
-        return relativeCoordinates;
-    }
 }

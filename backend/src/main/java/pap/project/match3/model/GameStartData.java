@@ -4,8 +4,11 @@ import org.springframework.lang.NonNull;
 
 import java.util.Map;
 
+/**
+ * @param playerData key is playerId
+ */
 public record GameStartData(
         @NonNull String gameId,
         @NonNull GameState gameState,
-        @NonNull Map<Long, PlayerData> playerData // Player Id -> PlayerData
+        @NonNull Map<Long, PlayerData> playerData
 ) { }

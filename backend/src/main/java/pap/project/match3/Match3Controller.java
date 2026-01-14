@@ -1,6 +1,5 @@
 package pap.project.match3;
 
-import jakarta.validation.constraints.Null;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -76,16 +75,16 @@ public class Match3Controller {
     @MessageMapping("/board/{gameId}/playTurn")
     public void playTurn(@DestinationVariable String gameId, @NonNull @RequestBody MoveRequest moveRequest, @NonNull Principal principal)
     {
-        GameState gameState = service.playTurn(gameId, moveRequest, getUser(principal).getUserId());
+        final GameState gameState = service.playTurn(gameId, moveRequest, getUser(principal).getUserId());
 
         if  (gameState != null)
         {
             messaging.convertAndSend("/topic/board/{gameId}/state", gameState);
 
-            if (service.HasGameEnded(gameId) && service.getPlayers(gameId) != null)
+            if (service.hasGameEnded(gameId) && service.getPlayers(gameId) != null)
             {
                 // TODO: Implement
-                // notifyGameEnded(PLAYER GAINS HERE, service.getPlayers(gameId));
+//                 notifyGameEnded(PLAYER GAINS HERE, service.getPlayers(gameId));
             }
         }
     }
@@ -103,7 +102,7 @@ public class Match3Controller {
             messaging.convertAndSendToUser(data.playerName(), "/queue/gameStart", gameStartData);
     }
 
-    private void notifyGameEnded(GameEndData gameEndData, List<PlayerData> playerData)
+    private void notifyGameEnded(@NonNull GameEndData gameEndData, @NonNull List<PlayerData> playerData)
     {
         for (PlayerData data : playerData)
             messaging.convertAndSendToUser(data.playerName(), "/queue/gameEnd", gameEndData);
