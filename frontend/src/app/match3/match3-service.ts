@@ -77,7 +77,7 @@ export class Match3Service {
 		this.client.publish({ destination: `/app/board/${gameId}/getState`, body: '{}' });
 	}
 
-	makeMove(gameId: number, moveRequest: MoveRequest): void {
+	makeMove(gameId: string, moveRequest: MoveRequest): void {
 		this.client.publish({
 			destination: `/app/board/${gameId}/playTurn`,
 			body: JSON.stringify(moveRequest)
