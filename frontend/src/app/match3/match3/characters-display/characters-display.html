@@ -9,7 +9,7 @@
 		@for (character of opponentData()?.characters ?? []; track $index; let index = $index) {
 			<div class="character-state-container">
 				@let health = opponentState()?.charactersHealth?.get(character.characterId) ?? 0;
-				<app-health-bar [maxHealth]="character.maxHealth" [currentHealth]="health"></app-health-bar>
+				<app-health-bar class="health-bar" [maxHealth]="character.maxHealth" [currentHealth]="health"></app-health-bar>
 				<div class="image-container" [class]="animationState.getAnimationClasses(character.characterId)">
 					<img [src]="getCharacterImage(character.characterType)" />
 				</div>
@@ -20,7 +20,7 @@
 		@for (character of myData()?.characters ?? []; track $index; let index = $index) {
 			<div class="character-state-container">
 				@let health = myState()?.charactersHealth?.get(character.characterId) ?? 0;
-				<app-health-bar [maxHealth]="character.maxHealth" [currentHealth]="health"></app-health-bar>
+				<app-health-bar class="health-bar" [maxHealth]="character.maxHealth" [currentHealth]="health"></app-health-bar>
 				<div class="image-container" [class]="animationState.getAnimationClasses(character.characterId)">
 					<img [src]="getCharacterImage(character.characterType)" />
 				</div>

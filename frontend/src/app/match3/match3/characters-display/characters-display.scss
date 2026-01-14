@@ -1,6 +1,7 @@
 #display-container {
 	display: flex;
 	flex-direction: column;
+	margin-bottom: 1rem;
 	.user-data {
 		display: flex;
 		border-radius: 10px;
@@ -11,25 +12,31 @@
 		justify-content: space-around;
 		align-items: center;
 		background: rgb(240, 226, 163, 0.7);
-		padding: 1rem;
+		padding: 0.3rem;
 		font-size: 1rem;
 		color: white;
 		font-weight: 450;
 		text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
-		margin: 1rem;
+		margin: 0.5rem;
 	}
 	.character-container {
 		display: flex;
 		flex-direction: row;
-		margin: 0.5rem;
+		margin-left: 1rem;
+		margin-right: 1rem;
 		.character-state-container {
+			display: flex;
+			flex-direction: column;
+			gap: 0.3rem;
+			margin: 0.5rem;
+			.health-bar {
+			}
 			.image-container {
-				margin: 0.5rem;
-				flex: 0 0 20%;
-				max-width: 5rem;
+				flex: 0 0 auto;
+				height: clamp(3rem, 12vh, 7rem);
 				img {
-					width: 100%;
-					height: auto;
+					width: auto;
+					height: 100%;
 					object-fit: contain;
 				}
 			}
