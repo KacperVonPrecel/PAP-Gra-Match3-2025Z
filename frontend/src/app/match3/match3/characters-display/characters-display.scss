@@ -1,0 +1,136 @@
+#display-container {
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 1rem;
+	.user-data {
+		display: flex;
+		border-radius: 10px;
+		border-width: 2px;
+		border-style: solid;
+		border-color: rgb(240, 226, 163, 0.6);
+		box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.2);
+		justify-content: space-around;
+		align-items: center;
+		background: rgb(240, 226, 163, 0.7);
+		padding: 0.3rem;
+		font-size: 1rem;
+		color: white;
+		font-weight: 450;
+		text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
+		margin: 0.5rem;
+	}
+	.character-container {
+		display: flex;
+		flex-direction: row;
+		margin-left: 1rem;
+		margin-right: 1rem;
+		.character-state-container {
+			display: flex;
+			flex-direction: column;
+			gap: 0.3rem;
+			margin: 0.5rem;
+			.health-bar {
+			}
+			.image-container {
+				flex: 0 0 auto;
+				height: clamp(3rem, 12vh, 7rem);
+				img {
+					width: auto;
+					height: 100%;
+					object-fit: contain;
+				}
+			}
+		}
+	}
+}
+
+.dead {
+	filter: grayscale(100%) brightness(60%);
+	opacity: 0.6;
+}
+
+.image-container {
+	transition:
+		filter 3s ease,
+		opacity 3s ease;
+}
+
+.damage {
+	animation:
+		damage-flash 0.25s ease-out,
+		damage-shake 0.25s ease-out;
+}
+
+@keyframes damage-flash {
+	0% {
+		filter: brightness(1) saturate(1);
+	}
+	20% {
+		filter: brightness(1.8) saturate(2) hue-rotate(-20deg); //shift all colors towards red
+	}
+	100% {
+		filter: brightness(1) saturate(1);
+	}
+}
+
+@keyframes damage-shake {
+	0% {
+		transform: translateX(0);
+	}
+	20% {
+		transform: translateX(-4px);
+	}
+	40% {
+		transform: translateX(4px);
+	}
+	60% {
+		transform: translateX(-3px);
+	}
+	80% {
+		transform: translateX(3px);
+	}
+	100% {
+		transform: translateX(0);
+	}
+}
+
+.attack {
+	animation:
+		attack-lunge 350ms ease-out,
+		attack-flash 200ms ease-out;
+}
+
+@keyframes attack-lunge {
+	0% {
+		transform: translateX(0) scale(1);
+	}
+	60% {
+		transform: translateX(10%) scale(1.1);
+	}
+	100% {
+		transform: translateX(0) scale(1);
+	}
+}
+
+.attack-flash {
+	position: absolute;
+	top: 40%;
+	left: 100%;
+	width: 1.2rem;
+	height: 1.2rem;
+	background: radial-gradient(circle, rgb(240, 226, 163, 0.8), rgba(255, 255, 200, 0));
+	opacity: 0;
+	pointer-events: none;
+}
+
+@keyframes attack-flash {
+	0% {
+		opacity: 0;
+	}
+	30% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}

@@ -5,7 +5,7 @@ enum FallType {
 	FALLING
 }
 
-export class AnimationState {
+export class BoardAnimationState {
 	swap = new Map<string, string>();
 	destroyed = new Map<string, string>();
 	falling = new Map<string, { class: string; distance: number; startOffset: number; fallType: FallType }>();
@@ -19,7 +19,7 @@ export class AnimationState {
 		if (d) classes.push(d);
 		const f = this.falling.get(key);
 		if (f) classes.push(f.class);
-		return classes.join(' '); //join all classes into one big string so they can be assigned easily
+		return classes.join(' ');
 	}
 	//methods for cleaning the entire map
 	clearSwap(): void {

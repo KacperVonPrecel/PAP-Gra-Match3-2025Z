@@ -1,31 +1,73 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Match3Service, MoveRequest } from '../match3-service';
 import { BoardState, GameStartData, GameState, PlayerData, PlayerState } from '../game-state';
 import { GameBoard } from './board/game-board';
 import { CharactersDisplay } from './characters-display/characters-display';
+import { UserDataService } from '../../user-data/user-data-service';
+import { FindingMatch } from './finding-match/finding-match';
+import { Subscription } from 'rxjs';
 
 @Component({
 	selector: 'app-match3',
-	imports: [GameBoard, CharactersDisplay],
+	imports: [GameBoard, CharactersDisplay, FindingMatch],
 	templateUrl: './match3.html',
 	styleUrl: './match3.scss'
 })
 export class Match3 {
-	private gameId?: number = 0;
-	private gameStartData?: GameStartData;
+	private gameId?: string;
+	public gameStartData: GameStartData | null = null;
 	private gameState?: GameState; //nullable because if we dont connect, no state
 	public _moveValid: { valid: boolean | null; moveId: number } = { valid: null, moveId: 0 };
-	playerId: number = 0;
+	playerId?: number = 0;
 	lastSentMoveRequestId: number = 0;
 	lastProcessedMoveId: number = 0;
+	private gameStateSub?: Subscription;
+
+	private readonly userDataService = inject(UserDataService);
 
 	constructor(private socket: Match3Service) {}
 
 	ngOnInit(): void {
+		this.socket.connectSocket();
+		/*
+		this.userDataService.userDataObservable.subscribe((data) => {
+			this.playerId = data.id;
+		});
+		*/
 		this.socket.client.onConnect = () => {
 			console.log('STOMP connected');
-			this.connect(0);
 		};
+
+		this.gameState = this.socket.getMockState();
+
+		this.join();
+	}
+
+	leaveQueue(): void {
+		if (this.gameStateSub) {
+			this.gameStateSub.unsubscribe();
+		}
+		this.socket.sendLeaveQueue();
+		this.disconnect();
+	}
+
+	join(): void {
+		setTimeout(() => {
+			this.gameStartData = this.socket.mockGameStartData();
+		}, 1000);
+
+		this.socket.gameStartData$.subscribe((gameData) => {
+			console.log(gameData);
+
+			this.gameStartData = gameData;
+
+			if (this.gameStartData) {
+				this.connect(this.gameStartData.gameId);
+				this.gameId = this.gameStartData.gameId;
+			}
+		});
+
+		this.socket.sendJoinRequest();
 	}
 
 	get moveValid(): { valid: boolean | null; moveId: number } {
@@ -107,11 +149,18 @@ export class Match3 {
 		return null;
 	}
 
-	connect(gameId: number): void {
+	get attackingCharacter(): number | null {
+		if (!this.gameState) {
+			return null;
+		}
+		return this.gameState.attackingCharacterId;
+	}
+
+	connect(gameId: string): void {
 		console.log(gameId);
 		this.gameId = gameId;
 		this.socket.subscribeToGame(this.gameId);
-		this.socket.gameState$.subscribe((gameState) => {
+		this.gameStateSub = this.socket.gameState$.subscribe((gameState) => {
 			//if processed id is less than sent move id -> this means make move set a new last sent move id, the user sent a move
 			//(unless a refresh happened exactly after a user moved, but before the server responded? depending on how the backend handles that -> but even then it will work fine,
 			// since refresh has no animations to display)
@@ -142,6 +191,7 @@ export class Match3 {
 			this.socket.unsubscribeFromGame();
 			this.gameId = undefined;
 		}
+		this.socket.disconnectSocket();
 	}
 
 	fetchState(): void {
@@ -150,9 +200,12 @@ export class Match3 {
 
 	makeMove(swapAttempt: { move: MoveRequest; moveId: number }): void {
 		console.log('Make move in match3 executed');
+		/*
 		if (this.gameId != undefined) {
 			this.lastSentMoveRequestId = swapAttempt.moveId;
 			this.socket.makeMove(this.gameId, swapAttempt.move);
 		}
+			*/
+		this.gameState = this.socket.getMockMove();
 	}
 }

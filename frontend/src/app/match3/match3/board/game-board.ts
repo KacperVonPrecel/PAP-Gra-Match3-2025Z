@@ -2,7 +2,7 @@ import { Component, effect, HostBinding, input, output } from '@angular/core';
 import { BoardState, Match3Block, NewBlock, Position } from '../../game-state';
 import { BlockType, getBlockFileName } from '../../match3-service';
 import { MoveRequest } from '../../match3-service';
-import { AnimationState } from './animation-state';
+import { BoardAnimationState } from './board-animation-state';
 import { NgStyle } from '@angular/common';
 
 @Component({
@@ -33,7 +33,7 @@ export class GameBoard {
 	/*threshold of how many pixels need to be moved before the block is considered as dragged*/
 	private dragThreshold = 20;
 	/*object managing maps of animation classes for animations that are currently happening*/
-	animationState: AnimationState = new AnimationState();
+	animationState: BoardAnimationState = new BoardAnimationState();
 	/*board before a move was executes - stored for the purpose of animating*/
 	private _oldBoard: Match3Block[][] | null = null;
 	/*value used to determine which board to display - the old board for animations or the current board*/

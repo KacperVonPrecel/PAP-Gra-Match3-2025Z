@@ -1,8 +1,10 @@
+import { CharacterType } from '../user-data/user-data-service';
 import { BlockType, MoveRequest } from './match3-service';
 export interface GameState {
 	boardState: BoardState;
 	currentPlayerId: number;
 	playerStates: Map<number, PlayerState>;
+	attackingCharacterId: number | null;
 }
 
 export interface Match3Block {
@@ -38,6 +40,7 @@ export interface PlayerData {
 	playerId: number;
 	playerName: string;
 	playerElo: number;
+	characters: GameCharacter[];
 }
 
 export interface PlayerState {
@@ -45,8 +48,14 @@ export interface PlayerState {
 }
 
 export interface GameStartData {
-	gameId: number;
-	gameState: GameState;
-	//XXXW zamieniam na razie
+	gameId: string;
 	playerData: Map<number, PlayerData>;
+}
+
+export interface GameCharacter {
+	characterId: number;
+	characterType: CharacterType;
+	maxHealth: number;
+	damage: number;
+	level: number;
 }
