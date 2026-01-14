@@ -31,9 +31,6 @@ export class CharactersDisplay {
 		effect(() => {
 			const opponentData = this.opponentData();
 			const myData = this.myData();
-			console.log('xxx');
-			console.log(opponentData);
-			console.log(myData);
 			this.loadCharacterAssets();
 		});
 		effect(() => {
@@ -44,7 +41,7 @@ export class CharactersDisplay {
 				for (const key of opponentState.charactersHealth.keys()) {
 					const oldHealth = this.opponentOldState.charactersHealth.get(key);
 					const newHealth = opponentState.charactersHealth.get(key);
-					console.log(oldHealth, newHealth);
+					// console.log(oldHealth, newHealth);
 					if (oldHealth != newHealth) {
 						if (newHealth! <= 0) {
 							this.animationState.addDamage(key);

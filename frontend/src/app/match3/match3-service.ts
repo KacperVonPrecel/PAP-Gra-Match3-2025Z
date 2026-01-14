@@ -59,19 +59,19 @@ export class Match3Service {
 		}
 
 		this.subscription = this.client.subscribe(`/topic/board/${gameId}/state`, (msg: IMessage) => {
-			console.log('zzz' + msg.body);
+			// console.log('zzz' + msg.body);
 			const gamestate: GameState = JSON.parse(msg.body);
 			this.gameState$.next(gamestate);
 		});
 
-		console.log(`Subscribed to game with id: ${gameId}`);
+		// console.log(`Subscribed to game with id: ${gameId}`);
 	}
 
 	unsubscribeFromGame(): void {
 		this.subscription?.unsubscribe();
 		this.subscription = undefined;
 
-		console.log('Unsubscribed from game');
+		// console.log('Unsubscribed from game');
 	}
 
 	fetchState(gameId: string): void {

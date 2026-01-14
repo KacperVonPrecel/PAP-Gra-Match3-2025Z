@@ -15,6 +15,7 @@ import { Characters } from './user-chararacters/characters/characters';
 import { Ranking } from './ranking/ranking/ranking';
 import { SelectTeam } from './select-team/select-team/select-team';
 import { FindingMatch } from './match3/match3/finding-match/finding-match';
+import { EndingScreen } from './match3/ending-screen/ending-screen';
 
 export const routes: Routes = [
 	{
@@ -92,6 +93,12 @@ export const routes: Routes = [
 				path: 'match3',
 				component: Match3,
 				title: 'Match3'
+			},
+			{
+				canActivate: [userDataGuard],
+				path: 'game-end',
+				component: EndingScreen,
+				title: 'Game End'
 			}
 		]
 	}

@@ -6,6 +6,8 @@ import { CharactersDisplay } from './characters-display/characters-display';
 import { characterNameMap, UserDataService } from '../../user-data/user-data-service';
 import { FindingMatch } from './finding-match/finding-match';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
+import { EndingScreenData } from '../ending-screen/ending-screen';
 
 @Component({
 	selector: 'app-match3',
@@ -24,6 +26,7 @@ export class Match3 {
 	private gameStateSub?: Subscription;
 
 	private readonly userDataService = inject(UserDataService);
+	private readonly router = inject(Router);
 
 	constructor(private socket: Match3Service) {}
 
@@ -33,7 +36,7 @@ export class Match3 {
 		});
 
 		this.socket.client.onConnect = () => {
-			console.log('STOMP connected');
+			// console.log('STOMP connected');
 			this.join();
 		};
 	}
@@ -48,7 +51,7 @@ export class Match3 {
 
 	join(): void {
 		this.socket.gameStartData$.subscribe((gameData) => {
-			console.log(gameData);
+			// console.log(gameData);
 
 			this.gameStartData = gameData;
 
@@ -95,7 +98,6 @@ export class Match3 {
 
 	get myData(): PlayerData | null {
 		const playersData = this.playersData;
-		console.log(playersData + 'xxxasdasdads');
 
 		if (!playersData) return null;
 
@@ -141,7 +143,7 @@ export class Match3 {
 	}
 
 	connect(gameId: string): void {
-		console.log(gameId);
+		// console.log(gameId);
 		this.gameId = gameId;
 		this.socket.subscribeToGame(this.gameId);
 		this.gameStateSub = this.socket.gameState$.subscribe((gameState) => {
@@ -149,8 +151,23 @@ export class Match3 {
 			//(unless a refresh happened exactly after a user moved, but before the server responded? depending on how the backend handles that -> but even then it will work fine,
 			// since refresh has no animations to display)
 			//if processed id is equal to sent move -> the new state is a result of opponents move or refresh
+
+			if (gameState?.gameEndDataResponse) {
+				const win = gameState.gameEndDataResponse.winnerId == this.playerId;
+				const state: EndingScreenData = {
+					victory: win,
+					eloChange: win ? 20 : -10,
+					moneyEarned: win ? 500 : 200
+				};
+				this.router.navigate(['/main/game-end'], {
+					// replaceUrl: true,
+					state: state
+				});
+				return;
+			}
+
 			if (this.lastProcessedMoveId < this.lastSentMoveRequestId) {
-				console.log('my valid move', this.lastProcessedMoveId, this.lastSentMoveRequestId);
+				// console.log('my valid move', this.lastProcessedMoveId, this.lastSentMoveRequestId);
 				this.lastProcessedMoveId = this.lastSentMoveRequestId; //setting my move as the last processedId
 				if (gameState) {
 					this._moveValid = { valid: true, moveId: this.lastSentMoveRequestId };
@@ -159,7 +176,7 @@ export class Match3 {
 					this._moveValid = { valid: false, moveId: this.lastSentMoveRequestId };
 				}
 			} else {
-				console.log('NOT my move', this.lastSentMoveRequestId, this.lastProcessedMoveId);
+				// console.log('NOT my move', this.lastSentMoveRequestId, this.lastProcessedMoveId);
 				//this was the opponents move or page refresh
 				if (gameState) {
 					this.gameState = gameState;
@@ -183,7 +200,7 @@ export class Match3 {
 	}
 
 	makeMove(swapAttempt: { move: MoveRequest; moveId: number }): void {
-		console.log('Make move in match3 executed');
+		// console.log('Make move in match3 executed');
 
 		if (this.gameId != undefined) {
 			this.lastSentMoveRequestId = swapAttempt.moveId;

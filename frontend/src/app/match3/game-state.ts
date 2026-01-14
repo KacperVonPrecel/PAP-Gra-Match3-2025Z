@@ -5,6 +5,7 @@ export interface GameState {
 	currentPlayerId: number;
 	playerStates: XXX2[];
 	attackingCharacterId: number | null;
+	gameEndDataResponse: GameEndDataResponse | null;
 }
 
 export interface XXX2 {
@@ -72,4 +73,8 @@ export interface GameCharacter {
 	characterType: CharacterType;
 	maxHealth: number;
 	level: number;
+}
+
+export interface GameEndDataResponse {
+	winnerId: number;
 }

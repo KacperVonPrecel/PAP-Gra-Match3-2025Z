@@ -27,8 +27,9 @@ public class OneMainBlockCharacterInGame extends CharacterInGame
     @Override
     public int calculateDamage(@NonNull Map<Match3Block.BlockType, Integer> totalMatchedBlocks)
     {
-        //XXX
-        return 1;
+        if (totalMatchedBlocks.containsKey(mainBlock))
+            return totalMatchedBlocks.get(mainBlock) * damage;
+        return totalMatchedBlocks.values().stream().mapToInt(w -> w).sum();
     }
 
     @Override

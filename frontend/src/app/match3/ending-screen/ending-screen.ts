@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { MatAnchor } from '@angular/material/button';
 import { Router } from '@angular/router';
+import { UserDataService } from '../../user-data/user-data-service';
 
 @Component({
 	selector: 'app-ending-screen',
@@ -9,6 +10,7 @@ import { Router } from '@angular/router';
 	styleUrl: './ending-screen.scss'
 })
 export class EndingScreen {
+	private readonly userDataService = inject(UserDataService);
 	private readonly router = inject(Router);
 	protected readonly data: EndingScreenData;
 
@@ -20,6 +22,8 @@ export class EndingScreen {
 			this.leave();
 			return;
 		}
+
+		this.userDataService.addMoney(this.data.moneyEarned);
 	}
 
 	protected leave() {

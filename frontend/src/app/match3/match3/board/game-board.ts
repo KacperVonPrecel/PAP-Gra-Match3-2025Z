@@ -72,7 +72,7 @@ export class GameBoard {
 		});
 		effect(() => {
 			const _moveValid = this.moveValid();
-			console.log('effect fired');
+			// console.log('effect fired');
 
 			if (_moveValid === null) return; //sth went wrong and move valid is null
 			if (this.lastMove === null) return; //if there is no move saved i have nothing to animate
@@ -89,7 +89,7 @@ export class GameBoard {
 			} else if (valid === true) {
 				//this was my move and it was valid
 				this.swapWasAnimated = true;
-				console.log('my valid move', this.allowSwapping, this.myTurn());
+				// console.log('my valid move', this.allowSwapping, this.myTurn());
 			}
 			this.lastMove = null;
 			return;

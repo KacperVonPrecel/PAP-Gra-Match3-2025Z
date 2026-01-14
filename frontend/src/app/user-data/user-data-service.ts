@@ -238,6 +238,18 @@ export class UserDataService {
 			})
 		);
 	}
+
+	addMoney(count: number) {
+		const userData = this.userData;
+		this._userData.next({
+			id: userData.id,
+			currency: userData.currency + count,
+			characters: userData.characters,
+			rankingPosition: userData.rankingPosition,
+			lockedCharacterData: userData.lockedCharacterData,
+			activeTeam: userData.activeTeam
+		});
+	}
 }
 
 export const RETURN_URL_QUERY_PARAM = 'returnUrl';
