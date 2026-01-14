@@ -24,8 +24,6 @@ export class Match3Service {
 		this.client.onConnect = () => {
 			console.log('STOMP connected');
 		};
-
-		this.client.activate();
 	}
 
 	sendJoinRequest(): void {
@@ -45,8 +43,14 @@ export class Match3Service {
 		this.client.publish({ destination: `/app/queue/exit`, body: '{}' });
 	}
 
-	disconnect(): void {
+	disconnectSocket(): void {
 		this.client.deactivate();
+	}
+
+	connectSocket(): void {
+		if (!this.client.active) {
+			this.client.activate();
+		}
 	}
 
 	subscribeToGame(gameId: string): void {

@@ -5,8 +5,6 @@ import { GameBoard } from './board/game-board';
 import { CharactersDisplay } from './characters-display/characters-display';
 import { UserDataService } from '../../user-data/user-data-service';
 import { FindingMatch } from './finding-match/finding-match';
-import { ActivatedRoute } from '@angular/router';
-import { StompSubscription } from '@stomp/stompjs';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -27,12 +25,10 @@ export class Match3 {
 
 	private readonly userDataService = inject(UserDataService);
 
-	constructor(
-		private socket: Match3Service,
-		private route: ActivatedRoute
-	) {}
+	constructor(private socket: Match3Service) {}
 
 	ngOnInit(): void {
+		this.socket.connectSocket();
 		/*
 		this.userDataService.userDataObservable.subscribe((data) => {
 			this.playerId = data.id;
@@ -40,16 +36,11 @@ export class Match3 {
 		*/
 		this.socket.client.onConnect = () => {
 			console.log('STOMP connected');
-			//this.connect(0);
 		};
-		this.gameStartData = this.socket.mockGameStartData();
+
 		this.gameState = this.socket.getMockState();
-		//if theres a join parameter passed in the navigation then join a game
-		this.route.queryParams.subscribe((params) => {
-			if (params['join']) {
-				this.join();
-			}
-		});
+
+		this.join();
 	}
 
 	leaveQueue(): void {
@@ -61,7 +52,10 @@ export class Match3 {
 	}
 
 	join(): void {
-		//this.connect('0');
+		setTimeout(() => {
+			this.gameStartData = this.socket.mockGameStartData();
+		}, 1000);
+
 		this.socket.gameStartData$.subscribe((gameData) => {
 			console.log(gameData);
 
@@ -190,7 +184,7 @@ export class Match3 {
 			this.socket.unsubscribeFromGame();
 			this.gameId = undefined;
 		}
-		this.socket.disconnect();
+		this.socket.disconnectSocket();
 	}
 
 	fetchState(): void {
