@@ -1,4 +1,4 @@
-package pap.project.users.characters.model;
+package pap.project.characters;
 
 
 import org.springframework.lang.NonNull;
@@ -9,12 +9,10 @@ import java.util.OptionalInt;
  * Function from this interface would be called in multiple threads.
  * This functions shouldn't take long to be executed.
  * Probably it should be simple multiplication or switch.
- *
+ * This method's should be stateless.
  */
-public interface CharacterStats
+public interface Character
 {
-    // XXX Add to this functions throws declarations if level is invalid.
-    // - Probably it shouldn't be InvalidArgumentException to require to handle this exception.
 
     /**
      * @return positive value.
@@ -29,4 +27,6 @@ public interface CharacterStats
      *         If it has value it positive.
      */
     @NonNull OptionalInt getRequiredCopiesForNextLevel(int level);
+
+    @NonNull CharacterInGame createCharacterInGame(long characterId, int level);
 }

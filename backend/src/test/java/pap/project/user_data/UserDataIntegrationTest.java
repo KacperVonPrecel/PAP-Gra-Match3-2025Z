@@ -19,10 +19,10 @@ import pap.project.user_stats.UserStatsRepository;
 import pap.project.users.User;
 import pap.project.users.UserAuthDetails;
 import pap.project.users.UserRepository;
-import pap.project.users.characters.UserCharacter;
-import pap.project.users.characters.UserCharactersRepository;
-import pap.project.users.characters.model.CharacterType;
-import pap.project.users.characters.model.controller.CharacterData;
+import pap.project.characters.UserCharacter;
+import pap.project.characters.UserCharactersRepository;
+import pap.project.characters.model.CharacterType;
+import pap.project.characters.model.controller.CharacterData;
 
 import java.util.List;
 import java.util.OptionalInt;

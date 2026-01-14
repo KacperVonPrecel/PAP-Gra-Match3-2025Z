@@ -1,9 +1,9 @@
-package pap.project.users.characters;
+package pap.project.characters;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
-import pap.project.users.characters.model.CharacterType;
+import pap.project.characters.model.CharacterType;
 
 import java.util.List;
 import java.util.Set;

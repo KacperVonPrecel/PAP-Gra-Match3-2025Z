@@ -8,7 +8,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.ActiveProfiles;
-import pap.project.users.characters.model.CharacterType;
+import pap.project.characters.UserCharacter;
+import pap.project.characters.UserCharactersRepository;
+import pap.project.characters.model.CharacterType;
 import pap.project.users.User;
 import pap.project.users.UserRepository;
 

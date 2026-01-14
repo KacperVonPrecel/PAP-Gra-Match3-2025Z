@@ -9,9 +9,9 @@ import pap.project.user_data.model.UserData;
 import pap.project.user_data.model.controller.*;
 import pap.project.user_stats.RankingService;
 import pap.project.users.UserAuthDetails;
-import pap.project.users.characters.UserCharactersService;
-import pap.project.users.characters.model.CharacterType;
-import pap.project.users.characters.model.controller.CharacterData;
+import pap.project.characters.UserCharactersService;
+import pap.project.characters.model.CharacterType;
+import pap.project.characters.model.controller.CharacterData;
 
 import java.util.Arrays;
 import java.util.List;

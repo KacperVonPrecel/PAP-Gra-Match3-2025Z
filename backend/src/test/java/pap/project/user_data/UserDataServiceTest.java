@@ -9,9 +9,9 @@ import pap.project.game_history.MatchRepository;
 import pap.project.user_data.model.UserData;
 import pap.project.user_stats.UserStats;
 import pap.project.user_stats.UserStatsRepository;
-import pap.project.users.characters.UserCharacter;
-import pap.project.users.characters.UserCharactersRepository;
-import pap.project.users.characters.model.CharacterType;
+import pap.project.characters.UserCharacter;
+import pap.project.characters.UserCharactersRepository;
+import pap.project.characters.model.CharacterType;
 
 import java.util.List;
 import java.util.Optional;

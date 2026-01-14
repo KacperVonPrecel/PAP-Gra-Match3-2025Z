@@ -1,6 +1,6 @@
 package pap.project.user_data.model.controller;
 
-import pap.project.users.characters.model.Rarity;
+import pap.project.characters.model.Rarity;
 
 import java.util.Map;
 

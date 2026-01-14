@@ -18,9 +18,9 @@ import pap.project.user_data.model.UserData;
 import pap.project.user_stats.UserStats;
 import pap.project.user_stats.UserStatsRepository;
 import pap.project.users.UserAuthDetails;
-import pap.project.users.characters.UserCharacter;
-import pap.project.users.characters.UserCharactersService;
-import pap.project.users.characters.model.controller.CharacterData;
+import pap.project.characters.UserCharacter;
+import pap.project.characters.UserCharactersService;
+import pap.project.characters.model.controller.CharacterData;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -127,7 +127,7 @@ public class GameController
             long characterId = character.getId().getAsLong();
             final CharacterData characterData = userCharactersService.createCharacterData(character);
 
-            gameCharacters.add(new GameCharacter(characterId, character.getCharacterType(), characterData.damage(), characterData.health()));
+            gameCharacters.add(new GameCharacter(characterId, character.getCharacterType(), characterData.damage(), characterData.health(), characterData.level()));
         }
 
         return new PlayerData(

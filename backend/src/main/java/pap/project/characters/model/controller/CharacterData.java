@@ -1,7 +1,7 @@
-package pap.project.users.characters.model.controller;
+package pap.project.characters.model.controller;
 
 import org.springframework.lang.NonNull;
-import pap.project.users.characters.model.CharacterType;
+import pap.project.characters.model.CharacterType;
 
 import java.util.OptionalInt;
 

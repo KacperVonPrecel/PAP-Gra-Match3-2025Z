@@ -35,8 +35,10 @@ public class Game
         this.secondPlayerData = secondPlayerData;
 
         match3Board = new Match3Board();
-        //XXX create character for combat
-        charactersCombat = new CharactersCombat(null, null);
+
+        charactersCombat = new CharactersCombat(
+                firstPlayerData.characters().stream().map(c -> c.characterType().character.createCharacterInGame(c.characterId(), c.level())).toList(),
+                secondPlayerData.characters().stream().map(c -> c.characterType().character.createCharacterInGame(c.characterId(), c.level())).toList());
     }
 
     /**

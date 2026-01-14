@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import pap.project.game_history.model.HistoryCharacterData;
-import pap.project.users.characters.UserCharacter;
 
 import java.util.List;
 

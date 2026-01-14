@@ -2,6 +2,7 @@ package pap.project.game;
 
 import org.springframework.data.util.Pair;
 import org.springframework.lang.NonNull;
+import pap.project.characters.CharacterInGame;
 import pap.project.game.match3.Match3Block;
 import pap.project.game.model.CharacterCombatResult;
 import pap.project.game.model.communication.PlayerCharactersState;

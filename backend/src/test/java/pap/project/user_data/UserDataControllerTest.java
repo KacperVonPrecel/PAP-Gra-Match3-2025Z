@@ -9,10 +9,10 @@ import org.springframework.security.core.Authentication;
 import pap.project.user_data.model.UserData;
 import pap.project.user_data.model.controller.UserDataResponse;
 import pap.project.users.UserAuthDetails;
-import pap.project.users.characters.UserCharacter;
-import pap.project.users.characters.UserCharactersService;
-import pap.project.users.characters.model.CharacterType;
-import pap.project.users.characters.model.controller.CharacterData;
+import pap.project.characters.UserCharacter;
+import pap.project.characters.UserCharactersService;
+import pap.project.characters.model.CharacterType;
+import pap.project.characters.model.controller.CharacterData;
 
 import java.util.List;
 import java.util.OptionalInt;

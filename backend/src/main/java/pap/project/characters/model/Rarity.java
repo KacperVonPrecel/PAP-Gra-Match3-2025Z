@@ -1,4 +1,4 @@
-package pap.project.users.characters.model;
+package pap.project.characters.model;
 
 public enum Rarity {
     COMMON,

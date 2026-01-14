@@ -1,4 +1,4 @@
-package pap.project.game;
+package pap.project.characters;
 
 import org.springframework.lang.NonNull;
 import pap.project.game.match3.Match3Block;
@@ -11,9 +11,12 @@ public abstract class CharacterInGame
 
     private int currentHealth;
 
-    public CharacterInGame(long characterId)
+
+    public CharacterInGame(long characterId, int maxHealth)
     {
         this.characterId = characterId;
+        this.currentHealth = maxHealth;
+
     }
 
     public boolean isAlive()

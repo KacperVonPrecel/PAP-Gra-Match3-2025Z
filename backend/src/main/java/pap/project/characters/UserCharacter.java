@@ -1,8 +1,8 @@
-package pap.project.users.characters;
+package pap.project.characters;
 
 import jakarta.persistence.*;
 import org.springframework.lang.NonNull;
-import pap.project.users.characters.model.CharacterType;
+import pap.project.characters.model.CharacterType;
 import pap.project.users.User;
 
 import java.util.OptionalLong;

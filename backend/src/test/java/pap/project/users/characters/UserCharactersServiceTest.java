@@ -5,7 +5,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pap.project.users.characters.model.CharacterType;
+import pap.project.characters.UserCharacter;
+import pap.project.characters.UserCharactersRepository;
+import pap.project.characters.UserCharactersService;
+import pap.project.characters.model.CharacterType;
 
 import java.util.Arrays;
 import java.util.List;
