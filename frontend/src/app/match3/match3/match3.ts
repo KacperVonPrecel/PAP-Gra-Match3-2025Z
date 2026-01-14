@@ -93,7 +93,7 @@ export class Match3 {
 
 	get playersData(): Map<number, PlayerData> | null {
 		if (this.gameStartData) {
-			return this.gameStartData.playerData;
+			return this.gameStartData.playersData;
 		}
 		return null;
 	}
@@ -110,6 +110,7 @@ export class Match3 {
 	}
 
 	get opponentData(): PlayerData | null {
+		// console.log('Getting opponent data' + this.playersData);
 		const playersData = this.playersData;
 		if (!this.playersData) return null;
 		for (const [id, data] of playersData!) {
@@ -121,24 +122,24 @@ export class Match3 {
 	}
 
 	get opponentState(): PlayerState | null {
-		const playerStates = this.playerStates;
-		if (!playerStates) return null;
-		for (const [id, state] of playerStates!) {
-			if (id != this.playerId) {
-				return state;
-			}
-		}
+		// const playerStates = this.playerStates;
+		// if (!playerStates) return null;
+		// for (const [id, state] of playerStates!) {
+		// 	if (id != this.playerId) {
+		// 		return state;
+		// 	}
+		// }
 		return null;
 	}
 
 	get myState(): PlayerState | null {
-		const playerStates = this.playerStates;
-		if (!playerStates) return null;
-		for (const [id, state] of playerStates!) {
-			if (id === this.playerId) {
-				return state;
-			}
-		}
+		// const playerStates = this.playerStates;
+		// if (!playerStates) return null;
+		// for (const [id, state] of playerStates!) {
+		// 	if (id === this.playerId) {
+		// 		return state;
+		// 	}
+		// }
 		return null;
 	}
 

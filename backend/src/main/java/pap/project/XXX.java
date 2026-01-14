@@ -38,10 +38,10 @@ public class XXX
     @PostConstruct
     public void xxx()
     {
-        for (String username : usernames) {
-            final RegisterRequest z = new RegisterRequest(username, username + "@gmail.com", "123456");
-            r.registerUser("xx", z);
-        }
+//        for (String username : usernames) {
+//            final RegisterRequest z = new RegisterRequest(username, username + "@gmail.com", "123456");
+//            r.registerUser("xx", z);
+//        }
 
 //        for (int i = 1; i < 200; i++) {
 //            final int x = new Random().nextInt(1, 50);

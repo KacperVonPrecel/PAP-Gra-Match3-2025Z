@@ -49,13 +49,12 @@ export interface PlayerState {
 
 export interface GameStartData {
 	gameId: string;
-	playerData: Map<number, PlayerData>;
+	playersData: Map<number, PlayerData>;
 }
 
 export interface GameCharacter {
 	characterId: number;
 	characterType: CharacterType;
 	maxHealth: number;
-	damage: number;
 	level: number;
 }

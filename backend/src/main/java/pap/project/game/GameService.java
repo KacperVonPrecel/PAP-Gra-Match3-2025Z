@@ -23,6 +23,7 @@ public class GameService
      */
     public @Nullable GameStartData joinOrCreateGame(@NonNull PlayerData player)
     {
+        System.out.println("xxx" + player.playerId());
         for (Map.Entry<String, Game> entry : games.entrySet())
         {
             if (entry.getValue().firstPlayerData.playerId() == player.playerId() || entry.getValue().secondPlayerData.playerId() == player.playerId())
@@ -91,6 +92,7 @@ public class GameService
 
     public @Nullable GameState getState(@NonNull String gameId)
     {
+        System.out.println("xxxasdasdasd");
         if (games.containsKey(gameId))
             return games.get(gameId).getGameState();
 

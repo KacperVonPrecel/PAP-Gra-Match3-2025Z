@@ -88,7 +88,8 @@ public class GameController
                 gameEndDataResponse = new GameEndDataResponse(gameState.gameEndData().winnerId(), false, playerStatChange); //XXX
 
             }
-            messaging.convertAndSend("/topic/board/{gameId}/state", new GameStateResponse(gameState, gameEndDataResponse));
+//            System.out.println("xxx" + xxx);
+            messaging.convertAndSend("/topic/board/" + gameId + "/state", new GameStateResponse(gameState, gameEndDataResponse));
         }
     }
 
@@ -102,7 +103,11 @@ public class GameController
     private void notifyGameStarted(@NonNull GameStartData gameStartData)
     {
         for (PlayerData data : gameStartData.playerData().values())
+        {
             messaging.convertAndSendToUser(data.playerName(), "/queue/gameStart", gameStartData);
+        }
+
+//        messaging.convertAndSend(gameStartData.gameState(), );
     }
 
     private @Nullable PlayerData getPlayer(@NonNull Principal principal)
