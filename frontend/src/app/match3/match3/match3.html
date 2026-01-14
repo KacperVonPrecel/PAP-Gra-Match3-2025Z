@@ -1,6 +1,11 @@
 <div id="game-container">
 	<div id="characters-container">
-		<app-characters-display></app-characters-display>
+		<app-characters-display
+			[opponentData]="opponentData"
+			[myData]="myData"
+			[opponentState]="opponentState"
+			[myState]="myState"
+		></app-characters-display>
 	</div>
 	<div id="board-container">
 		@if (boardState) {
