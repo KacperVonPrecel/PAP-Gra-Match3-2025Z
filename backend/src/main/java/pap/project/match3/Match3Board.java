@@ -5,6 +5,7 @@ import org.springframework.lang.Nullable;
 import pap.project.match3.model.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Match3Board
 {
@@ -12,6 +13,7 @@ public class Match3Board
     private final @NonNull MatchableShape[] matchableShapes;
 
     private final @NonNull PlayerData[] playerData;
+    private final @NonNull PlayerState[] playerStates;
     private int currentPlayerIndex;
 
     private final @NonNull Random random = new Random();
@@ -29,7 +31,11 @@ public class Match3Board
         this.matchableShapes = matchableShapes;
 
         this.playerData = playerData;
+        this.playerStates = new PlayerState[playerData.length];
         this.currentPlayerIndex = random.nextInt(playerData.length);
+
+        for (int i  = 0; i < playerData.length; i++)
+            playerStates[i] = new PlayerState(playerData[i].characters().stream().collect((Collectors.toMap(GameCharacter::characterId, GameCharacter::maxHealth))));
 
         // If forceBoard = true, do not make sure there are no matches and at least one allowed move
         if (!forceBoard)
@@ -47,8 +53,13 @@ public class Match3Board
 
         // Destroy, drop and repeat until no matches are left
         Matches matches = findMatchedBlocks();
+        Map<Match3Block.BlockType, Integer> totalMatchedBlocks = new HashMap<>();
+
         while (!matches.blocks().isEmpty())
         {
+            for (Match3Block block : matches.blocks())
+                totalMatchedBlocks.put(block.getBlockType(), totalMatchedBlocks.getOrDefault(block.getBlockType(), 0) + 1);
+
             destroyBlocks(matches.blocks());
 
             final List<MoveRequest> dropped = dropFloatingBlocks();
@@ -82,6 +93,32 @@ public class Match3Board
             ));
         }
 
+        int totalDamage = 0;
+        for (Map.Entry<Match3Block.BlockType, Integer> entry : totalMatchedBlocks.entrySet())
+        {
+            int maxDamage = 1;
+            for (GameCharacter character : playerData[currentPlayerIndex].characters())
+            {
+                if (character.damage() >  maxDamage)
+                    maxDamage = character.damage();
+            }
+
+            totalDamage += maxDamage;
+        }
+
+        for (Map.Entry<Long, Integer> entry : playerStates[(currentPlayerIndex + 1) % playerData.length].charactersHealth().entrySet())
+        {
+            if (entry.getValue() > 0)
+            {
+                entry.setValue(entry.getValue() - totalDamage);
+
+                if (entry.getValue() <= 0)
+                    entry.setValue(0);
+
+                break;
+            }
+        }
+
         currentPlayerIndex = (currentPlayerIndex + 1) % playerData.length;
 
         final BoardState boardState = new BoardState(
@@ -92,7 +129,8 @@ public class Match3Board
 
         return new GameState(
                 boardState,
-                playerData[currentPlayerIndex].playerId()
+                playerData[currentPlayerIndex].playerId(),
+                playerStates
         );
     }
 
@@ -109,7 +147,8 @@ public class Match3Board
     {
         return new GameState(
                 getBoardState(),
-                playerData[currentPlayerIndex].playerId()
+                playerData[currentPlayerIndex].playerId(),
+                playerStates
         );
     }
 

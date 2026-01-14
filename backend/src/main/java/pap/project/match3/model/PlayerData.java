@@ -2,8 +2,11 @@ package pap.project.match3.model;
 
 import org.springframework.lang.NonNull;
 
+import java.util.List;
+
 public record PlayerData(
         long playerId,
-        String playerName,
-        int playerElo
+        @NonNull String playerName,
+        int playerElo,
+        @NonNull List<GameCharacter> characters
 ) { }

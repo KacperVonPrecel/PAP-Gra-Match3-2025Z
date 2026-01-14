@@ -4,5 +4,6 @@ import org.springframework.lang.NonNull;
 
 public record GameState(
         @NonNull BoardState boardState,
-        long currentPlayerId
+        long currentPlayerId,
+        @NonNull PlayerState[] playerStates
 ) { }
