@@ -75,7 +75,7 @@ export class Match3Service {
 		const opponentState = new Map<number, number>([
 			[3, 50],
 			[4, 110],
-			[4, 110]
+			[5, 110]
 		]);
 		const playerStates = new Map<number, PlayerState>();
 		playerStates.set(0, { charactersHealth: playerState });
@@ -97,7 +97,7 @@ export class Match3Service {
 		const opponentState = new Map<number, number>([
 			[3, 50],
 			[4, 70],
-			[4, 0]
+			[5, 0]
 		]);
 		const playerStates = new Map<number, PlayerState>();
 		playerStates.set(0, { charactersHealth: playerState });
@@ -119,7 +119,7 @@ export class Match3Service {
 		const opponentCharacters: GameCharacter[] = [
 			{ characterId: 3, characterType: CharacterType.AMETHYST_ENCHANTRESS, maxHealth: 90, damage: 100 },
 			{ characterId: 4, characterType: CharacterType.EMERALD_CORE_KNIGHT, maxHealth: 110, damage: 100 },
-			{ characterId: 4, characterType: CharacterType.EMERALD_CORE_KNIGHT, maxHealth: 110, damage: 100 }
+			{ characterId: 5, characterType: CharacterType.TRASH_MAN, maxHealth: 100, damage: 100 }
 		];
 		const playerState = new Map<number, number>([
 			[1, 100],
@@ -127,7 +127,7 @@ export class Match3Service {
 		]);
 		const opponentState = new Map<number, number>([
 			[3, 90],
-			[4, 110]
+			[4, 100]
 		]);
 		const playerStates = new Map<number, PlayerState>();
 		playerStates.set(0, { charactersHealth: playerState });

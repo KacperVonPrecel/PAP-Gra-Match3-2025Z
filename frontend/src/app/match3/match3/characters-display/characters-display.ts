@@ -37,8 +37,11 @@ export class CharactersDisplay {
 				for (const key of opponentState.charactersHealth.keys()) {
 					const oldHealth = this.opponentOldState.charactersHealth.get(key);
 					const newHealth = opponentState.charactersHealth.get(key);
+					console.log(oldHealth, newHealth);
 					if (oldHealth != newHealth) {
-						if (newHealth && newHealth <= 0) {
+						console.log(key, 'ENTERED');
+						if (newHealth! <= 0) {
+							console.log('Added dead');
 							this.animationState.addDead(key);
 						} else {
 							this.animationState.addDamage(key);
