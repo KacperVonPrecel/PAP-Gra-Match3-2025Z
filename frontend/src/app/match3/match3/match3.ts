@@ -4,8 +4,10 @@ import { BoardState, GameStartData, GameState, PlayerData, PlayerState } from '.
 import { GameBoard } from './board/game-board';
 import { CharactersDisplay } from './characters-display/characters-display';
 import { UserDataService } from '../../user-data/user-data-service';
-import { FindingMatch } from '../finding-match/finding-match';
+import { FindingMatch } from './finding-match/finding-match';
 import { ActivatedRoute } from '@angular/router';
+import { StompSubscription } from '@stomp/stompjs';
+import { Subscription } from 'rxjs';
 
 @Component({
 	selector: 'app-match3',
@@ -21,6 +23,7 @@ export class Match3 {
 	playerId?: number = 0;
 	lastSentMoveRequestId: number = 0;
 	lastProcessedMoveId: number = 0;
+	private gameStateSub?: Subscription;
 
 	private readonly userDataService = inject(UserDataService);
 
@@ -47,6 +50,14 @@ export class Match3 {
 				this.join();
 			}
 		});
+	}
+
+	leaveQueue(): void {
+		if (this.gameStateSub) {
+			this.gameStateSub.unsubscribe();
+		}
+		this.socket.sendLeaveQueue();
+		this.disconnect();
 	}
 
 	join(): void {
@@ -148,7 +159,7 @@ export class Match3 {
 		console.log(gameId);
 		this.gameId = gameId;
 		this.socket.subscribeToGame(this.gameId);
-		this.socket.gameState$.subscribe((gameState) => {
+		this.gameStateSub = this.socket.gameState$.subscribe((gameState) => {
 			//if processed id is less than sent move id -> this means make move set a new last sent move id, the user sent a move
 			//(unless a refresh happened exactly after a user moved, but before the server responded? depending on how the backend handles that -> but even then it will work fine,
 			// since refresh has no animations to display)
@@ -179,6 +190,7 @@ export class Match3 {
 			this.socket.unsubscribeFromGame();
 			this.gameId = undefined;
 		}
+		this.socket.disconnect();
 	}
 
 	fetchState(): void {

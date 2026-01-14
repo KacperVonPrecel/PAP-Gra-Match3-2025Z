@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { RouterLink } from '@angular/router';
@@ -9,4 +9,12 @@ import { RouterLink } from '@angular/router';
 	templateUrl: './finding-match.html',
 	styleUrl: './finding-match.scss'
 })
-export class FindingMatch {}
+export class FindingMatch {
+	leaveQueue = output<boolean>();
+	private _leaveQueue: boolean = false;
+
+	doLeaveQueue(): void {
+		this._leaveQueue = false;
+		this.leaveQueue.emit(this._leaveQueue);
+	}
+}

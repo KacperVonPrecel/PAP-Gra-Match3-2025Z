@@ -14,6 +14,7 @@ export class Match3Service {
 
 	public gameState$ = new BehaviorSubject<GameState | null>(null);
 	public gameStartData$ = new BehaviorSubject<GameStartData | null>(null);
+	private gameStartSub?: StompSubscription;
 
 	constructor() {
 		this.client = new Client({
@@ -28,12 +29,24 @@ export class Match3Service {
 	}
 
 	sendJoinRequest(): void {
-		this.client.subscribe(`/user/queue/gameStart`, (msg: IMessage) => {
+		this.gameStartSub = this.client.subscribe(`/user/queue/gameStart`, (msg: IMessage) => {
 			const gameData: GameStartData = JSON.parse(msg.body);
 			this.gameStartData$.next(gameData);
 		});
 
 		this.client.publish({ destination: `/app/queue/join`, body: '{}' });
+	}
+
+	sendLeaveQueue(): void {
+		if (this.gameStartSub) {
+			this.gameStartSub.unsubscribe();
+			this.gameStartSub = undefined;
+		}
+		this.client.publish({ destination: `/app/queue/exit`, body: '{}' });
+	}
+
+	disconnect(): void {
+		this.client.deactivate();
 	}
 
 	subscribeToGame(gameId: string): void {
