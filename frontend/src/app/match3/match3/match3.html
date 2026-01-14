@@ -1,15 +1,19 @@
-<div id="game-container">
-	<div id="characters-container">
-		<app-characters-display
-			[opponentData]="opponentData"
-			[myData]="myData"
-			[opponentState]="opponentState"
-			[myState]="myState"
-		></app-characters-display>
+@if (this.gameStartData) {
+	<div id="game-container">
+		<div id="characters-container">
+			<app-characters-display
+				[opponentData]="opponentData"
+				[myData]="myData"
+				[opponentState]="opponentState"
+				[myState]="myState"
+			></app-characters-display>
+		</div>
+		<div id="board-container">
+			@if (boardState) {
+				<app-board [state]="boardState" [moveValid]="moveValid" [myTurn]="isItMyTurn" (swapAttempt)="makeMove($event)"></app-board>
+			}
+		</div>
 	</div>
-	<div id="board-container">
-		@if (boardState) {
-			<app-board [state]="boardState" [moveValid]="moveValid" [myTurn]="isItMyTurn" (swapAttempt)="makeMove($event)"></app-board>
-		}
-	</div>
-</div>
+} @else {
+	<app-finding-match></app-finding-match>
+}

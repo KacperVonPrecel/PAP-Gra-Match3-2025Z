@@ -92,12 +92,6 @@ export const routes: Routes = [
 				path: 'match3',
 				component: Match3,
 				title: 'Match3'
-			},
-			{
-				canActivate: [userDataGuard],
-				path: 'finding-match',
-				component: FindingMatch,
-				title: 'FindingMatch'
 			}
 		]
 	}

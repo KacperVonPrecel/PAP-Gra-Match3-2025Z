@@ -4,16 +4,18 @@ import { BoardState, GameStartData, GameState, PlayerData, PlayerState } from '.
 import { GameBoard } from './board/game-board';
 import { CharactersDisplay } from './characters-display/characters-display';
 import { UserDataService } from '../../user-data/user-data-service';
+import { FindingMatch } from '../finding-match/finding-match';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
 	selector: 'app-match3',
-	imports: [GameBoard, CharactersDisplay],
+	imports: [GameBoard, CharactersDisplay, FindingMatch],
 	templateUrl: './match3.html',
 	styleUrl: './match3.scss'
 })
 export class Match3 {
-	private gameId?: number = 0;
-	private gameStartData?: GameStartData;
+	private gameId?: string;
+	public gameStartData: GameStartData | null = null;
 	private gameState?: GameState; //nullable because if we dont connect, no state
 	public _moveValid: { valid: boolean | null; moveId: number } = { valid: null, moveId: 0 };
 	playerId?: number = 0;
@@ -22,7 +24,10 @@ export class Match3 {
 
 	private readonly userDataService = inject(UserDataService);
 
-	constructor(private socket: Match3Service) {}
+	constructor(
+		private socket: Match3Service,
+		private route: ActivatedRoute
+	) {}
 
 	ngOnInit(): void {
 		/*
@@ -30,12 +35,34 @@ export class Match3 {
 			this.playerId = data.id;
 		});
 		*/
-		//this.socket.client.onConnect = () => {
-		//console.log('STOMP connected');
-		//this.connect(0);
-		//};
+		this.socket.client.onConnect = () => {
+			console.log('STOMP connected');
+			//this.connect(0);
+		};
 		this.gameStartData = this.socket.mockGameStartData();
 		this.gameState = this.socket.getMockState();
+		//if theres a join parameter passed in the navigation then join a game
+		this.route.queryParams.subscribe((params) => {
+			if (params['join']) {
+				this.join();
+			}
+		});
+	}
+
+	join(): void {
+		//this.connect('0');
+		this.socket.gameStartData$.subscribe((gameData) => {
+			console.log(gameData);
+
+			this.gameStartData = gameData;
+
+			if (this.gameStartData) {
+				this.connect(this.gameStartData.gameId);
+				this.gameId = this.gameStartData.gameId;
+			}
+		});
+
+		this.socket.sendJoinRequest();
 	}
 
 	get moveValid(): { valid: boolean | null; moveId: number } {
@@ -117,7 +144,7 @@ export class Match3 {
 		return null;
 	}
 
-	connect(gameId: number): void {
+	connect(gameId: string): void {
 		console.log(gameId);
 		this.gameId = gameId;
 		this.socket.subscribeToGame(this.gameId);

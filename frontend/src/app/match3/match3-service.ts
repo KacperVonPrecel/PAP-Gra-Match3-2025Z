@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Client, IMessage, StompSubscription } from '@stomp/stompjs';
-import { Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import SockJS from 'sockjs-client';
-import { BoardState, GameCharacter, GameState, Match3Block, PlayerData, PlayerState, Position } from './game-state';
+import { BoardState, GameCharacter, GameStartData, GameState, Match3Block, PlayerData, PlayerState, Position } from './game-state';
 import { CharacterType } from '../user-data/user-data-service';
 
 @Injectable({
@@ -12,7 +12,8 @@ export class Match3Service {
 	public client: Client;
 	private subscription?: StompSubscription;
 
-	public gameState$ = new Subject<GameState>();
+	public gameState$ = new BehaviorSubject<GameState | null>(null);
+	public gameStartData$ = new BehaviorSubject<GameStartData | null>(null);
 
 	constructor() {
 		this.client = new Client({
@@ -26,7 +27,16 @@ export class Match3Service {
 		this.client.activate();
 	}
 
-	subscribeToGame(gameId: number): void {
+	sendJoinRequest(): void {
+		this.client.subscribe(`/user/queue/gameStart`, (msg: IMessage) => {
+			const gameData: GameStartData = JSON.parse(msg.body);
+			this.gameStartData$.next(gameData);
+		});
+
+		this.client.publish({ destination: `/app/queue/join`, body: '{}' });
+	}
+
+	subscribeToGame(gameId: string): void {
 		if (this.subscription != undefined) {
 			this.unsubscribeFromGame();
 		}
@@ -46,7 +56,7 @@ export class Match3Service {
 		console.log('Unsubscribed from game');
 	}
 
-	fetchState(gameId: number): void {
+	fetchState(gameId: string): void {
 		this.client.publish({ destination: `/app/board/${gameId}/getState`, body: '{}' });
 	}
 
@@ -135,7 +145,7 @@ export class Match3Service {
 		const playerData = new Map<number, PlayerData>();
 		playerData.set(0, { playerId: 1, playerName: 'PlayerOne', playerElo: 1500, characters: playerCharacters });
 		playerData.set(1, { playerId: 2, playerName: 'Opponent', playerElo: 1480, characters: opponentCharacters });
-		return { gameId: 'mock-game-123', playerData };
+		return { gameId: '0', playerData };
 	}
 }
 
