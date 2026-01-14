@@ -59,6 +59,7 @@ export class Match3Service {
 		}
 
 		this.subscription = this.client.subscribe(`/topic/board/${gameId}/state`, (msg: IMessage) => {
+			console.log('zzz' + msg.body);
 			const gamestate: GameState = JSON.parse(msg.body);
 			this.gameState$.next(gamestate);
 		});
@@ -84,31 +85,31 @@ export class Match3Service {
 		});
 	}
 
-	getMockState(): GameState {
-		const board: Match3Block[][] = [
-			[{ blockType: BlockType.DIAMOND }, { blockType: BlockType.RUBY }],
-			[{ blockType: BlockType.RUBY }, { blockType: BlockType.RUBY }]
-		];
-		const boardState: BoardState = {
-			board,
-			allowedMoves: [{ source: { row: 1, column: 0 }, target: { row: 1, column: 1 } }],
-			animationSteps: []
-		};
-		const playerState = new Map<number, number>([
-			[0, 50],
-			[1, 80],
-			[2, 100]
-		]);
-		const opponentState = new Map<number, number>([
-			[3, 50],
-			[4, 110],
-			[5, 110]
-		]);
-		const playerStates = new Map<number, PlayerState>();
-		playerStates.set(0, { charactersHealth: playerState });
-		playerStates.set(1, { charactersHealth: opponentState });
-		return { boardState: boardState, currentPlayerId: 0, playerStates: playerStates, attackingCharacterId: null };
-	}
+	// getMockState(): GameState {
+	// 	const board: Match3Block[][] = [
+	// 		[{ blockType: BlockType.DIAMOND }, { blockType: BlockType.RUBY }],
+	// 		[{ blockType: BlockType.RUBY }, { blockType: BlockType.RUBY }]
+	// 	];
+	// 	const boardState: BoardState = {
+	// 		board,
+	// 		allowedMoves: [{ source: { row: 1, column: 0 }, target: { row: 1, column: 1 } }],
+	// 		animationSteps: []
+	// 	};
+	// 	const playerState = new Map<number, number>([
+	// 		[0, 50],
+	// 		[1, 80],
+	// 		[2, 100]
+	// 	]);
+	// 	const opponentState = new Map<number, number>([
+	// 		[3, 50],
+	// 		[4, 110],
+	// 		[5, 110]
+	// 	]);
+	// 	const playerStates = new Map<number, PlayerState>();
+	// 	playerStates.set(0, { charactersHealth: playerState });
+	// 	playerStates.set(1, { charactersHealth: opponentState });
+	// 	return { boardState: boardState, currentPlayerId: 0, playerStates: playerStates, attackingCharacterId: null };
+	// }
 
 	getMockMove() {
 		const board: Match3Block[][] = [

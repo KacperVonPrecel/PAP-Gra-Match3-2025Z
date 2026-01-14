@@ -36,7 +36,7 @@ public class OneMainBlockCharacter implements Character
     {
         if (level < 1)
             throw new IllegalArgumentException("Invalid level");
-        return baseHealth + ((level - 1) * healthPerLevelIncrease);
+        return baseDamage + ((level - 1) * damagePerLevelIncrease);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class OneMainBlockCharacter implements Character
     {
         if (level < 1)
             throw new IllegalArgumentException("Invalid level");
-        return baseDamage + ((level - 1) * damagePerLevelIncrease);
+        return baseHealth + ((level - 1) * healthPerLevelIncrease);
     }
 
     @Override

@@ -102,9 +102,9 @@ public class GameController
 
     private void notifyGameStarted(@NonNull GameStartData gameStartData)
     {
-        for (PlayerData data : gameStartData.playerData().values())
+        for (XXX3 data : gameStartData.playerData())
         {
-            messaging.convertAndSendToUser(data.playerName(), "/queue/gameStart", gameStartData);
+            messaging.convertAndSendToUser(data.playerData().playerName(), "/queue/gameStart", gameStartData);
         }
 
 //        messaging.convertAndSend(gameStartData.gameState(), );

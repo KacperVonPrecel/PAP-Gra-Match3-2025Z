@@ -2,6 +2,7 @@ package pap.project.game.model.communication;
 
 import org.springframework.lang.NonNull;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -10,5 +11,5 @@ import java.util.Map;
 public record GameStartData(
         @NonNull String gameId,
         @NonNull GameState gameState,
-        @NonNull Map<Long, PlayerData> playerData
+        @NonNull List<XXX3> playerData
 ) { }

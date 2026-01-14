@@ -3,8 +3,18 @@ import { BlockType, MoveRequest } from './match3-service';
 export interface GameState {
 	boardState: BoardState;
 	currentPlayerId: number;
-	playerStates: Map<number, PlayerState>;
+	playerStates: XXX2[];
 	attackingCharacterId: number | null;
+}
+
+export interface XXX2 {
+	playerId: number;
+	playerCharactersState: XXX1[];
+}
+
+export interface XXX1 {
+	characterId: number;
+	health: number;
 }
 
 export interface Match3Block {
@@ -49,7 +59,12 @@ export interface PlayerState {
 
 export interface GameStartData {
 	gameId: string;
-	playersData: Map<number, PlayerData>;
+	playerData: XXX3[];
+}
+
+export interface XXX3 {
+	playerId: number;
+	playerData: PlayerData;
 }
 
 export interface GameCharacter {

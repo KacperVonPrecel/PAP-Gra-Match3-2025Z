@@ -7,3 +7,5 @@ import java.util.Map;
 public record PlayerCharactersState(
         @NonNull Map<Long, Integer> charactersHealth
 ) { }
+
+

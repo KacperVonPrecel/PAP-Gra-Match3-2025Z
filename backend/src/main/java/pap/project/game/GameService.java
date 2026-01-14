@@ -7,6 +7,7 @@ import pap.project.game.match3.model.MoveRequest;
 import pap.project.game.model.communication.GameStartData;
 import pap.project.game.model.communication.GameState;
 import pap.project.game.model.communication.PlayerData;
+import pap.project.game.model.communication.XXX3;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,9 +32,9 @@ public class GameService
                 return new GameStartData(
                         entry.getKey(),
                         entry.getValue().getGameState(),
-                        Map.of(
-                                entry.getValue().firstPlayerData.playerId(), entry.getValue().firstPlayerData,
-                                entry.getValue().secondPlayerData.playerId(), entry.getValue().secondPlayerData
+                        List.of(
+                                new XXX3(entry.getValue().firstPlayerData.playerId(), entry.getValue().firstPlayerData),
+                                new XXX3(entry.getValue().secondPlayerData.playerId(), entry.getValue().secondPlayerData)
                         )
                 );
             }
@@ -57,9 +58,9 @@ public class GameService
         return new GameStartData(
                 gameId,
                 game.getGameState(),
-                Map.of(
-                        player.playerId(), player,
-                        otherPlayer.playerId(), otherPlayer
+                List.of(
+                        new XXX3(player.playerId(), player),
+                        new XXX3(otherPlayer.playerId(), otherPlayer)
                 )
         );
     }

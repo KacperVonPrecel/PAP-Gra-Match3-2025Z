@@ -31,6 +31,9 @@ export class CharactersDisplay {
 		effect(() => {
 			const opponentData = this.opponentData();
 			const myData = this.myData();
+			console.log('xxx');
+			console.log(opponentData);
+			console.log(myData);
 			this.loadCharacterAssets();
 		});
 		effect(() => {

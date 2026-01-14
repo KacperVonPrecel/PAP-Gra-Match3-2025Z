@@ -1,9 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
 import { Match3Service, MoveRequest } from '../match3-service';
-import { BoardState, GameStartData, GameState, PlayerData, PlayerState } from '../game-state';
+import { BoardState, GameStartData, GameState, PlayerData, PlayerState, XXX2, XXX3 } from '../game-state';
 import { GameBoard } from './board/game-board';
 import { CharactersDisplay } from './characters-display/characters-display';
-import { UserDataService } from '../../user-data/user-data-service';
+import { characterNameMap, UserDataService } from '../../user-data/user-data-service';
 import { FindingMatch } from './finding-match/finding-match';
 import { Subscription } from 'rxjs';
 
@@ -79,63 +79,58 @@ export class Match3 {
 		return null;
 	}
 
-	get playerStates(): Map<number, PlayerState> | null {
+	get playerStates(): XXX2[] | null {
 		if (this.gameState) {
 			return this.gameState.playerStates;
 		}
 		return null;
 	}
 
-	get playersData(): Map<number, PlayerData> | null {
+	get playersData(): XXX3[] | null {
 		if (this.gameStartData) {
-			return this.gameStartData.playersData;
+			return this.gameStartData.playerData;
 		}
 		return null;
 	}
 
-	get myData() {
+	get myData(): PlayerData | null {
 		const playersData = this.playersData;
-		if (!this.playersData) return null;
-		for (const [id, data] of playersData!) {
-			if (id === this.playerId) {
-				return data;
-			}
-		}
-		return null;
+		console.log(playersData + 'xxxasdasdads');
+
+		if (!playersData) return null;
+
+		const dupa = playersData.filter((x) => x.playerId == this.playerId).map((i) => i.playerData)[0];
+		if (!dupa) return null;
+		return dupa;
 	}
 
 	get opponentData(): PlayerData | null {
-		// console.log('Getting opponent data' + this.playersData);
 		const playersData = this.playersData;
-		if (!this.playersData) return null;
-		for (const [id, data] of playersData!) {
-			if (id != this.playerId) {
-				return data;
-			}
-		}
-		return null;
+		if (!playersData) return null;
+
+		const dupa = playersData.filter((x) => x.playerId != this.playerId).map((i) => i.playerData)[0];
+		if (!dupa) return null;
+		return dupa;
 	}
 
 	get opponentState(): PlayerState | null {
-		// const playerStates = this.playerStates;
-		// if (!playerStates) return null;
-		// for (const [id, state] of playerStates!) {
-		// 	if (id != this.playerId) {
-		// 		return state;
-		// 	}
-		// }
-		return null;
+		const playerStates = this.playerStates;
+		if (!playerStates) return null;
+		const dupa = playerStates
+			.filter((x) => x.playerId != this.playerId)
+			.map((i) => new Map(i.playerCharactersState.map((i2) => [i2.characterId, i2.health])))[0];
+		if (!dupa) return null;
+		return { charactersHealth: dupa };
 	}
 
 	get myState(): PlayerState | null {
-		// const playerStates = this.playerStates;
-		// if (!playerStates) return null;
-		// for (const [id, state] of playerStates!) {
-		// 	if (id === this.playerId) {
-		// 		return state;
-		// 	}
-		// }
-		return null;
+		const playerStates = this.playerStates;
+		if (!playerStates) return null;
+		const dupa = playerStates
+			.filter((x) => x.playerId == this.playerId)
+			.map((i) => new Map(i.playerCharactersState.map((i2) => [i2.characterId, i2.health])))[0];
+		if (!dupa) return null;
+		return { charactersHealth: dupa };
 	}
 
 	get attackingCharacter(): number | null {
