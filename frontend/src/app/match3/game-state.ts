@@ -4,6 +4,7 @@ export interface GameState {
 	boardState: BoardState;
 	currentPlayerId: number;
 	playerStates: Map<number, PlayerState>;
+	attackingCharacterId: number | null;
 }
 
 export interface Match3Block {
@@ -48,7 +49,6 @@ export interface PlayerState {
 
 export interface GameStartData {
 	gameId: string;
-	gameState: GameState;
 	playerData: Map<number, PlayerData>;
 }
 

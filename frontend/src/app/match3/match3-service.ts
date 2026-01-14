@@ -80,7 +80,7 @@ export class Match3Service {
 		const playerStates = new Map<number, PlayerState>();
 		playerStates.set(0, { charactersHealth: playerState });
 		playerStates.set(1, { charactersHealth: opponentState });
-		return { boardState: boardState, currentPlayerId: 0, playerStates: playerStates };
+		return { boardState: boardState, currentPlayerId: 0, playerStates: playerStates, attackingCharacterId: null };
 	}
 
 	getMockMove() {
@@ -102,7 +102,7 @@ export class Match3Service {
 		const playerStates = new Map<number, PlayerState>();
 		playerStates.set(0, { charactersHealth: playerState });
 		playerStates.set(1, { charactersHealth: opponentState });
-		return { boardState: boardState, currentPlayerId: 0, playerStates: playerStates };
+		return { boardState: boardState, currentPlayerId: 0, playerStates: playerStates, attackingCharacterId: 0 };
 	}
 
 	mockGameStartData() {
@@ -135,7 +135,7 @@ export class Match3Service {
 		const playerData = new Map<number, PlayerData>();
 		playerData.set(0, { playerId: 1, playerName: 'PlayerOne', playerElo: 1500, characters: playerCharacters });
 		playerData.set(1, { playerId: 2, playerName: 'Opponent', playerElo: 1480, characters: opponentCharacters });
-		return { gameId: 'mock-game-123', gameState: { boardState, currentPlayerId: 1, playerStates }, playerData };
+		return { gameId: 'mock-game-123', playerData };
 	}
 }
 
