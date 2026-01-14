@@ -1,8 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Match3Service, MoveRequest } from '../match3-service';
 import { BoardState, GameStartData, GameState, PlayerData, PlayerState } from '../game-state';
 import { GameBoard } from './board/game-board';
 import { CharactersDisplay } from './characters-display/characters-display';
+import { UserDataService } from '../../user-data/user-data-service';
 
 @Component({
 	selector: 'app-match3',
@@ -22,10 +23,12 @@ export class Match3 {
 	constructor(private socket: Match3Service) {}
 
 	ngOnInit(): void {
-		this.socket.client.onConnect = () => {
-			console.log('STOMP connected');
-			this.connect(0);
-		};
+		//this.socket.client.onConnect = () => {
+		//console.log('STOMP connected');
+		//this.connect(0);
+		//};
+		this.gameStartData = this.socket.mockGameStartData();
+		this.gameState = this.socket.getMockState();
 	}
 
 	get moveValid(): { valid: boolean | null; moveId: number } {
@@ -150,9 +153,12 @@ export class Match3 {
 
 	makeMove(swapAttempt: { move: MoveRequest; moveId: number }): void {
 		console.log('Make move in match3 executed');
+		/*
 		if (this.gameId != undefined) {
 			this.lastSentMoveRequestId = swapAttempt.moveId;
 			this.socket.makeMove(this.gameId, swapAttempt.move);
 		}
+			*/
+		this.gameState = this.socket.getMockMove();
 	}
 }

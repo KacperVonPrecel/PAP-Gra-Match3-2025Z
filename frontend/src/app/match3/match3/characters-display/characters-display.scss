@@ -36,3 +36,14 @@
 		}
 	}
 }
+
+.dead {
+	filter: grayscale(100%) brightness(60%);
+	opacity: 0.6;
+}
+
+.image-container img {
+	transition:
+		filter 0.3s ease,
+		opacity 0.3s ease;
+}

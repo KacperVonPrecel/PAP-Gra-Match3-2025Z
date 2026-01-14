@@ -2,6 +2,7 @@ import { Component, effect, input } from '@angular/core';
 import { PlayerData, PlayerState } from '../../game-state';
 import { HealthBar } from './health-bar/health-bar';
 import { CharacterType, getCharacterFileName } from '../../../user-data/user-data-service';
+import { CharacterAnimationState } from './character-animation-state';
 
 @Component({
 	selector: 'app-characters-display',
@@ -15,14 +16,57 @@ export class CharactersDisplay {
 	myState = input<PlayerState | null>();
 	opponentState = input<PlayerState | null>();
 
+	private myOldState: PlayerState | null = null;
+	private opponentOldState: PlayerState | null = null;
+
 	private characterImages = new Map<CharacterType, string>();
 	imagesLoadedCount: number = 0;
+	animationState = new CharacterAnimationState();
 
 	constructor() {
 		effect(() => {
 			const opponentData = this.opponentData();
 			const myData = this.myData();
 			this.loadCharacterAssets();
+		});
+		effect(() => {
+			const opponentState = this.opponentState();
+			const myState = this.myState();
+
+			if (this.opponentOldState && opponentState) {
+				for (const key of opponentState.charactersHealth.keys()) {
+					const oldHealth = this.opponentOldState.charactersHealth.get(key);
+					const newHealth = opponentState.charactersHealth.get(key);
+					if (oldHealth != newHealth) {
+						if (newHealth && newHealth <= 0) {
+							this.animationState.addDead(key);
+						} else {
+							this.animationState.addDamage(key);
+						}
+					}
+				}
+			}
+
+			if (this.myOldState && myState) {
+				for (const key of myState.charactersHealth.keys()) {
+					const oldHealth = this.myOldState.charactersHealth.get(key);
+					const newHealth = myState.charactersHealth.get(key);
+					if (oldHealth != newHealth) {
+						if (newHealth && newHealth <= 0) {
+							this.animationState.addDead(key);
+						} else {
+							this.animationState.addDamage(key);
+						}
+					}
+				}
+			}
+
+			if (opponentState) {
+				this.opponentOldState = opponentState;
+			}
+			if (myState) {
+				this.myOldState = myState;
+			}
 		});
 	}
 

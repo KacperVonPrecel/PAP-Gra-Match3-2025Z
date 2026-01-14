@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { Client, IMessage, StompSubscription } from '@stomp/stompjs';
 import { Observable, of, Subject } from 'rxjs';
 import SockJS from 'sockjs-client';
-import { GameState, Position } from './game-state';
+import { BoardState, GameCharacter, GameState, Match3Block, PlayerData, PlayerState, Position } from './game-state';
+import { CharacterType } from '../user-data/user-data-service';
 
 @Injectable({
 	providedIn: 'root'
@@ -54,6 +55,87 @@ export class Match3Service {
 			destination: `/app/board/${gameId}/playTurn`,
 			body: JSON.stringify(moveRequest)
 		});
+	}
+
+	getMockState(): GameState {
+		const board: Match3Block[][] = [
+			[{ blockType: BlockType.DIAMOND }, { blockType: BlockType.RUBY }],
+			[{ blockType: BlockType.RUBY }, { blockType: BlockType.RUBY }]
+		];
+		const boardState: BoardState = {
+			board,
+			allowedMoves: [{ source: { row: 1, column: 0 }, target: { row: 1, column: 1 } }],
+			animationSteps: []
+		};
+		const playerState = new Map<number, number>([
+			[0, 50],
+			[1, 80],
+			[2, 100]
+		]);
+		const opponentState = new Map<number, number>([
+			[3, 50],
+			[4, 110],
+			[4, 110]
+		]);
+		const playerStates = new Map<number, PlayerState>();
+		playerStates.set(0, { charactersHealth: playerState });
+		playerStates.set(1, { charactersHealth: opponentState });
+		return { boardState: boardState, currentPlayerId: 0, playerStates: playerStates };
+	}
+
+	getMockMove() {
+		const board: Match3Block[][] = [
+			[{ blockType: BlockType.EMERALD }, { blockType: BlockType.RUBY }],
+			[{ blockType: BlockType.RUBY }, { blockType: BlockType.RUBY }]
+		];
+		const boardState: BoardState = { board, allowedMoves: [], animationSteps: [] };
+		const playerState = new Map<number, number>([
+			[0, 50],
+			[1, 20],
+			[2, 100]
+		]);
+		const opponentState = new Map<number, number>([
+			[3, 50],
+			[4, 70],
+			[4, 0]
+		]);
+		const playerStates = new Map<number, PlayerState>();
+		playerStates.set(0, { charactersHealth: playerState });
+		playerStates.set(1, { charactersHealth: opponentState });
+		return { boardState: boardState, currentPlayerId: 0, playerStates: playerStates };
+	}
+
+	mockGameStartData() {
+		const board: Match3Block[][] = [
+			[{ blockType: BlockType.DIAMOND }, { blockType: BlockType.RUBY }],
+			[{ blockType: BlockType.RUBY }, { blockType: BlockType.RUBY }]
+		];
+		const boardState: BoardState = { board, allowedMoves: [], animationSteps: [] };
+		const playerCharacters: GameCharacter[] = [
+			{ characterId: 0, characterType: CharacterType.SACRED_CAT, maxHealth: 100, damage: 100 },
+			{ characterId: 1, characterType: CharacterType.AMETHYST_ENCHANTRESS, maxHealth: 100, damage: 100 },
+			{ characterId: 2, characterType: CharacterType.RUBY_HORNED_DAME, maxHealth: 80, damage: 100 }
+		];
+		const opponentCharacters: GameCharacter[] = [
+			{ characterId: 3, characterType: CharacterType.AMETHYST_ENCHANTRESS, maxHealth: 90, damage: 100 },
+			{ characterId: 4, characterType: CharacterType.EMERALD_CORE_KNIGHT, maxHealth: 110, damage: 100 },
+			{ characterId: 4, characterType: CharacterType.EMERALD_CORE_KNIGHT, maxHealth: 110, damage: 100 }
+		];
+		const playerState = new Map<number, number>([
+			[1, 100],
+			[2, 80]
+		]);
+		const opponentState = new Map<number, number>([
+			[3, 90],
+			[4, 110]
+		]);
+		const playerStates = new Map<number, PlayerState>();
+		playerStates.set(0, { charactersHealth: playerState });
+		playerStates.set(1, { charactersHealth: opponentState });
+		const playerData = new Map<number, PlayerData>();
+		playerData.set(0, { playerId: 1, playerName: 'PlayerOne', playerElo: 1500, characters: playerCharacters });
+		playerData.set(1, { playerId: 2, playerName: 'Opponent', playerElo: 1480, characters: opponentCharacters });
+		return { gameId: 'mock-game-123', gameState: { boardState, currentPlayerId: 1, playerStates }, playerData };
 	}
 }
 
