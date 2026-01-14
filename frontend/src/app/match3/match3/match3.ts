@@ -18,7 +18,7 @@ export class Match3 {
 	public gameStartData: GameStartData | null = null;
 	private gameState?: GameState; //nullable because if we dont connect, no state
 	public _moveValid: { valid: boolean | null; moveId: number } = { valid: null, moveId: 0 };
-	playerId?: number = 0;
+	playerId?: number;
 	lastSentMoveRequestId: number = 0;
 	lastProcessedMoveId: number = 0;
 	private gameStateSub?: Subscription;
@@ -29,16 +29,14 @@ export class Match3 {
 
 	ngOnInit(): void {
 		this.socket.connectSocket();
-		/*
+
 		this.userDataService.userDataObservable.subscribe((data) => {
 			this.playerId = data.id;
 		});
-		*/
+
 		this.socket.client.onConnect = () => {
 			console.log('STOMP connected');
 		};
-
-		this.gameState = this.socket.getMockState();
 
 		this.join();
 	}
@@ -52,10 +50,6 @@ export class Match3 {
 	}
 
 	join(): void {
-		setTimeout(() => {
-			this.gameStartData = this.socket.mockGameStartData();
-		}, 1000);
-
 		this.socket.gameStartData$.subscribe((gameData) => {
 			console.log(gameData);
 
@@ -66,7 +60,6 @@ export class Match3 {
 				this.gameId = this.gameStartData.gameId;
 			}
 		});
-
 		this.socket.sendJoinRequest();
 	}
 
@@ -200,12 +193,10 @@ export class Match3 {
 
 	makeMove(swapAttempt: { move: MoveRequest; moveId: number }): void {
 		console.log('Make move in match3 executed');
-		/*
+
 		if (this.gameId != undefined) {
 			this.lastSentMoveRequestId = swapAttempt.moveId;
 			this.socket.makeMove(this.gameId, swapAttempt.move);
 		}
-			*/
-		this.gameState = this.socket.getMockMove();
 	}
 }
