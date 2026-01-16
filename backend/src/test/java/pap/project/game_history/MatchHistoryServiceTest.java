@@ -83,6 +83,7 @@ public class MatchHistoryServiceTest
         final List<MatchFromHistoryData> matchesList = matchesListData.matches();
         assertEquals(1, matchesList.size());
         final MatchFromHistoryData matchFromHistoryData = matchesList.getFirst();
+
         assertEquals(playerOne.getId().orElseThrow(), matchFromHistoryData.playerId());
         assertEquals(playerTwo.getId().orElseThrow(), matchFromHistoryData.opponentsId());
         assertEquals("test-user-1", matchFromHistoryData.playerUsername());
