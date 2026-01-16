@@ -16,7 +16,6 @@ import pap.project.user_stats.UserStatsRepository;
 import pap.project.users.User;
 import pap.project.users.UserRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
