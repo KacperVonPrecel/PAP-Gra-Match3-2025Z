@@ -70,9 +70,9 @@ public class MatchHistoryHistoryTest
 
         final LoadHistoryMatchesData loadHistoryMatchesData = matchHistoryController.load(1, 2, 10);
 
-        assertFalse(loadHistoryMatchesData.isMoreToLoad());
-        assertEquals(2, loadHistoryMatchesData.getMatches().size());
-        final List<MatchFromHistoryData> loadedMatches = loadHistoryMatchesData.getMatches();
+        assertFalse(loadHistoryMatchesData.moreToLoad());
+        assertEquals(2, loadHistoryMatchesData.matches().size());
+        final List<MatchFromHistoryData> loadedMatches = loadHistoryMatchesData.matches();
         assertEquals("test-user1", loadedMatches.getFirst().playerUsername());
         assertEquals("test-user1", loadedMatches.getLast().playerUsername());
 
