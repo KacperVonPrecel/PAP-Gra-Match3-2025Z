@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import pap.project.user_data.model.UserData;
 import pap.project.user_data.model.controller.UserDataResponse;
+import pap.project.user_stats.RankingService;
 import pap.project.users.UserAuthDetails;
 import pap.project.characters.UserCharacter;
 import pap.project.characters.UserCharactersService;
@@ -27,7 +28,8 @@ public class UserDataControllerTest
     private UserDataService userDataService;
     @Mock
     private UserCharactersService userCharactersService;
-
+    @Mock
+    private RankingService rankingService;
     @Mock
     private Authentication authentication;
 

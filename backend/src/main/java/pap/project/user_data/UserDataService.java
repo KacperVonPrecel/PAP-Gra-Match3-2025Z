@@ -146,7 +146,7 @@ public class UserDataService
                     loserCharacters
             );
 
-            matchCharactersRepository.save(matchCharacters);
+            match.setMatchCharacters(matchCharacters);
             matchRepository.save(match);
 
             return Map.of(
@@ -218,8 +218,6 @@ public class UserDataService
 
             userStatsRepository.updateUserStatsAfterDrawing(userDataSession.getUserData().currency(), userId);
             userCharactersRepository.saveAll(charactersToSave);
-
-
 
             return new DrawCharacterResponse(drawResults);
         } finally {

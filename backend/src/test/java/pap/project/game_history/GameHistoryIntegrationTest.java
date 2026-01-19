@@ -16,7 +16,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import pap.project.characters.model.CharacterType;
-import pap.project.game_history.model.DataNotFoundException;
 import pap.project.game_history.model.HistoryCharacterData;
 import pap.project.user_stats.UserStats;
 import pap.project.user_stats.UserStatsRepository;
@@ -26,7 +25,6 @@ import pap.project.users.UserRepository;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -58,10 +56,10 @@ public class GameHistoryIntegrationTest
     @BeforeEach
     void init ()
     {
-        userStatsRepository.deleteAll();
-        matchRepository.deleteAll();
-        userRepository.deleteAll();
         matchCharactersRepository.deleteAll();
+        matchRepository.deleteAll();
+        userStatsRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -86,7 +84,7 @@ public class GameHistoryIntegrationTest
                     20,
                     -10
             );
-            matchCharactersRepository.saveAndFlush(getMatchCharacters(mockedMatch));
+            mockedMatch.setMatchCharacters(getMatchCharacters(mockedMatch));
             matchRepository.saveAndFlush(mockedMatch);
         }
 
@@ -96,7 +94,7 @@ public class GameHistoryIntegrationTest
                 finishTime + 100000,
                 20,
                 -10);
-        matchCharactersRepository.saveAndFlush(getMatchCharacters(newestMatch));
+        newestMatch.setMatchCharacters(getMatchCharacters(newestMatch));
         matchRepository.saveAndFlush(newestMatch);
         final long newestMatchId = newestMatch.getId().orElseThrow();
 
@@ -108,11 +106,11 @@ public class GameHistoryIntegrationTest
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.moreToLoad").isBoolean())
-                .andExpect(jsonPath("$.moreToLoad").value(false))
                 .andExpect(jsonPath("$.matches").isArray())
                 .andExpect(jsonPath("$.matches").isNotEmpty())
                 .andExpect(jsonPath("$.matches", hasSize(10)))
+                .andExpect(jsonPath("$.moreToLoad").isBoolean())
+                .andExpect(jsonPath("$.moreToLoad").value(false))
                 .andExpect(jsonPath("$.matches[9].playerId").value(user1.getId().orElseThrow()))
                 .andExpect(jsonPath("$.matches[9].opponentsId").value(user2.getId().orElseThrow()))
                 .andExpect(jsonPath("$.matches[9].playerUsername").value("test-user1"))
@@ -125,17 +123,17 @@ public class GameHistoryIntegrationTest
                 .andExpect(jsonPath("$.matches[9].playerCharacters", hasSize(3)))
                 .andExpect(jsonPath("$.matches[9].opponentCharacters").isArray())
                 .andExpect(jsonPath("$.matches[9].opponentCharacters", hasSize(3)))
-                .andExpect(jsonPath("$.matches[9].playerCharacters[0].characterType").value(CharacterType.AMETHYST_ENCHANTRESS))
+                .andExpect(jsonPath("$.matches[9].playerCharacters[0].characterType").value("AMETHYST_ENCHANTRESS"))
                 .andExpect(jsonPath("$.matches[9].playerCharacters[0].level").value(10))
-                .andExpect(jsonPath("$.matches[9].playerCharacters[1].characterType").value(CharacterType.RUBY_HORNED_DAME))
+                .andExpect(jsonPath("$.matches[9].playerCharacters[1].characterType").value("RUBY_HORNED_DAME"))
                 .andExpect(jsonPath("$.matches[9].playerCharacters[1].level").value(12))
-                .andExpect(jsonPath("$.matches[9].playerCharacters[2].characterType").value(CharacterType.HONEY_TRIGGER))
+                .andExpect(jsonPath("$.matches[9].playerCharacters[2].characterType").value("HONEY_TRIGGER"))
                 .andExpect(jsonPath("$.matches[9].playerCharacters[2].level").value(9))
-                .andExpect(jsonPath("$.matches[9].opponentCharacters[0].characterType").value(CharacterType.TRASH_MAN))
+                .andExpect(jsonPath("$.matches[9].opponentCharacters[0].characterType").value("TRASH_MAN"))
                 .andExpect(jsonPath("$.matches[9].opponentCharacters[0].level").value(13))
-                .andExpect(jsonPath("$.matches[9].opponentCharacters[1].characterType").value(CharacterType.SACRED_CAT))
+                .andExpect(jsonPath("$.matches[9].opponentCharacters[1].characterType").value("SACRED_CAT"))
                 .andExpect(jsonPath("$.matches[9].opponentCharacters[1].level").value(12))
-                .andExpect(jsonPath("$.matches[9].opponentCharacters[2].characterType").value(CharacterType.EMERALD_CORE_KNIGHT))
+                .andExpect(jsonPath("$.matches[9].opponentCharacters[2].characterType").value("EMERALD_CORE_KNIGHT"))
                 .andExpect(jsonPath("$.matches[9].opponentCharacters[2].level").value(11))
 
                 .andExpect(jsonPath("$.matches[5].playerId").value(user1.getId().orElseThrow()))
@@ -145,22 +143,22 @@ public class GameHistoryIntegrationTest
                 .andExpect(jsonPath("$.matches[5].playerEloPoints").value(100))
                 .andExpect(jsonPath("$.matches[5].opponentsEloPoints").value(100))
                 .andExpect(jsonPath("$.matches[5].isPlayerWinner").value(true))
-                .andExpect(jsonPath("$.matches[5].finishTime").value(finishTime + 6 * 10000))
+                .andExpect(jsonPath("$.matches[5].finishTime").value(finishTime + 4 * 10000))
                 .andExpect(jsonPath("$.matches[5].playerCharacters").isArray())
                 .andExpect(jsonPath("$.matches[5].playerCharacters", hasSize(3)))
                 .andExpect(jsonPath("$.matches[5].opponentCharacters").isArray())
                 .andExpect(jsonPath("$.matches[5].opponentCharacters", hasSize(3)))
-                .andExpect(jsonPath("$.matches[5].playerCharacters[0].characterType").value(CharacterType.AMETHYST_ENCHANTRESS))
+                .andExpect(jsonPath("$.matches[5].playerCharacters[0].characterType").value("AMETHYST_ENCHANTRESS"))
                 .andExpect(jsonPath("$.matches[5].playerCharacters[0].level").value(10))
-                .andExpect(jsonPath("$.matches[5].playerCharacters[1].characterType").value(CharacterType.RUBY_HORNED_DAME))
+                .andExpect(jsonPath("$.matches[5].playerCharacters[1].characterType").value("RUBY_HORNED_DAME"))
                 .andExpect(jsonPath("$.matches[5].playerCharacters[1].level").value(12))
-                .andExpect(jsonPath("$.matches[5].playerCharacters[2].characterType").value(CharacterType.HONEY_TRIGGER))
+                .andExpect(jsonPath("$.matches[5].playerCharacters[2].characterType").value("HONEY_TRIGGER"))
                 .andExpect(jsonPath("$.matches[5].playerCharacters[2].level").value(9))
-                .andExpect(jsonPath("$.matches[5].opponentCharacters[0].characterType").value(CharacterType.TRASH_MAN))
+                .andExpect(jsonPath("$.matches[5].opponentCharacters[0].characterType").value("TRASH_MAN"))
                 .andExpect(jsonPath("$.matches[5].opponentCharacters[0].level").value(13))
-                .andExpect(jsonPath("$.matches[5].opponentCharacters[1].characterType").value(CharacterType.SACRED_CAT))
+                .andExpect(jsonPath("$.matches[5].opponentCharacters[1].characterType").value("SACRED_CAT"))
                 .andExpect(jsonPath("$.matches[5].opponentCharacters[1].level").value(12))
-                .andExpect(jsonPath("$.matches[5].opponentCharacters[2].characterType").value(CharacterType.EMERALD_CORE_KNIGHT))
+                .andExpect(jsonPath("$.matches[5].opponentCharacters[2].characterType").value("EMERALD_CORE_KNIGHT"))
                 .andExpect(jsonPath("$.matches[5].opponentCharacters[2].level").value(11));
     }
 
@@ -177,53 +175,50 @@ public class GameHistoryIntegrationTest
         userRepository.saveAndFlush(user1);
         userRepository.saveAndFlush(user2);
 
-        for(long i = 0; i < 5; i++)
+        for(long i = 0; i < 4; i++)
         {
-            matchRepository.saveAndFlush(new Match(
+            Match mockedMatch = new Match(
                     user1.getId().orElseThrow(),
                     user2.getId().orElseThrow(),
                     finishTime + (i * 10000),
                     20,
                     -10
-            ));
+            );
+            mockedMatch.setMatchCharacters(getMatchCharacters(mockedMatch));
+            matchRepository.saveAndFlush(mockedMatch);
         }
 
-        final Match matchFive = new Match(
+        final Match matchSix = new Match(
                 user1.getId().orElseThrow(),
                 user2.getId().orElseThrow(),
-                finishTime + 50000,
+                finishTime + 40000,
                 20,
                 -10);
-        matchRepository.saveAndFlush(matchFive);
+        matchSix.setMatchCharacters(getMatchCharacters(matchSix));
+        matchRepository.saveAndFlush(matchSix);
 
-        for(long i = 6; i < 14; i++)
+        for(long i = 5; i < 14; i++)
         {
-            matchRepository.saveAndFlush(new Match(
+            Match mockedMatch = new Match(
                     user1.getId().orElseThrow(),
                     user2.getId().orElseThrow(),
                     finishTime + (i * 10000),
                     20,
                     -10
-            ));
+            );
+            mockedMatch.setMatchCharacters(getMatchCharacters(mockedMatch));
+            matchRepository.saveAndFlush(mockedMatch);
         }
 
-        final Match matchFourteen = new Match(
+        final Match matchFifteen = new Match(
                 user1.getId().orElseThrow(),
                 user2.getId().orElseThrow(),
                 finishTime + 140000,
                 20,
                 -10);
-        matchRepository.saveAndFlush(matchFourteen);
-        final long matchFifteenId = matchFourteen.getId().orElseThrow();
-
-        matchRepository.saveAndFlush(new Match(
-                user1.getId().orElseThrow(),
-                user2.getId().orElseThrow(),
-                finishTime + 150000,
-                20,
-                -10
-        ));
-
+        matchFifteen.setMatchCharacters(getMatchCharacters(matchFifteen));
+        matchRepository.saveAndFlush(matchFifteen);
+        final long matchFifteenId = matchFifteen.getId().orElseThrow();
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/match_history/load")
                         .param("size", "10")
@@ -238,8 +233,8 @@ public class GameHistoryIntegrationTest
                 .andExpect(jsonPath("$.matches").isArray())
                 .andExpect(jsonPath("$.matches").isNotEmpty())
                 .andExpect(jsonPath("$.matches", hasSize(10)))
-                .andExpect(jsonPath("$.matches[9].finishTime").value(matchFive.getFinishTime()))
-                .andExpect(jsonPath("$.matches[0].finishTime").value(matchFourteen.getFinishTime()));
+                .andExpect(jsonPath("$.matches[9].finishTime").value(matchSix.getFinishTime()))
+                .andExpect(jsonPath("$.matches[0].finishTime").value(matchFifteen.getFinishTime() - 10000));
     }
 
     @Test

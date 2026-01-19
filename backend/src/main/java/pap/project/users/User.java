@@ -2,6 +2,7 @@ package pap.project.users;
 
 import jakarta.persistence.*;
 import org.springframework.lang.NonNull;
+import pap.project.user_stats.UserStats;
 
 import java.util.Objects;
 import java.util.OptionalLong;
@@ -31,6 +32,8 @@ public class User
     private String email;
     @Column(name = "hashed_password")
     private String hashedPassword;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private UserStats userStats;
 
     /**
      * Only for use in tests if it necessary to have userId.
@@ -69,6 +72,16 @@ public class User
     public @NonNull String getHashedPassword()
     {
         return Objects.requireNonNull(hashedPassword);
+    }
+
+    public @NonNull UserStats getUserStats()
+    {
+    return userStats;
+    }
+
+    public void setUserStats(UserStats userStats)
+    {
+        this.userStats = userStats;
     }
 
 }

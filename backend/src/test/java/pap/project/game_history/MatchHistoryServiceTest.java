@@ -63,16 +63,16 @@ public class MatchHistoryServiceTest
 
         final Match mockedMatch = Match.createMatchForTest(playerOne, playerTwo, finishTime, 20, -10);
         Long matchId = 10L;
-        ReflectionTestUtils.setField(mockedMatch, "Id", matchId);
+        ReflectionTestUtils.setField(mockedMatch, "id", matchId);
 
         final MatchCharacters mockedMatchCharacters = getMatchCharacters(mockedMatch);
+        mockedMatch.setMatchCharacters(mockedMatchCharacters);
 
         final UserStats userStatsOne = new UserStats(playerOne);
         final UserStats userStatsTwo = new UserStats(playerTwo);
 
         final List<Match> matches = List.of(mockedMatch);
         Mockito.when(matchRepository.findMatchesBeforeRecordId(anyLong(), anyLong(), any())).thenReturn(matches);
-        Mockito.when(matchCharactersRepository.findByMatchId(anyLong())).thenReturn(mockedMatchCharacters);
 
         Mockito.when(userRepository.existsById(1)).thenReturn(true);
         Mockito.when(userStatsRepository.findUserStatsById(1)).thenReturn(Optional.of(userStatsOne));

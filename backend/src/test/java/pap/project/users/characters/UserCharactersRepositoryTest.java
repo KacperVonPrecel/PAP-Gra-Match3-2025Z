@@ -20,8 +20,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @ActiveProfiles("test")
-@EntityScan(basePackages = {"pap.project.users"})
-@EnableJpaRepositories(basePackages = {"pap.project.users"})
+@EntityScan(basePackages = {"pap.project.users", "pap.project.user_stats", "pap.project.characters"})
+@EnableJpaRepositories(basePackages = {"pap.project.users", "pap.project.user_stats", "pap.project.characters"})
 public class UserCharactersRepositoryTest
 {
     @Autowired

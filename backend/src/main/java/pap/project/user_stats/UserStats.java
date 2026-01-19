@@ -82,4 +82,9 @@ public class UserStats {
         return activeTeam.size() != 3 ? null : activeTeam;
     }
 
+    public  void setActiveTeam(@NonNull List<CharacterType> activeTeam)
+    {
+        this.activeTeam = activeTeam;
+    }
+
 }

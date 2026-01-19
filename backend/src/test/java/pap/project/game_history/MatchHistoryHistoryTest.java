@@ -36,7 +36,7 @@ public class MatchHistoryHistoryTest
     {
         final LoadHistoryMatchesData loadHistoryMatchesDataMock = getLoadHistoryMatchesData();
 
-        when(matchHistoryService.loadMatches(1, 20L, 10)).thenReturn(loadHistoryMatchesDataMock);
+        when(matchHistoryService.loadMatches(100L, 20L, 10)).thenReturn(loadHistoryMatchesDataMock);
 
         final LoadHistoryMatchesData loadHistoryMatchesData = matchHistoryController.load(authentication, 100L, 20L, 10);
 

@@ -18,7 +18,6 @@ public class MatchHistoryService
     private final @NonNull MatchRepository matchRepository;
     private final @NonNull UserStatsRepository userStatsRepository;
     private final @NonNull UserRepository userRepository;
-    private final @NonNull MatchCharactersRepository matchCharactersRepository;
 
     public MatchHistoryService(
             @NonNull MatchRepository matchRepository,
@@ -29,7 +28,6 @@ public class MatchHistoryService
         this.matchRepository = matchRepository;
         this.userStatsRepository = userStatsRepository;
         this.userRepository = userRepository;
-        this.matchCharactersRepository = matchCharactersRepository;
     }
 
     /**
@@ -55,7 +53,7 @@ public class MatchHistoryService
             final long playerId = player.getId().orElseThrow();
             final long opponentId = opponent.getId().orElseThrow();
 
-            final MatchCharacters matchCharacters = matchCharactersRepository.findByMatchId(match.getId().orElseThrow());
+            final MatchCharacters matchCharacters = match.getMatchCharacters();
             final List<HistoryCharacterData> winnerCharList = List.of(
                     matchCharacters.getWinnerFirstCharacterRecord(),
                     matchCharacters.getWinnerSecondCharacterRecord(),
