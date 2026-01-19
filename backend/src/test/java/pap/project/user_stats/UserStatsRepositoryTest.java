@@ -29,8 +29,8 @@ public class UserStatsRepositoryTest
         final User user2 = new User( "test-user2", "test-user2@gmail.com", "password");
         userRepository.saveAll(List.of(user1, user2));
 
-        final UserStats userStats1 = new UserStats(user1.getId().orElseThrow());
-        final UserStats userStats2 = new UserStats(user2.getId().orElseThrow());
+        final UserStats userStats1 = new UserStats(user1);
+        final UserStats userStats2 = new UserStats(user2);
         userStatsRepository.saveAll(List.of(userStats1, userStats2));
     }
 
@@ -40,7 +40,7 @@ public class UserStatsRepositoryTest
         final User user3 = new User( "test-user3", "test-user3@gmail.com", "password");
         userRepository.save(user3);
 
-        final UserStats userStats3 = new UserStats(user3.getId().orElseThrow());
+        final UserStats userStats3 = new UserStats(user3);
         userStatsRepository.save(userStats3);
         final UserStats founded = userStatsRepository.findUserStatsById(userStats3.getId()).orElseThrow();
         assertEquals(userStats3.getId(), founded.getId());

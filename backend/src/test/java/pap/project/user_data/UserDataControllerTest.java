@@ -38,8 +38,28 @@ public class UserDataControllerTest
     public void test_get_starting_data()
     {
         when(authentication.getPrincipal()).thenReturn(new UserAuthDetails("test-user", "password", 1));
-        final UserData userData = new UserData(List.of(new UserCharacter(CharacterType.AMETHYST_ENCHANTRESS, 1, 10, 10)), 100, 0, 0, 0);
-        final List<CharacterData> charactersData = List.of(new CharacterData(CharacterType.AMETHYST_ENCHANTRESS, 100, 100, 1, OptionalInt.empty(), 10));
+        final UserData userData = new UserData(
+                "test-user",
+                List.of(
+                        new UserCharacter(CharacterType.AMETHYST_ENCHANTRESS, 1, 10, 10),
+                        new UserCharacter(CharacterType.EMERALD_CORE_KNIGHT, 1, 11, 12),
+                        new UserCharacter(CharacterType.SACRED_CAT, 1, 9, 9)
+                        ),
+                List.of(
+                        CharacterType.AMETHYST_ENCHANTRESS,
+                        CharacterType.EMERALD_CORE_KNIGHT,
+                        CharacterType.SACRED_CAT
+                ),
+                100,
+                0,
+                0,
+                0);
+        final List<CharacterData> charactersData =
+                List.of(
+                        new CharacterData(CharacterType.AMETHYST_ENCHANTRESS, 100, 100, 10, OptionalInt.empty(), 10),
+                        new CharacterData(CharacterType.EMERALD_CORE_KNIGHT, 100, 100, 11, OptionalInt.empty(), 12),
+                        new CharacterData(CharacterType.SACRED_CAT, 100, 100, 9, OptionalInt.empty(), 9)
+                );
         when(userDataService.getUserData(1)).thenReturn(userData);
         when(userCharactersService.createCharactersData(userData.userCharacters())).thenReturn(charactersData);
 

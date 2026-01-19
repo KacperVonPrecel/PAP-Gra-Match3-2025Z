@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import pap.project.auth.model.RegisterResult;
 import pap.project.auth.model.controller.register.RegisterRequest;
+import pap.project.user_stats.UserStatsRepository;
 import pap.project.users.User;
 import pap.project.users.UserRepository;
 
@@ -24,6 +25,9 @@ public class RegisterServiceTest
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private UserStatsRepository userStatsRepository;
 
     @InjectMocks
     private RegisterService registerService;

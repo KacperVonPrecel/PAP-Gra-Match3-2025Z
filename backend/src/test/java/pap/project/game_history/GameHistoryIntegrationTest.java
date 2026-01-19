@@ -70,14 +70,14 @@ public class GameHistoryIntegrationTest
     {
         final User user1 = new User("test-user1", "test-user1@gmail.com", "password1");
         final User user2 = new User("test-user2", "test-user2@gmail.com", "password2");
-        userRepository.saveAndFlush(user1);
-        userRepository.saveAndFlush(user2);
 
         final UserStats userStats1 = new UserStats(user1);
         final UserStats userStats2 = new UserStats(user2);
         userStatsRepository.saveAllAndFlush(List.of(userStats1, userStats2));
+        userRepository.saveAndFlush(user1);
+        userRepository.saveAndFlush(user2);
 
-        for(long i = 0; i < 9; i++)
+        for(long i = 0; i < 10; i++)
         {
             final Match mockedMatch = new Match(
                     user1.getId().orElseThrow(),
@@ -96,8 +96,8 @@ public class GameHistoryIntegrationTest
                 finishTime + 100000,
                 20,
                 -10);
-        matchRepository.saveAndFlush(newestMatch);
         matchCharactersRepository.saveAndFlush(getMatchCharacters(newestMatch));
+        matchRepository.saveAndFlush(newestMatch);
         final long newestMatchId = newestMatch.getId().orElseThrow();
 
 
@@ -113,30 +113,30 @@ public class GameHistoryIntegrationTest
                 .andExpect(jsonPath("$.matches").isArray())
                 .andExpect(jsonPath("$.matches").isNotEmpty())
                 .andExpect(jsonPath("$.matches", hasSize(10)))
-                .andExpect(jsonPath("$.matches[0].playerId").value(user1.getId().orElseThrow()))
-                .andExpect(jsonPath("$.matches[0].opponentsId").value(user2.getId().orElseThrow()))
-                .andExpect(jsonPath("$.matches[0].playerUsername").value("test-user1"))
-                .andExpect(jsonPath("$.matches[0].opponentsUsername").value("test-user2"))
-                .andExpect(jsonPath("$.matches[0].playerEloPoints").value(100))
-                .andExpect(jsonPath("$.matches[0].opponentsEloPoints").value(100))
-                .andExpect(jsonPath("$.matches[0].isPlayerWinner").value(true))
-                .andExpect(jsonPath("$.matches[0].finishTime").value(finishTime))
-                .andExpect(jsonPath("$.matches[0].playerCharacters").isArray())
-                .andExpect(jsonPath("$.matches[0].playerCharacters", hasSize(3)))
-                .andExpect(jsonPath("$.matches[0].opponentCharacters").isArray())
-                .andExpect(jsonPath("$.matches[0].opponentCharacters", hasSize(3)))
-                .andExpect(jsonPath("$.matches[0].playerCharacters[0].characterType").value(CharacterType.AMETHYST_ENCHANTRESS))
-                .andExpect(jsonPath("$.matches[0].playerCharacters[0].level").value(10))
-                .andExpect(jsonPath("$.matches[0].playerCharacters[1].characterType").value(CharacterType.RUBY_HORNED_DAME))
-                .andExpect(jsonPath("$.matches[0].playerCharacters[1].level").value(12))
-                .andExpect(jsonPath("$.matches[0].playerCharacters[2].characterType").value(CharacterType.HONEY_TRIGGER))
-                .andExpect(jsonPath("$.matches[0].playerCharacters[2].level").value(9))
-                .andExpect(jsonPath("$.matches[0].opponentCharacters[0].characterType").value(CharacterType.TRASH_MAN))
-                .andExpect(jsonPath("$.matches[0].opponentCharacters[0].level").value(13))
-                .andExpect(jsonPath("$.matches[0].opponentCharacters[1].characterType").value(CharacterType.SACRED_CAT))
-                .andExpect(jsonPath("$.matches[0].opponentCharacters[1].level").value(12))
-                .andExpect(jsonPath("$.matches[0].opponentCharacters[2].characterType").value(CharacterType.EMERALD_CORE_KNIGHT))
-                .andExpect(jsonPath("$.matches[0].opponentCharacters[2].level").value(11))
+                .andExpect(jsonPath("$.matches[9].playerId").value(user1.getId().orElseThrow()))
+                .andExpect(jsonPath("$.matches[9].opponentsId").value(user2.getId().orElseThrow()))
+                .andExpect(jsonPath("$.matches[9].playerUsername").value("test-user1"))
+                .andExpect(jsonPath("$.matches[9].opponentsUsername").value("test-user2"))
+                .andExpect(jsonPath("$.matches[9].playerEloPoints").value(100))
+                .andExpect(jsonPath("$.matches[9].opponentsEloPoints").value(100))
+                .andExpect(jsonPath("$.matches[9].isPlayerWinner").value(true))
+                .andExpect(jsonPath("$.matches[9].finishTime").value(finishTime))
+                .andExpect(jsonPath("$.matches[9].playerCharacters").isArray())
+                .andExpect(jsonPath("$.matches[9].playerCharacters", hasSize(3)))
+                .andExpect(jsonPath("$.matches[9].opponentCharacters").isArray())
+                .andExpect(jsonPath("$.matches[9].opponentCharacters", hasSize(3)))
+                .andExpect(jsonPath("$.matches[9].playerCharacters[0].characterType").value(CharacterType.AMETHYST_ENCHANTRESS))
+                .andExpect(jsonPath("$.matches[9].playerCharacters[0].level").value(10))
+                .andExpect(jsonPath("$.matches[9].playerCharacters[1].characterType").value(CharacterType.RUBY_HORNED_DAME))
+                .andExpect(jsonPath("$.matches[9].playerCharacters[1].level").value(12))
+                .andExpect(jsonPath("$.matches[9].playerCharacters[2].characterType").value(CharacterType.HONEY_TRIGGER))
+                .andExpect(jsonPath("$.matches[9].playerCharacters[2].level").value(9))
+                .andExpect(jsonPath("$.matches[9].opponentCharacters[0].characterType").value(CharacterType.TRASH_MAN))
+                .andExpect(jsonPath("$.matches[9].opponentCharacters[0].level").value(13))
+                .andExpect(jsonPath("$.matches[9].opponentCharacters[1].characterType").value(CharacterType.SACRED_CAT))
+                .andExpect(jsonPath("$.matches[9].opponentCharacters[1].level").value(12))
+                .andExpect(jsonPath("$.matches[9].opponentCharacters[2].characterType").value(CharacterType.EMERALD_CORE_KNIGHT))
+                .andExpect(jsonPath("$.matches[9].opponentCharacters[2].level").value(11))
 
                 .andExpect(jsonPath("$.matches[5].playerId").value(user1.getId().orElseThrow()))
                 .andExpect(jsonPath("$.matches[5].opponentsId").value(user2.getId().orElseThrow()))
@@ -145,7 +145,7 @@ public class GameHistoryIntegrationTest
                 .andExpect(jsonPath("$.matches[5].playerEloPoints").value(100))
                 .andExpect(jsonPath("$.matches[5].opponentsEloPoints").value(100))
                 .andExpect(jsonPath("$.matches[5].isPlayerWinner").value(true))
-                .andExpect(jsonPath("$.matches[5].finishTime").value(finishTime + 5 * 10000))
+                .andExpect(jsonPath("$.matches[5].finishTime").value(finishTime + 6 * 10000))
                 .andExpect(jsonPath("$.matches[5].playerCharacters").isArray())
                 .andExpect(jsonPath("$.matches[5].playerCharacters", hasSize(3)))
                 .andExpect(jsonPath("$.matches[5].opponentCharacters").isArray())
@@ -170,14 +170,14 @@ public class GameHistoryIntegrationTest
     {
         final User user1 = new User("test-user1", "test-user1@gmail.com", "password1");
         final User user2 = new User("test-user2", "test-user2@gmail.com", "password2");
-        userRepository.saveAndFlush(user1);
-        userRepository.saveAndFlush(user2);
 
         final UserStats userStats1 = new UserStats(user1);
         final UserStats userStats2 = new UserStats(user2);
         userStatsRepository.saveAllAndFlush(List.of(userStats1, userStats2));
+        userRepository.saveAndFlush(user1);
+        userRepository.saveAndFlush(user2);
 
-        for(long i = 0; i < 4; i++)
+        for(long i = 0; i < 5; i++)
         {
             matchRepository.saveAndFlush(new Match(
                     user1.getId().orElseThrow(),
@@ -250,12 +250,12 @@ public class GameHistoryIntegrationTest
         userRepository.saveAndFlush(user1);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/match_history/load")
-                    .param("size", "9")
+                    .param("size", "12")
                     .param("userId",  String.valueOf(user1.getId().orElseThrow()))
-                    .param("latestRecordId", String.valueOf(1))
+                    .param("latestRecordId", String.valueOf(1L))
                     .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError())
-                .andExpect(result -> assertInstanceOf(DataNotFoundException.class, result.getResolvedException()));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.matches").isEmpty());
     }
 
     @Test
