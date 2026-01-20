@@ -15,6 +15,6 @@ public class AmethystEnchantress extends OneMainBlockCharacter
 
     public AmethystEnchantress()
     {
-        super(CharacterType.AMETHYST_ENCHANTRESS, BASE_HEALTH, BASE_DAMAGE, HEALTH_PER_LEVEL_INCREASE, DAMAGE_PER_LEVEL_INCREASE, MAIN_BLOCK);
+        super(BASE_HEALTH, BASE_DAMAGE, HEALTH_PER_LEVEL_INCREASE, DAMAGE_PER_LEVEL_INCREASE, MAIN_BLOCK);
     }
 }

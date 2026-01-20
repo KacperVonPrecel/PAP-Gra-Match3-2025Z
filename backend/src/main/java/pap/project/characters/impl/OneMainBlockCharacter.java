@@ -11,7 +11,6 @@ import java.util.OptionalInt;
 
 public class OneMainBlockCharacter implements Character
 {
-    private final @NonNull CharacterType characterType;
 
     private final int baseHealth;
     private final int baseDamage;
@@ -20,10 +19,9 @@ public class OneMainBlockCharacter implements Character
 
     private final @NonNull Match3Block.BlockType mainBlock;
 
-    OneMainBlockCharacter(@NonNull CharacterType characterType, int baseHealth, int baseDamage, int healthPerLevelIncrease, int damagePerLevelIncrease,
+    OneMainBlockCharacter(int baseHealth, int baseDamage, int healthPerLevelIncrease, int damagePerLevelIncrease,
                           @NonNull Match3Block.BlockType mainBlock)
     {
-        this.characterType = characterType;
         this.baseHealth = baseHealth;
         this.baseDamage = baseDamage;
         this.healthPerLevelIncrease = healthPerLevelIncrease;
@@ -54,7 +52,7 @@ public class OneMainBlockCharacter implements Character
     }
 
     @Override
-    public final @NonNull CharacterInGame createCharacterInGame(long characterId, int level)
+    public final @NonNull CharacterInGame createCharacterInGame(long characterId, int level, CharacterType characterType)
     {
         return new OneMainBlockCharacterInGame(characterId, getDamage(level), getHealth(level), mainBlock, new HistoryCharacterData(characterType, level));
     }

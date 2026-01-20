@@ -2,6 +2,7 @@ package pap.project.characters;
 
 
 import org.springframework.lang.NonNull;
+import pap.project.characters.model.CharacterType;
 
 import java.util.OptionalInt;
 
@@ -28,5 +29,5 @@ public interface Character
      */
     @NonNull OptionalInt getRequiredCopiesForNextLevel(int level);
 
-    @NonNull CharacterInGame createCharacterInGame(long characterId, int level);
+    @NonNull CharacterInGame createCharacterInGame(long characterId, int level, CharacterType characterType);
 }

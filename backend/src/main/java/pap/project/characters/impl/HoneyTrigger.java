@@ -41,7 +41,7 @@ public class HoneyTrigger implements Character {
     }
 
     @Override
-    public CharacterInGame createCharacterInGame(long characterId, int level) {
-        return new HoneyTriggerInGame(characterId, getDamage(level), getHealth(level), new HistoryCharacterData(CharacterType.HONEY_TRIGGER, level));
+    public CharacterInGame createCharacterInGame(long characterId, int level, CharacterType characterType) {
+        return new HoneyTriggerInGame(characterId, getDamage(level), getHealth(level), new HistoryCharacterData(characterType, level));
     }
 }

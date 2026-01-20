@@ -15,6 +15,6 @@ public class TrashMan extends OneMainBlockCharacter
 
     public TrashMan()
     {
-        super(CharacterType.TRASH_MAN, BASE_HEALTH, BASE_DAMAGE, HEALTH_PER_LEVEL_INCREASE, DAMAGE_PER_LEVEL_INCREASE, MAIN_BLOCK);
+        super(BASE_HEALTH, BASE_DAMAGE, HEALTH_PER_LEVEL_INCREASE, DAMAGE_PER_LEVEL_INCREASE, MAIN_BLOCK);
     }
 }

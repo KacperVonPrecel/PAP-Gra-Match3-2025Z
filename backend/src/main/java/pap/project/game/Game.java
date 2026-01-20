@@ -38,8 +38,14 @@ public class Game
         match3Board = new Match3Board();
 
         charactersCombat = new CharactersCombat(
-                firstPlayerData.characters().stream().map(c -> c.characterType().character.createCharacterInGame(c.characterId(), c.level())).toList(),
-                secondPlayerData.characters().stream().map(c -> c.characterType().character.createCharacterInGame(c.characterId(), c.level())).toList());
+                firstPlayerData.characters().stream().map(c -> c.characterType().character.createCharacterInGame(
+                        c.characterId(),
+                        c.level(),
+                        c.characterType())).toList(),
+                secondPlayerData.characters().stream().map(c -> c.characterType().character.createCharacterInGame(
+                        c.characterId(),
+                        c.level(),
+                        c.characterType())).toList());
     }
 
     /**

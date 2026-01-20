@@ -13,6 +13,6 @@ public class SacredCat extends OneMainBlockCharacter {
     private static final Match3Block.BlockType MAIN_BLOCK = Match3Block.BlockType.HEMATITE;
 
     public SacredCat() {
-        super(CharacterType.SACRED_CAT, BASE_HEALTH, BASE_DAMAGE, HEALTH_PER_LEVEL_INCREASE, DAMAGE_PER_LEVEL_INCREASE, MAIN_BLOCK);
+        super(BASE_HEALTH, BASE_DAMAGE, HEALTH_PER_LEVEL_INCREASE, DAMAGE_PER_LEVEL_INCREASE, MAIN_BLOCK);
     }
 }

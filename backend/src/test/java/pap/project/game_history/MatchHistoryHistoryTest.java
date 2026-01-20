@@ -71,19 +71,19 @@ public class MatchHistoryHistoryTest
         assertEquals(100, loadedMatches.getFirst().opponentsEloPoints());
         assertEquals(100, loadedMatches.getLast().opponentsEloPoints());
 
-        assertEquals(CharacterType.AMETHYST_ENCHANTRESS, loadedMatches.getFirst().playerCharacters().getFirst().characterType());
-        assertEquals(10, loadedMatches.getFirst().playerCharacters().getFirst().level());
-        assertEquals(CharacterType.RUBY_HORNED_DAME, loadedMatches.getFirst().playerCharacters().get(1).characterType());
-        assertEquals(12, loadedMatches.getFirst().playerCharacters().get(1).level());
-        assertEquals(CharacterType.HONEY_TRIGGER, loadedMatches.getFirst().playerCharacters().getLast().characterType());
-        assertEquals(9, loadedMatches.getFirst().playerCharacters().getLast().level());
+        assertEquals(CharacterType.AMETHYST_ENCHANTRESS, loadedMatches.getFirst().playerCharacters().getFirst().getCharacterType());
+        assertEquals(10, loadedMatches.getFirst().playerCharacters().getFirst().getLevel());
+        assertEquals(CharacterType.RUBY_HORNED_DAME, loadedMatches.getFirst().playerCharacters().get(1).getCharacterType());
+        assertEquals(12, loadedMatches.getFirst().playerCharacters().get(1).getLevel());
+        assertEquals(CharacterType.HONEY_TRIGGER, loadedMatches.getFirst().playerCharacters().getLast().getCharacterType());
+        assertEquals(9, loadedMatches.getFirst().playerCharacters().getLast().getLevel());
 
-        assertEquals(CharacterType.TRASH_MAN, loadedMatches.getLast().opponentCharacters().getFirst().characterType());
-        assertEquals(13, loadedMatches.getLast().opponentCharacters().getFirst().level());
-        assertEquals(CharacterType.SACRED_CAT, loadedMatches.getLast().opponentCharacters().get(1).characterType());
-        assertEquals(12, loadedMatches.getLast().opponentCharacters().get(1).level());
-        assertEquals(CharacterType.EMERALD_CORE_KNIGHT, loadedMatches.getLast().opponentCharacters().getLast().characterType());
-        assertEquals(11, loadedMatches.getLast().opponentCharacters().getLast().level());
+        assertEquals(CharacterType.TRASH_MAN, loadedMatches.getLast().opponentCharacters().getFirst().getCharacterType());
+        assertEquals(13, loadedMatches.getLast().opponentCharacters().getFirst().getLevel());
+        assertEquals(CharacterType.SACRED_CAT, loadedMatches.getLast().opponentCharacters().get(1).getCharacterType());
+        assertEquals(12, loadedMatches.getLast().opponentCharacters().get(1).getLevel());
+        assertEquals(CharacterType.EMERALD_CORE_KNIGHT, loadedMatches.getLast().opponentCharacters().getLast().getCharacterType());
+        assertEquals(11, loadedMatches.getLast().opponentCharacters().getLast().getLevel());
 
         assertTrue(loadedMatches.getFirst().isPlayerWinner());
         assertFalse(loadedMatches.getLast().isPlayerWinner());

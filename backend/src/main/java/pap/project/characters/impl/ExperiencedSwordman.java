@@ -13,6 +13,6 @@ public class ExperiencedSwordman extends OneMainBlockCharacter {
     private static final Match3Block.BlockType MAIN_BLOCK = Match3Block.BlockType.DIAMOND;
 
     public ExperiencedSwordman() {
-        super(CharacterType.EXPERIENCED_SWORDMAN, BASE_HEALTH, BASE_DAMAGE, HEALTH_PER_LEVEL_INCREASE, DAMAGE_PER_LEVEL_INCREASE, MAIN_BLOCK);
+        super(BASE_HEALTH, BASE_DAMAGE, HEALTH_PER_LEVEL_INCREASE, DAMAGE_PER_LEVEL_INCREASE, MAIN_BLOCK);
     }
 }

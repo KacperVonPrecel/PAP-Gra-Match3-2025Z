@@ -163,8 +163,8 @@ public class UserDataServiceTest
         assertEquals(-10, savedMatch.getLoserEloChange());
 
         assertNotNull(savedMatch.getMatchCharacters());
-        assertEquals(CharacterType.AMETHYST_ENCHANTRESS, savedMatch.getMatchCharacters().getWinnerFirstCharacterRecord().characterType());
-        assertEquals(CharacterType.TRASH_MAN, savedMatch.getMatchCharacters().getLoserFirstCharacterRecord().characterType());
+        assertEquals(CharacterType.AMETHYST_ENCHANTRESS, savedMatch.getMatchCharacters().getWinnerFirstCharacterRecord().getCharacterType());
+        assertEquals(CharacterType.TRASH_MAN, savedMatch.getMatchCharacters().getLoserFirstCharacterRecord().getCharacterType());
 
         assertNotNull(result);
         assertEquals(20, result.get(10L).elo());
@@ -266,8 +266,8 @@ public class UserDataServiceTest
         assertEquals(-10, savedMatch.getLoserEloChange());
 
         assertNotNull(savedMatch.getMatchCharacters());
-        assertEquals(CharacterType.AMETHYST_ENCHANTRESS, savedMatch.getMatchCharacters().getWinnerFirstCharacterRecord().characterType());
-        assertEquals(CharacterType.TRASH_MAN, savedMatch.getMatchCharacters().getLoserFirstCharacterRecord().characterType());
+        assertEquals(CharacterType.AMETHYST_ENCHANTRESS, savedMatch.getMatchCharacters().getWinnerFirstCharacterRecord().getCharacterType());
+        assertEquals(CharacterType.TRASH_MAN, savedMatch.getMatchCharacters().getLoserFirstCharacterRecord().getCharacterType());
 
         assertNotNull(result);
         assertEquals(20, result.get(10L).elo());
