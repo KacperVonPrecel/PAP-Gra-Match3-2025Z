@@ -15,6 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import pap.project.characters.UserCharactersRepository;
 import pap.project.characters.model.CharacterType;
 import pap.project.game_history.model.HistoryCharacterData;
 import pap.project.user_stats.UserStats;
@@ -51,6 +52,9 @@ public class GameHistoryIntegrationTest
     @Autowired
     private UserStatsRepository userStatsRepository;
 
+    @Autowired
+    private UserCharactersRepository userCharactersRepository;
+
     private final long finishTime = 1000166400;
 
     @BeforeEach
@@ -59,6 +63,7 @@ public class GameHistoryIntegrationTest
         matchCharactersRepository.deleteAll();
         matchRepository.deleteAll();
         userStatsRepository.deleteAll();
+        userCharactersRepository.deleteAll();
         userRepository.deleteAll();
     }
 

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
+import pap.project.characters.model.CharacterType;
 import pap.project.users.User;
 import pap.project.users.UserRepository;
 
@@ -25,12 +26,24 @@ public class UserStatsRepositoryTest
     @BeforeEach
     void init()
     {
+        userStatsRepository.deleteAll();
+        userRepository.deleteAll();
+
         final User user1 = new User("test-user1", "test-user1@gmail.com", "password");
         final User user2 = new User( "test-user2", "test-user2@gmail.com", "password");
         userRepository.saveAll(List.of(user1, user2));
 
         final UserStats userStats1 = new UserStats(user1);
         final UserStats userStats2 = new UserStats(user2);
+
+        List<CharacterType> activeTeam = List.of(
+                CharacterType.TRASH_MAN,
+                CharacterType.SACRED_CAT,
+                CharacterType.AMETHYST_ENCHANTRESS
+        );
+        userStats1.setActiveTeam(activeTeam);
+        userStats2.setActiveTeam(activeTeam);
+
         userStatsRepository.saveAll(List.of(userStats1, userStats2));
     }
 
@@ -89,5 +102,28 @@ public class UserStatsRepositoryTest
         assertEquals(11, founded2.getMatchWon());
         assertEquals(1200, founded1.getCurrency());
         assertEquals(900, founded2.getCurrency());
+    }
+
+    @Test
+    void test_update_user_stats_active_team()
+    {
+        final long userId = userRepository.findByUsername("test-user1").orElseThrow().getId().orElseThrow();
+
+        List<CharacterType> newTeam = List.of(
+                CharacterType.HONEY_TRIGGER,
+                CharacterType.SACRED_CAT,
+                CharacterType.EMERALD_CORE_KNIGHT
+        );
+
+        UserStats userStats = userStatsRepository.findUserStatsById(userId).orElseThrow();
+
+        assertEquals(CharacterType.TRASH_MAN, userStats.getActiveTeam().getFirst());
+        assertEquals(CharacterType.SACRED_CAT, userStats.getActiveTeam().get(1));
+        assertEquals(CharacterType.AMETHYST_ENCHANTRESS, userStats.getActiveTeam().getLast());
+
+        userStatsRepository.updateUserStatsActiveTeam(newTeam, userId);
+
+        userStats = userStatsRepository.findUserStatsById(userId).orElseThrow();
+        assertEquals(newTeam, userStats.getActiveTeam());
     }
 }
