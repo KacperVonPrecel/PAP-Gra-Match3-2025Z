@@ -318,13 +318,6 @@ public class GameHistoryIntegrationTest
         return new MatchCharacters(mockedMatch, historyCharacterDataPlayer, historyCharacterDataOpponent);
     }
 
-    // XXXK tests for user which is not logged
-    // invalid input for controller, for example too large size etc. - if this test don't pass probably it's missing @Valid (I'm not sure if it required) annotation on controller method params.
-    // for returning empty list of matches
-    // saving more than 10 matches in history, than check if load keep size limit. Then use bigger size check if it loaded
-    // check if latestRecordTime (or latestId after change) works, and not return invalid records
-    // and maybe something more if u have more ideas.
-
 
 
 

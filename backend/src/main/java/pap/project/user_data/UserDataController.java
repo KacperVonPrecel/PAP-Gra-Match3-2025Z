@@ -62,8 +62,6 @@ public class UserDataController
     {
         final UserAuthDetails user = (UserAuthDetails) authentication.getPrincipal();
         final long userId = user.getUserId();
-
-
         return userDataService.upgradeCharacter(request, userId);
     }
 

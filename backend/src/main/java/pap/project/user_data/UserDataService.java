@@ -167,6 +167,9 @@ public class UserDataService
         userDataSession.lock();
         try
         {
+            if (userDataSession.getUserData() == null)
+                loadUserSessionData(userDataSession, userId);
+
             final int cost = switch(request.drawType())
             {
                 case COMMON -> 25;
@@ -225,6 +228,7 @@ public class UserDataService
         }
     }
 
+    @Transactional
     public UpgradeCharacterResponse upgradeCharacter(@NonNull UpgradeCharacterRequest request, long userId)
     {
         final UserSessionData userDataSession = userSessionData.computeIfAbsent(userId, _ -> new UserSessionData());
@@ -234,7 +238,10 @@ public class UserDataService
             if (userDataSession.getUserData() == null)
                 loadUserSessionData(userDataSession, userId);
 
-            final UserCharacter userCharacter = userDataSession.getUserData().userCharacters().stream().filter((character) -> character.getCharacterType() == request.characterType()).findFirst().orElseThrow();
+            final UserCharacter userCharacter = userDataSession.getUserData()
+                    .userCharacters().stream()
+                    .filter((character) -> character.getCharacterType() == request.characterType())
+                    .findFirst().orElseThrow();
 
             final CharacterData characterDataToUpgrade = userCharactersService.createCharacterData(userCharacter);
 
