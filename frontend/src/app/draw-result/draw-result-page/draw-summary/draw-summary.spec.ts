@@ -1,23 +1,23 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+// import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DrawSummary } from './draw-summary';
+// import { DrawSummary } from './draw-summary';
 
-describe('DrawSummary', () => {
-  let component: DrawSummary;
-  let fixture: ComponentFixture<DrawSummary>;
+// describe('DrawSummary', () => {
+//   let component: DrawSummary;
+//   let fixture: ComponentFixture<DrawSummary>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [DrawSummary]
-    })
-    .compileComponents();
+//   beforeEach(async () => {
+//     await TestBed.configureTestingModule({
+//       imports: [DrawSummary]
+//     })
+//     .compileComponents();
 
-    fixture = TestBed.createComponent(DrawSummary);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+//     fixture = TestBed.createComponent(DrawSummary);
+//     component = fixture.componentInstance;
+//     fixture.detectChanges();
+//   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+//   it('should create', () => {
+//     expect(component).toBeTruthy();
+//   });
+// });

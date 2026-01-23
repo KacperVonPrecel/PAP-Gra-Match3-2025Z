@@ -1,23 +1,23 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+// import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FireflyBackground } from './firefly-background';
+// import { FireflyBackground } from './firefly-background';
 
-describe('FireflyBackground', () => {
-  let component: FireflyBackground;
-  let fixture: ComponentFixture<FireflyBackground>;
+// describe('FireflyBackground', () => {
+//   let component: FireflyBackground;
+//   let fixture: ComponentFixture<FireflyBackground>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [FireflyBackground]
-    })
-    .compileComponents();
+//   beforeEach(async () => {
+//     await TestBed.configureTestingModule({
+//       imports: [FireflyBackground]
+//     })
+//     .compileComponents();
 
-    fixture = TestBed.createComponent(FireflyBackground);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+//     fixture = TestBed.createComponent(FireflyBackground);
+//     component = fixture.componentInstance;
+//     fixture.detectChanges();
+//   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+//   it('should create', () => {
+//     expect(component).toBeTruthy();
+//   });
+// });

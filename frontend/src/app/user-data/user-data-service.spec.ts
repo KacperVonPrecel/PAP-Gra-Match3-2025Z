@@ -262,7 +262,7 @@ describe('UserDataService', () => {
 				const updatedUserData: UserData = {
 					id: 1,
 					characters: userData.characters,
-					currency: 7500, // Updated currency
+					currency: 7500,
 					rankingPosition: 0,
 					lockedCharacterData: [],
 					activeTeam: null
@@ -275,15 +275,14 @@ describe('UserDataService', () => {
 		});
 	});
 
-	// Test for the XXX validation comment
-	describe('Data Validation (Future Implementation)', () => {
-		it('should not accept invalid data', () => {
-			//XXX
-		});
-	});
+	// describe('Data Validation (Future Implementation)', () => {
+	// 	it('should not accept invalid data', () => {
+	// 		//XXX
+	// 	});
+	// });
 
-	describe('draw', () => {
-		//XXXW
-		// XXXW Test for error inside tap()
-	});
+	// describe('draw', () => {
+	// 	//XXXW
+	// 	// XXXW Test for error inside tap()
+	// });
 });
