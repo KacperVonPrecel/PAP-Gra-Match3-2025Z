@@ -42,6 +42,7 @@ public class WebSecurityConfig
                         .requestMatchers("/api/auth/**").anonymous()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/h2-console", "/h2-console/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers
