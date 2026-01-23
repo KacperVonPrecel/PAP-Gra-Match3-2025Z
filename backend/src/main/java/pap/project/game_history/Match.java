@@ -38,6 +38,9 @@ public class Match {
     @Column(name = "loser_elo_change")
     private int loserEloChange;
 
+    @OneToOne(mappedBy = "match", cascade = CascadeType.ALL)
+    private MatchCharacters matchCharacters;
+
     public static @NonNull Match createMatchForTest(
             @NonNull User winner,
             @NonNull User loser,
@@ -105,6 +108,16 @@ public class Match {
     public @NonNull Integer getLoserEloChange()
     {
         return loserEloChange;
+    }
+
+    public void setMatchCharacters(MatchCharacters matchCharacters)
+    {
+        this.matchCharacters = matchCharacters;
+    }
+
+    public @NonNull MatchCharacters getMatchCharacters()
+    {
+        return matchCharacters;
     }
 
 }

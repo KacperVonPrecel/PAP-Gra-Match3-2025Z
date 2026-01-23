@@ -238,6 +238,18 @@ export class UserDataService {
 			})
 		);
 	}
+
+	addMoney(count: number) {
+		const userData = this.userData;
+		this._userData.next({
+			id: userData.id,
+			currency: userData.currency + count,
+			characters: userData.characters,
+			rankingPosition: userData.rankingPosition,
+			lockedCharacterData: userData.lockedCharacterData,
+			activeTeam: userData.activeTeam
+		});
+	}
 }
 
 export const RETURN_URL_QUERY_PARAM = 'returnUrl';
@@ -273,7 +285,9 @@ export enum CharacterType {
 	TRASH_MAN = 'TRASH_MAN',
 	SACRED_CAT = 'SACRED_CAT',
 	EMERALD_CORE_KNIGHT = 'EMERALD_CORE_KNIGHT',
-	RUBY_HORNED_DAME = 'RUBY_HORNED_DAME'
+	RUBY_HORNED_DAME = 'RUBY_HORNED_DAME',
+	EXPERIENCED_SWORDMAN = 'EXPERIENCED_SWORDMAN',
+	HONEY_TRIGGER = 'HONEY_TRIGGER'
 }
 
 export function getCharacterFileName(characterType: CharacterType): string {
@@ -285,7 +299,28 @@ const characterFileMap: { [key in CharacterType]: string } = {
 	[CharacterType.TRASH_MAN]: 'trash_man.svg',
 	[CharacterType.SACRED_CAT]: 'sacred_cat.svg',
 	[CharacterType.EMERALD_CORE_KNIGHT]: 'emerald_core_knight.svg',
-	[CharacterType.RUBY_HORNED_DAME]: 'ruby_horned_dame.svg'
+	[CharacterType.RUBY_HORNED_DAME]: 'ruby_horned_dame.svg',
+	[CharacterType.EXPERIENCED_SWORDMAN]: 'experienced_swordsman.svg',
+	[CharacterType.HONEY_TRIGGER]: 'honey_trigger.svg'
+};
+export const characterNameMap: { [key in CharacterType]: string } = {
+	[CharacterType.AMETHYST_ENCHANTRESS]: 'Amethyst Enchantress',
+	[CharacterType.TRASH_MAN]: 'Trash Man',
+	[CharacterType.SACRED_CAT]: 'Sacred Cat',
+	[CharacterType.EMERALD_CORE_KNIGHT]: 'Emerald Core Knight',
+	[CharacterType.RUBY_HORNED_DAME]: 'Ruby Horned Dame',
+	[CharacterType.EXPERIENCED_SWORDMAN]: 'Experienced Swordman',
+	[CharacterType.HONEY_TRIGGER]: 'Honey Trigger'
+};
+
+export const characterDescriptionMap: { [key in CharacterType]: string } = {
+	[CharacterType.AMETHYST_ENCHANTRESS]: 'Amethyst Enchantress',
+	[CharacterType.TRASH_MAN]: 'Trash Man',
+	[CharacterType.SACRED_CAT]: 'Sacred Cat',
+	[CharacterType.EMERALD_CORE_KNIGHT]: 'Emerald Core Knight',
+	[CharacterType.RUBY_HORNED_DAME]: 'Ruby Horned Dame',
+	[CharacterType.EXPERIENCED_SWORDMAN]: 'Experienced Swordman',
+	[CharacterType.HONEY_TRIGGER]: 'Honey Trigger'
 };
 
 export enum DrawType {

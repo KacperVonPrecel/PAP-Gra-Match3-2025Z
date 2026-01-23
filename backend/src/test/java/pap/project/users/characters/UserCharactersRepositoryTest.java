@@ -8,7 +8,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.ActiveProfiles;
-import pap.project.users.characters.model.CharacterType;
+import pap.project.characters.UserCharacter;
+import pap.project.characters.UserCharactersRepository;
+import pap.project.characters.model.CharacterType;
 import pap.project.users.User;
 import pap.project.users.UserRepository;
 
@@ -18,8 +20,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @ActiveProfiles("test")
-@EntityScan(basePackages = {"pap.project.users"})
-@EnableJpaRepositories(basePackages = {"pap.project.users"})
+@EntityScan(basePackages = {"pap.project.users", "pap.project.user_stats", "pap.project.characters"})
+@EnableJpaRepositories(basePackages = {"pap.project.users", "pap.project.user_stats", "pap.project.characters"})
 public class UserCharactersRepositoryTest
 {
     @Autowired

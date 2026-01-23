@@ -3,6 +3,7 @@ package pap.project.user_data;
 import jakarta.transaction.Transactional;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import pap.project.game.model.communication.PlayerStatChange;
 import pap.project.game_history.Match;
 import pap.project.game_history.MatchCharacters;
 import pap.project.game_history.MatchCharactersRepository;
@@ -14,12 +15,12 @@ import pap.project.user_data.model.controller.*;
 import pap.project.user_stats.UserStats;
 import pap.project.user_stats.UserStatsRepository;
 import pap.project.users.UserRepository;
-import pap.project.users.characters.UserCharacter;
-import pap.project.users.characters.UserCharactersRepository;
-import pap.project.users.characters.UserCharactersService;
-import pap.project.users.characters.model.CharacterType;
-import pap.project.users.characters.model.Rarity;
-import pap.project.users.characters.model.controller.CharacterData;
+import pap.project.characters.UserCharacter;
+import pap.project.characters.UserCharactersRepository;
+import pap.project.characters.UserCharactersService;
+import pap.project.characters.model.CharacterType;
+import pap.project.characters.model.Rarity;
+import pap.project.characters.model.controller.CharacterData;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -83,7 +84,7 @@ public class UserDataService
      * This function can take long time to execute, so don't call this in thread which need to do something else.
      */
     @Transactional
-    public void processGameEnd(long winnerId, long loserId, long finishTime, List<HistoryCharacterData> winnerCharacters, List<HistoryCharacterData> loserCharacters)
+    public @NonNull Map<Long, PlayerStatChange> processGameEnd(long winnerId, long loserId, long finishTime, @NonNull List<HistoryCharacterData> winnerCharacters, @NonNull List<HistoryCharacterData> loserCharacters)
     {
         final UserSessionData winnerUserSessionData = userSessionData.computeIfAbsent(winnerId, _ -> new UserSessionData());
         final UserSessionData loserUserSessionData  = userSessionData.computeIfAbsent(loserId, _ -> new UserSessionData());
@@ -100,7 +101,7 @@ public class UserDataService
             {
                 Thread.interrupted();
             }
-            processGameEnd(winnerId, loserId, finishTime, winnerCharacters, loserCharacters);
+            return processGameEnd(winnerId, loserId, finishTime, winnerCharacters, loserCharacters);
         }
 
         try
@@ -145,9 +146,13 @@ public class UserDataService
                     loserCharacters
             );
 
-            matchCharactersRepository.save(matchCharacters);
+            match.setMatchCharacters(matchCharacters);
             matchRepository.save(match);
 
+            return Map.of(
+                    winnerId, new PlayerStatChange(ELO_UP, CURRENCY_WINNER),
+                    loserId, new PlayerStatChange(ELO_DOWN, CURRENCY_LOSER)
+            );
         } finally
         {
             winnerUserSessionData.unlock();
@@ -162,6 +167,9 @@ public class UserDataService
         userDataSession.lock();
         try
         {
+            if (userDataSession.getUserData() == null)
+                loadUserSessionData(userDataSession, userId);
+
             final int cost = switch(request.drawType())
             {
                 case COMMON -> 25;
@@ -214,14 +222,13 @@ public class UserDataService
             userStatsRepository.updateUserStatsAfterDrawing(userDataSession.getUserData().currency(), userId);
             userCharactersRepository.saveAll(charactersToSave);
 
-
-
             return new DrawCharacterResponse(drawResults);
         } finally {
             userDataSession.unlock();
         }
     }
 
+    @Transactional
     public UpgradeCharacterResponse upgradeCharacter(@NonNull UpgradeCharacterRequest request, long userId)
     {
         final UserSessionData userDataSession = userSessionData.computeIfAbsent(userId, _ -> new UserSessionData());
@@ -231,7 +238,10 @@ public class UserDataService
             if (userDataSession.getUserData() == null)
                 loadUserSessionData(userDataSession, userId);
 
-            final UserCharacter userCharacter = userDataSession.getUserData().userCharacters().stream().filter((character) -> character.getCharacterType() == request.characterType()).findFirst().orElseThrow();
+            final UserCharacter userCharacter = userDataSession.getUserData()
+                    .userCharacters().stream()
+                    .filter((character) -> character.getCharacterType() == request.characterType())
+                    .findFirst().orElseThrow();
 
             final CharacterData characterDataToUpgrade = userCharactersService.createCharacterData(userCharacter);
 
@@ -318,7 +328,7 @@ public class UserDataService
     private CharacterType drawCharacterByRarity(@NonNull Rarity rarity)
     {
         List<CharacterType> pool = Arrays.stream(CharacterType.values())
-                .filter(c -> c.getRarity() == rarity)
+                .filter(c -> c.rarity == rarity)
                 .toList();
 
         if (pool.isEmpty())

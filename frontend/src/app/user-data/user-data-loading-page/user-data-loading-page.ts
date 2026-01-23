@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { RETURN_URL_QUERY_PARAM, UserDataService } from '../user-data-service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscribable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 @Component({
 	selector: 'app-user-data-loading-page',
@@ -24,7 +24,7 @@ export class UserDataLoadingPage implements OnInit, OnDestroy {
 			if (isLoaded) {
 				const returnUrl = this.route.snapshot.queryParamMap.get(RETURN_URL_QUERY_PARAM);
 				if (returnUrl) this.router.navigate([returnUrl]);
-				else this.router.navigate(['/main/home']);
+				else this.router.navigate(['/main/home'], { replaceUrl: true });
 			}
 		});
 	}

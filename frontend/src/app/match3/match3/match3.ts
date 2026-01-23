@@ -1,79 +1,210 @@
-import { Component } from '@angular/core';
-import { Board, Match3Service, MoveRequest } from '../match3-service';
+import { Component, inject, signal } from '@angular/core';
+import { Match3Service, MoveRequest } from '../match3-service';
+import { BoardState, GameStartData, GameState, PlayerData, PlayerState, XXX2, XXX3 } from '../game-state';
+import { GameBoard } from './board/game-board';
+import { CharactersDisplay } from './characters-display/characters-display';
+import { characterNameMap, UserDataService } from '../../user-data/user-data-service';
+import { FindingMatch } from './finding-match/finding-match';
+import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
+import { EndingScreenData } from '../ending-screen/ending-screen';
 
 @Component({
-  selector: 'app-match3',
-  imports: [],
-  templateUrl: './match3.html',
-  styleUrl: './match3.scss',
+	selector: 'app-match3',
+	imports: [GameBoard, CharactersDisplay, FindingMatch],
+	templateUrl: './match3.html',
+	styleUrl: './match3.scss'
 })
 export class Match3 {
-  private gameId?: number;
+	private gameId?: string;
+	public gameStartData: GameStartData | null = null;
+	private gameState?: GameState; //nullable because if we dont connect, no state
+	public _moveValid: { valid: boolean | null; moveId: number } = { valid: null, moveId: 0 };
+	playerId?: number;
+	lastSentMoveRequestId: number = 0;
+	lastProcessedMoveId: number = 0;
+	private gameStateSub?: Subscription;
 
-  public board: String = "";
-  
-  constructor(
-    private socket: Match3Service,
-  ) { }
+	private readonly userDataService = inject(UserDataService);
+	private readonly router = inject(Router);
 
-  connect(gameId: number): void {
-    this.gameId = gameId;
-    this.socket.subscribeToGame(this.gameId);
-    this.socket.board$.subscribe(board => { this.updateBoard(board) });
-    this.fetchBoard();
-  }
+	constructor(private socket: Match3Service) {}
 
-  disconnect(): void {
-    if (this.gameId != undefined) {
-      this.socket.unsubscribeFromGame();
-      this.gameId = undefined;
-    }
-  }
+	ngOnInit(): void {
+		this.userDataService.userDataObservable.subscribe((data) => {
+			this.playerId = data.id;
+		});
 
-  fetchBoard(): void {
-    if (this.gameId != undefined)
-      this.socket?.updateBoard(this.gameId);
-  }
+		this.socket.client.onConnect = () => {
+			// console.log('STOMP connected');
+			this.join();
+		};
+	}
 
-  updateBoard(board: Board): void {
-    const boardBlocks = board.board;
+	leaveQueue(): void {
+		if (this.gameStateSub) {
+			this.gameStateSub.unsubscribe();
+		}
+		this.socket.sendLeaveQueue();
+		this.disconnect();
+	}
 
-    let output = "";
-    for (let i = 0; i < boardBlocks.length; i++) {
-      for (let j = 0; j < boardBlocks[i].length; j++) {
-        output += boardBlocks[i][j].blockType.toString();
-      }
-      output += "\n";
-    }
-    this.board = output;
-  }
+	join(): void {
+		this.socket.gameStartData$.subscribe((gameData) => {
+			// console.log(gameData);
 
-  fillBoard(): void {
-    if (this.gameId != undefined)
-      this.socket.fillBoard(this.gameId);
-  }
+			this.gameStartData = gameData;
 
-  dropFloatingBlocks(): void {
-    if (this.gameId != undefined)
-      this.socket.dropFloatingBlocks(this.gameId);
-  }
+			if (this.gameStartData) this.connect(this.gameStartData.gameId);
+		});
 
-  makeMove(sourceRow: number, sourceColumn: number, targetRow: number, targetColumn: number): void {
-    if (this.gameId == undefined)
-      return;
+		this.socket.sendJoinRequest();
+	}
 
-    const moveRequest: MoveRequest = {
-      sourceRow: sourceRow,
-      sourceColumn: sourceColumn,
-      targetRow: targetRow,
-      targetColumn: targetColumn
-    }
+	get moveValid(): { valid: boolean | null; moveId: number } {
+		return this._moveValid;
+	}
 
-    this.socket.swapBlocks(this.gameId, moveRequest);
-  }
+	get isItMyTurn(): boolean {
+		if (!this.gameState) {
+			return false;
+		}
+		if (this.gameState!.currentPlayerId == this.playerId) {
+			return true;
+		}
+		return false;
+	}
 
-  destroyMatchedBlocks(): void {
-    if (this.gameId != undefined)
-      this.socket.destroyMatchedBlocks(this.gameId);
-  }
+	get boardState(): BoardState | null {
+		if (this.gameState) {
+			return this.gameState.boardState;
+		}
+		return null;
+	}
+
+	get playerStates(): XXX2[] | null {
+		if (this.gameState) {
+			return this.gameState.playerStates;
+		}
+		return null;
+	}
+
+	get playersData(): XXX3[] | null {
+		if (this.gameStartData) {
+			return this.gameStartData.playerData;
+		}
+		return null;
+	}
+
+	get myData(): PlayerData | null {
+		const playersData = this.playersData;
+
+		if (!playersData) return null;
+
+		const dupa = playersData.filter((x) => x.playerId == this.playerId).map((i) => i.playerData)[0];
+		if (!dupa) return null;
+		return dupa;
+	}
+
+	get opponentData(): PlayerData | null {
+		const playersData = this.playersData;
+		if (!playersData) return null;
+
+		const dupa = playersData.filter((x) => x.playerId != this.playerId).map((i) => i.playerData)[0];
+		if (!dupa) return null;
+		return dupa;
+	}
+
+	get opponentState(): PlayerState | null {
+		const playerStates = this.playerStates;
+		if (!playerStates) return null;
+		const dupa = playerStates
+			.filter((x) => x.playerId != this.playerId)
+			.map((i) => new Map(i.playerCharactersState.map((i2) => [i2.characterId, i2.health])))[0];
+		if (!dupa) return null;
+		return { charactersHealth: dupa };
+	}
+
+	get myState(): PlayerState | null {
+		const playerStates = this.playerStates;
+		if (!playerStates) return null;
+		const dupa = playerStates
+			.filter((x) => x.playerId == this.playerId)
+			.map((i) => new Map(i.playerCharactersState.map((i2) => [i2.characterId, i2.health])))[0];
+		if (!dupa) return null;
+		return { charactersHealth: dupa };
+	}
+
+	get attackingCharacter(): number | null {
+		if (!this.gameState) {
+			return null;
+		}
+		return this.gameState.attackingCharacterId;
+	}
+
+	connect(gameId: string): void {
+		// console.log(gameId);
+		this.gameId = gameId;
+		this.socket.subscribeToGame(this.gameId);
+		this.gameStateSub = this.socket.gameState$.subscribe((gameState) => {
+			//if processed id is less than sent move id -> this means make move set a new last sent move id, the user sent a move
+			//(unless a refresh happened exactly after a user moved, but before the server responded? depending on how the backend handles that -> but even then it will work fine,
+			// since refresh has no animations to display)
+			//if processed id is equal to sent move -> the new state is a result of opponents move or refresh
+
+			if (gameState?.gameEndDataResponse) {
+				const win = gameState.gameEndDataResponse.winnerId == this.playerId;
+				const state: EndingScreenData = {
+					victory: win,
+					eloChange: win ? 20 : -10,
+					moneyEarned: win ? 500 : 200
+				};
+				this.router.navigate(['/main/game-end'], {
+					// replaceUrl: true,
+					state: state
+				});
+				return;
+			}
+
+			if (this.lastProcessedMoveId < this.lastSentMoveRequestId) {
+				// console.log('my valid move', this.lastProcessedMoveId, this.lastSentMoveRequestId);
+				this.lastProcessedMoveId = this.lastSentMoveRequestId; //setting my move as the last processedId
+				if (gameState) {
+					this._moveValid = { valid: true, moveId: this.lastSentMoveRequestId };
+					this.gameState = gameState;
+				} else {
+					this._moveValid = { valid: false, moveId: this.lastSentMoveRequestId };
+				}
+			} else {
+				// console.log('NOT my move', this.lastSentMoveRequestId, this.lastProcessedMoveId);
+				//this was the opponents move or page refresh
+				if (gameState) {
+					this.gameState = gameState;
+				}
+				this._moveValid = { valid: null, moveId: this.lastSentMoveRequestId };
+			}
+		});
+		this.fetchState();
+	}
+
+	disconnect(): void {
+		if (this.gameId != undefined) {
+			this.socket.unsubscribeFromGame();
+			this.gameId = undefined;
+		}
+		this.socket.disconnectSocket();
+	}
+
+	fetchState(): void {
+		if (this.gameId != undefined) this.socket?.fetchState(this.gameId);
+	}
+
+	makeMove(swapAttempt: { move: MoveRequest; moveId: number }): void {
+		// console.log('Make move in match3 executed');
+
+		if (this.gameId != undefined) {
+			this.lastSentMoveRequestId = swapAttempt.moveId;
+			this.socket.makeMove(this.gameId, swapAttempt.move);
+		}
+	}
 }

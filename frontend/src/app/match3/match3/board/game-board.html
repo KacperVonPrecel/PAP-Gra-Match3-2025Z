@@ -1,0 +1,28 @@
+<div id="board-container">
+	<div id="board-background">
+		@if (state() && assetsLoaded) {
+			@let boardToRender = animationsPlaying ? oldBoard : state()!.board;
+
+			@for (row of boardToRender; track $index; let row_idx = $index) {
+				<div class="row">
+					@for (crystal of row; track $index; let column_idx = $index) {
+						<div class="cell-background" [class.transparent]="crystal.blockType === BlockType.DISABLED">
+							<div
+								class="cell"
+								[class]="animationState.getAnimationClasses(row_idx, column_idx)"
+								[ngStyle]="animationState.getFallParameters(row_idx, column_idx)"
+								(pointerdown)="onPointerDown($event, row_idx, column_idx)"
+								(pointermove)="onPointerMove($event)"
+								(pointerup)="onPointerUp()"
+							>
+								@if (crystal.blockType != BlockType.EMPTY && crystal.blockType != BlockType.DISABLED) {
+									<img [src]="getBlockImage(crystal)" />
+								}
+							</div>
+						</div>
+					}
+				</div>
+			}
+		}
+	</div>
+</div>

@@ -1,0 +1,9 @@
+<div id="page-container">
+	<div id="loading-container">
+		<p id="looking-text" i18n>Looking for a match...</p>
+		<mat-spinner [diameter]="60"></mat-spinner>
+	</div>
+	<div id="stop-container">
+		<button id="stop-button" matButton="filled" routerLink="/main/home/home-page" (click)="doLeaveQueue()" i18n>Stop waiting</button>
+	</div>
+</div>

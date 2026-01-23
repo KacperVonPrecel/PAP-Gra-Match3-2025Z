@@ -1,0 +1,100 @@
+:host {
+	--cell-size: min(3.1rem, 10vw);
+	--swap-duration: 150ms;
+	--destroy-duration: 250ms;
+	--fall-ease: cubic-bezier(0.2, 0.8, 0.4, 1);
+}
+#board-background {
+	//background: rgb(240, 226, 163, 0.6);
+	border-radius: 10px;
+	border-color: rgb(240, 226, 163, 0.6);
+	overflow: hidden;
+	.row {
+		display: flex;
+	}
+	.cell-background {
+		background: rgb(240, 226, 163, 0.7);
+		&.transparent {
+			background: transparent;
+		}
+	}
+	.cell {
+		width: var(--cell-size);
+		height: var(--cell-size);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		//transition: transform 150ms ease-in-out;
+	}
+	.cell img {
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+	}
+}
+
+.swap-right {
+	transform: translateX(var(--cell-size));
+	transition: transform var(--swap-duration) ease;
+}
+.swap-left {
+	transform: translateX(calc(var(--cell-size) * -1));
+	transition: transform var(--swap-duration) ease;
+}
+.swap-up {
+	transform: translateY(calc(var(--cell-size) * -1));
+	transition: transform var(--swap-duration) ease;
+}
+.swap-down {
+	transform: translateY(var(--cell-size));
+	transition: transform var(--swap-duration) ease;
+}
+
+.go-back {
+	transform: translateY(0px);
+	transition: transform var(--swap-duration) ease;
+}
+
+@keyframes pop-and-shrink {
+	0% {
+		transform: scale(1);
+		opacity: 1;
+	}
+	20% {
+		transform: scale(1.15);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(0);
+		opacity: 0;
+	}
+}
+.destroying {
+	animation: pop-and-shrink var(--destroy-duration) ease forwards;
+}
+
+@keyframes fall {
+	from {
+		transform: translateY(var(--fall-start-offset));
+	}
+	to {
+		transform: translateY(var(--fall-distance));
+	}
+}
+
+@keyframes new {
+	from {
+		transform: translateY(var(--fall-start-offset));
+	}
+	to {
+		transform: translateY(var(--fall-distance));
+	}
+}
+
+.falling {
+	animation: fall var(--fall-duration) var(--fall-ease) forwards;
+}
+
+.new {
+	animation: new var(--fall-duration) var(--fall-ease) forwards;
+}

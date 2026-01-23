@@ -1,0 +1,36 @@
+<div id="display-container">
+	<div class="user-data" id="opponent-data">
+		@if (opponentData()) {
+			<span class="username">{{ opponentData()!.playerName }}</span>
+			<span class="elo" i18n>Elo: {{ opponentData()!.playerElo }}</span>
+		}
+	</div>
+	<div class="character-container" id="opponents-character-container">
+		@for (character of opponentData()?.characters ?? []; track $index; let index = $index) {
+			<div class="character-state-container">
+				@let health = opponentState()?.charactersHealth?.get(character.characterId) ?? 0;
+				<app-health-bar class="health-bar" [maxHealth]="character.maxHealth" [currentHealth]="health"></app-health-bar>
+				<div class="image-container" [class]="animationState.getAnimationClasses(character.characterId)">
+					<img [src]="getCharacterImage(character.characterType)" />
+				</div>
+			</div>
+		}
+	</div>
+	<div class="character-container" id="players-character-container">
+		@for (character of myData()?.characters ?? []; track $index; let index = $index) {
+			<div class="character-state-container">
+				@let health = myState()?.charactersHealth?.get(character.characterId) ?? 0;
+				<app-health-bar class="health-bar" [maxHealth]="character.maxHealth" [currentHealth]="health"></app-health-bar>
+				<div class="image-container" [class]="animationState.getAnimationClasses(character.characterId)">
+					<img [src]="getCharacterImage(character.characterType)" />
+				</div>
+			</div>
+		}
+	</div>
+	<div class="user-data" id="player-data">
+		@if (myData()) {
+			<span class="username">{{ myData()!.playerName }}</span>
+			<span class="elo" i18n>Elo:{{ myData()!.playerElo }}</span>
+		}
+	</div>
+</div>

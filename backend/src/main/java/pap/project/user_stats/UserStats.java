@@ -6,7 +6,7 @@ import org.hibernate.type.SqlTypes;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import pap.project.users.User;
-import pap.project.users.characters.model.CharacterType;
+import pap.project.characters.model.CharacterType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,6 +80,11 @@ public class UserStats {
     public @Nullable List<CharacterType> getActiveTeam()
     {
         return activeTeam.size() != 3 ? null : activeTeam;
+    }
+
+    public  void setActiveTeam(@NonNull List<CharacterType> activeTeam)
+    {
+        this.activeTeam = activeTeam;
     }
 
 }

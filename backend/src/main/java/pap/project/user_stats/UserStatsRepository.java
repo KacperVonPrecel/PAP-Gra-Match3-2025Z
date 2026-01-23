@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import pap.project.user_stats.model.RankingEntry;
-import pap.project.users.characters.model.CharacterType;
+import pap.project.characters.model.CharacterType;
 
 import java.util.List;
 import java.util.Optional;

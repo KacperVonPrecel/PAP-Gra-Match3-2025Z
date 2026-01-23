@@ -14,6 +14,8 @@ import { CharactersList } from './user-chararacters/characters-list/characters-l
 import { Characters } from './user-chararacters/characters/characters';
 import { Ranking } from './ranking/ranking/ranking';
 import { SelectTeam } from './select-team/select-team/select-team';
+import { FindingMatch } from './match3/match3/finding-match/finding-match';
+import { EndingScreen } from './match3/ending-screen/ending-screen';
 
 export const routes: Routes = [
 	{
@@ -85,12 +87,19 @@ export const routes: Routes = [
 				path: 'draw-result',
 				component: DrawResultControllerPage,
 				title: 'DrawResultPage'
+			},
+			{
+				canActivate: [userDataGuard],
+				path: 'match3',
+				component: Match3,
+				title: 'Match3'
+			},
+			{
+				canActivate: [userDataGuard],
+				path: 'game-end',
+				component: EndingScreen,
+				title: 'Game End'
 			}
 		]
-	},
-	{
-		path: 'match3',
-		component: Match3,
-		title: 'Match3'
 	}
 ];
