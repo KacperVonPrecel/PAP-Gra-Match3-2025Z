@@ -113,7 +113,7 @@ public class Match3Board
     {
         fillBoard();
 
-        while (!findMatchedBlocks().blocks.isEmpty() || getAllowedMoves().isEmpty())
+        while (!findMatchedBlocks().blocks().isEmpty() || getAllowedMoves().isEmpty())
         {
             clearBoard();
             fillBoard();
@@ -275,6 +275,13 @@ public class Match3Board
 
     private boolean isMoveAllowed(@NonNull MoveRequest move)
     {
+        Match3Block sourceBlock = board[move.source().row()][move.source().column()];
+        Match3Block targetBlock = board[move.target().row()][move.target().column()];
+
+        if (sourceBlock.getBlockType() == Match3Block.BlockType.EMPTY ||  targetBlock.getBlockType() == Match3Block.BlockType.EMPTY ||
+                sourceBlock.getBlockType() == Match3Block.BlockType.DISABLED || targetBlock.getBlockType() == Match3Block.BlockType.DISABLED)
+            return false;
+
         MoveRequest reverse = new MoveRequest(move.target(), move.source());
 
         forceSwapBlocks(move);
