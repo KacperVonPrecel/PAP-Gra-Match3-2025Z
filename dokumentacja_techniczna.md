@@ -53,5 +53,20 @@
 3. Klinknąć przycisk connect.
 
 ### Dokumentacja REST api
-- Wygenerowana za pomocą
+- Wygenerowana za pomocą swaggera
 - Znajduję się pod adresem http://localhost:8080/swagger-ui/index.html
+
+## Frontend
+- Program jest uruchomiony na standardowym porcie Angulara 4200
+### Uruchomienie
+
+- Należy być w katalogu frontend i mieć zainstalowanego Angulara
+    ```
+    ng s
+    ```
+### Urchomienie testów
+- Należy być w katalogu frontend i mieć zainstalowanego Angulara
+    ```
+    ng t
+    ```
+- Testy są uruchamiane w przeglądarce na porcie 9876
