@@ -4,8 +4,8 @@ import org.springframework.lang.NonNull;
 
 import java.util.List;
 
-public record XXX2(
+public record PlayerState(
         long playerId,
-        @NonNull List<XXX1> playerCharactersState
+        @NonNull List<CharacterHealth> playerCharactersState
 ) {
 }

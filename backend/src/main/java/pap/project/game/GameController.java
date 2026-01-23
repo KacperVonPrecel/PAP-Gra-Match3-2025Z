@@ -1,7 +1,5 @@
 package pap.project.game;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -102,7 +100,7 @@ public class GameController
 
     private void notifyGameStarted(@NonNull GameStartData gameStartData)
     {
-        for (XXX3 data : gameStartData.playerData())
+        for (PlayerStartData data : gameStartData.playerData())
         {
             messaging.convertAndSendToUser(data.playerData().playerName(), "/queue/gameStart", gameStartData);
         }

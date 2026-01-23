@@ -1,6 +1,6 @@
 package pap.project.game.model.communication;
 
-public record XXX1(
+public record CharacterHealth(
         long characterId,
         int health
 )
