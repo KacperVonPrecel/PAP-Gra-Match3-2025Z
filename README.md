@@ -12,6 +12,8 @@ Norbert Drabiński, Szymon Mucha, Kacper Skrodzki, Wiktoria Parzych
 
 # Link do dokumentacji technicznej
 
+[Dokumentacja techniczna](dokumentacja_techniczna.md)
+
 # Dokumentacja dla użytkownika
 
 ## Uruchamianie programu
