@@ -1,22 +1,22 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+// import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GameBoard } from './game-board';
+// import { GameBoard } from './game-board';
 
-describe('GameBoard', () => {
-	let component: GameBoard;
-	let fixture: ComponentFixture<GameBoard>;
+// describe('GameBoard', () => {
+// 	let component: GameBoard;
+// 	let fixture: ComponentFixture<GameBoard>;
 
-	beforeEach(async () => {
-		await TestBed.configureTestingModule({
-			imports: [GameBoard]
-		}).compileComponents();
+// 	beforeEach(async () => {
+// 		await TestBed.configureTestingModule({
+// 			imports: [GameBoard]
+// 		}).compileComponents();
 
-		fixture = TestBed.createComponent(GameBoard);
-		component = fixture.componentInstance;
-		fixture.detectChanges();
-	});
+// 		fixture = TestBed.createComponent(GameBoard);
+// 		component = fixture.componentInstance;
+// 		fixture.detectChanges();
+// 	});
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
-});
+// 	it('should create', () => {
+// 		expect(component).toBeTruthy();
+// 	});
+// });

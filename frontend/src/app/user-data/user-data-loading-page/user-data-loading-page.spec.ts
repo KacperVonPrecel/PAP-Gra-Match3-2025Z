@@ -73,7 +73,7 @@ describe('UserDataLoadingPage', () => {
 		userDataLoadedSubject.next(true);
 		tick();
 
-		expect(mockRouter.navigate).toHaveBeenCalledWith(['/main/home']);
+		expect(mockRouter.navigate).toHaveBeenCalledWith(['/main/home'], { replaceUrl: true});
 	}));
 
 	it('should handle multiple emissions from observableUserDataLoaded', fakeAsync(() => {
@@ -85,7 +85,7 @@ describe('UserDataLoadingPage', () => {
 		tick();
 
 		expect(mockRouter.navigate).toHaveBeenCalledTimes(1);
-		expect(mockRouter.navigate).toHaveBeenCalledWith(['/main/home']);
+		expect(mockRouter.navigate).toHaveBeenCalledWith(['/main/home'], { replaceUrl: true });
 	}));
 
 	it('should not navigate if user data is not loaded', fakeAsync(() => {
@@ -105,7 +105,7 @@ describe('UserDataLoadingPage', () => {
 		userDataLoadedSubject.next(true);
 		tick();
 
-		expect(mockRouter.navigate).toHaveBeenCalledWith(['/main/home']);
+		expect(mockRouter.navigate).toHaveBeenCalledWith(['/main/home'], { replaceUrl: true });
 	}));
 
 	it('should handle loaded user data before navigation', fakeAsync(() => {
@@ -115,6 +115,6 @@ describe('UserDataLoadingPage', () => {
 		component.ngOnInit();
 		tick();
 
-		expect(mockRouter.navigate).toHaveBeenCalledWith(['/main/home']);
+		expect(mockRouter.navigate).toHaveBeenCalledWith(['/main/home'] , { replaceUrl: true });
 	}));
 });

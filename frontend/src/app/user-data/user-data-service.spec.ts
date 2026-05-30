@@ -28,7 +28,10 @@ describe('UserDataService', () => {
 				currentCopiesCount: 15
 			}
 		],
-		currency: 5000
+		currency: 5000,
+		rankingPosition: 1,
+		lockedCharacterData: [],
+		activeTeam: null
 	};
 
 	const maxLevelCharacterData: CharacterData = {
@@ -162,7 +165,10 @@ describe('UserDataService', () => {
 			const mockDataWithMaxLevel: UserData = {
 				id: 1,
 				characters: [maxLevelCharacterData],
-				currency: 10000
+				currency: 10000,
+				rankingPosition: 0,
+				lockedCharacterData: [],
+				activeTeam: null
 			};
 
 			service.loadUserData();
@@ -256,7 +262,10 @@ describe('UserDataService', () => {
 				const updatedUserData: UserData = {
 					id: 1,
 					characters: userData.characters,
-					currency: 7500 // Updated currency
+					currency: 7500,
+					rankingPosition: 0,
+					lockedCharacterData: [],
+					activeTeam: null
 				};
 
 				service.loadUserData();
@@ -266,15 +275,14 @@ describe('UserDataService', () => {
 		});
 	});
 
-	// Test for the XXX validation comment
-	describe('Data Validation (Future Implementation)', () => {
-		it('should not accept invalid data', () => {
-			//XXX
-		});
-	});
+	// describe('Data Validation (Future Implementation)', () => {
+	// 	it('should not accept invalid data', () => {
+	// 		//XXX
+	// 	});
+	// });
 
-	describe('draw', () => {
-		//XXXW
-		// XXXW Test for error inside tap()
-	});
+	// describe('draw', () => {
+	// 	//XXXW
+	// 	// XXXW Test for error inside tap()
+	// });
 });

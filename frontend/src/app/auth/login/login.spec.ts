@@ -214,7 +214,7 @@ describe('Login', () => {
 		spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 		authServiceSpy.login.and.returnValue(of(LoginResult.SUCCESS));
 		component.login();
-		expect(router.navigate).toHaveBeenCalledOnceWith(['/game']);
+		expect(router.navigate).toHaveBeenCalledOnceWith(['/main/loading']);
 	});
 
 	it('login should set errorToDisplay error when INVALID_CREDENTIALS is returned', async () => {

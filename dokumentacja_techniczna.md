@@ -59,16 +59,20 @@
 3. Klinknąć przycisk connect.
 
 ### Dokumentacja REST api
-
-- Wygenerowana za pomocą
+- Wygenerowana za pomocą swaggera
 - Znajduję się pod adresem http://localhost:8080/swagger-ui/index.html
 
 ## Frontend
+- Program jest uruchomiony na standardowym porcie Angulara 4200
+### Uruchomienie
 
-- frontend zawiera komentarze opisujące sposob dzialania komponentow, których działanie lub funckja mogłyby nie być jasne
-- serwisy używane na frontendzie to:
-  - UserData używany do trzymania danych użytkownika
-  - AuthService używany podczas logowania i rejestracji
-  - HistoryService używany przy wczytywaniu histroii użytkownika
-  - Match3Service używany do tworzenia połączenia web socketami przy tworzeniu gry i przesyłania i odbierania danych z backendu dotyczących rozgrywki
-  - RankingService używany do ładowania danych rankingu
+- Należy być w katalogu frontend i mieć zainstalowanego Angulara
+    ```
+    ng s
+    ```
+### Urchomienie testów
+- Należy być w katalogu frontend i mieć zainstalowanego Angulara
+    ```
+    ng t
+    ```
+- Testy są uruchamiane w przeglądarce na porcie 9876

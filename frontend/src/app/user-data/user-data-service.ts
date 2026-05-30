@@ -76,6 +76,7 @@ export class UserDataService {
 			)
 			.subscribe((result: UserData) => {
 				this._userData.next(result);
+				this.endLoadingUserData();
 			});
 	}
 
