@@ -1,6 +1,6 @@
 package pap.project.game.model.communication;
 
-public record XXX3(
+public record PlayerStartData(
         long playerId,
         PlayerData playerData
 ) {
